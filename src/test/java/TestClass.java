@@ -1,7 +1,9 @@
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.volunteer.VolunteerManagementApplication;
 import com.volunteer.entity.Volunteer;
+import com.volunteer.entity.vo.SignUpVo;
 import com.volunteer.mapper.VolunteerMapper;
+import com.volunteer.service.SignUpRecordService;
 import com.volunteer.service.VolunteerService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,8 +22,19 @@ public class TestClass {
     @Autowired
     private VolunteerMapper volunteerMapper;
 
+    @Autowired
+    private SignUpRecordService signUpRecordService;
+
     @Test
     public void test() {
         System.out.println(volunteerMapper.selectById(1));
+    }
+
+    @Test
+    public void testSignUp() {
+        SignUpVo query = new SignUpVo();
+        query.setVolunteerId(1).setActivityId(1);
+
+        System.out.println(signUpRecordService.signUp(query));
     }
 }

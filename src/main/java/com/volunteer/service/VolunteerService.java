@@ -2,6 +2,7 @@ package com.volunteer.service;
 
 import com.volunteer.entity.Volunteer;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.volunteer.entity.vo.SignUpVo;
 
 /**
  * <p>

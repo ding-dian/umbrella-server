@@ -30,3 +30,9 @@ mybatis:
 logging:
   level:
     com.volunteer.mapper: debug
+
+mybatis-plus:
+  global-config:
+    db-config:
+      logic-delete-value: 1 # ??????(??? 1)
+      logic-not-delete-value: 0 # ??????(??? 0)
