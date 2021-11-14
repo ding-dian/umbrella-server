@@ -2,7 +2,7 @@ package com.volunteer.service;
 
 import com.volunteer.entity.Volunteer;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.volunteer.entity.vo.SignUpVo;
+import org.springframework.http.ResponseEntity;
 
 /**
  * <p>
@@ -13,5 +13,9 @@ import com.volunteer.entity.vo.SignUpVo;
  * @since 2021-11-07
  */
 public interface VolunteerService extends IService<Volunteer> {
-
+    /**
+     * 志愿者注册
+     * @return
+     */
+        ResponseEntity<String> register(Volunteer register);
 }
