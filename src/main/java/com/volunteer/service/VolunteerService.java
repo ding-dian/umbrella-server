@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author hefuren
@@ -15,7 +15,8 @@ import org.springframework.http.ResponseEntity;
 public interface VolunteerService extends IService<Volunteer> {
     /**
      * 志愿者注册
+     *
      * @return
      */
-        ResponseEntity<String> register(Volunteer register);
+    ResponseEntity<String> register(Volunteer register);
 }

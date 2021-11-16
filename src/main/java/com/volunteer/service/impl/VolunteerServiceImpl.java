@@ -31,7 +31,9 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
                 return ResponseEntity.badRequest().body("账号已被注册！");
             }
             volunteerMapper.insert(register);
-        }else ResponseEntity.badRequest().body("请检查账号，密码和手机号是否为空！");
+        }else {
+            ResponseEntity.badRequest().body("请检查账号，密码和手机号是否为空！");
+        }
         return ResponseEntity.badRequest().body("注册成功");
     }
 
