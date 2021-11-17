@@ -1,9 +1,12 @@
 package com.volunteer.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
 import java.io.Serializable;
+
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -75,6 +78,7 @@ public class Volunteer implements Serializable {
     /**
      * 逻辑删除【0:未删除，1:已删除】
      */
+    @TableLogic
     private Integer deleted;
 
     /**
@@ -97,5 +101,15 @@ public class Volunteer implements Serializable {
      */
     private String updateBy;
 
+    /**
+     * 页号
+     */
+    @TableField(exist = false)
+    private int pageNo;
 
+    /**
+     * 每页大小
+     */
+    @TableField(exist = false)
+    private int pageSize;
 }

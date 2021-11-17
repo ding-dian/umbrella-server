@@ -1,8 +1,11 @@
 package com.volunteer.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.volunteer.entity.Volunteer;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.http.ResponseEntity;
+
+import java.util.List;
 
 /**
  * <p>
@@ -18,5 +21,14 @@ public interface VolunteerService extends IService<Volunteer> {
      *
      * @return
      */
-    ResponseEntity<String> register(Volunteer register);
+    int register(Volunteer register);
+
+    /**
+     * 根据条件查询志愿者列表
+     *
+     * @param volunteer
+     * @return
+     */
+    IPage<Volunteer> selectList(Volunteer volunteer);
+
 }
