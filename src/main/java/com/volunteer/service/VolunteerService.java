@@ -31,4 +31,24 @@ public interface VolunteerService extends IService<Volunteer> {
      */
     IPage<Volunteer> selectList(Volunteer volunteer);
 
+    /**
+     * 删除一个志愿者
+     * @param id
+     * @return
+     */
+    int deleteVolunteer(Integer id);
+
+    /**
+     * 批量删除志愿者
+     * @param ids
+     * @return
+     */
+    void deleteList(Integer[] ids);
+
+    /**
+     * 查询单个志愿者
+     * @param id
+     * @return
+     */
+    Volunteer selectOne(Integer id);
 }

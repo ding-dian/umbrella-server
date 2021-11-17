@@ -66,12 +66,47 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
                 .eq(ObjectUtil.isNotNull(volunteer.getPhoneNumber()),Volunteer::getPhoneNumber,volunteer.getPhoneNumber())
                 .eq(StrUtil.isNotEmpty(volunteer.getInstitude()),Volunteer::getInstitude,volunteer.getInstitude())
                 .eq(ObjectUtil.isNotNull(volunteer.getGrade()),Volunteer::getGrade,volunteer.getGrade())
-                .eq(ObjectUtil.isNotNull(volunteer.getMajor()),Volunteer::getMajor,volunteer.getMajor());
+                .eq(ObjectUtil.isNotNull(volunteer.getMajor()),Volunteer::getMajor,volunteer.getMajor())
+                .eq(Volunteer::getDeleted,0);
         // 分页
         log.info("pageNo:【{}】，pageSize:【{}】",volunteer.getPageNo(),volunteer.getPageSize());
         Page<Volunteer> page = new Page<>();
         page.setCurrent(volunteer.getPageNo()).setSize(volunteer.getPageSize());
         return baseMapper.selectPage(page, queryWrapper);
+    }
+
+
+
+    /**
+     * 批量删除志愿者
+     *
+     * @param ids
+     * @return
+     */
+    @Override
+    public void deleteList(Integer[] ids) {
+        for (int i = 0; i < ids.length; i++) {
+            deleteVolunteer(ids[i]);
+        }
+
+    }
+
+    /**
+     * 删除一个志愿者
+     *
+     * @param id
+     * @return
+     * 
+     */
+    @Override
+    public int deleteVolunteer(Integer id) {
+        Volunteer volunteer = baseMapper.selectById(id);
+        if (ObjectUtil.isNotNull(volunteer)){
+            volunteer.setDeleted(1);
+            return baseMapper.updateById(volunteer);
+        }
+        return 0;
+
     }
 
 
