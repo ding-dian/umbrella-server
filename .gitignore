@@ -7,3 +7,4 @@ target/classes/com/volunteer/service/VolunteerService.class
 target/classes/com/volunteer/service/impl/VolunteerServiceImpl.class
 target/test-classes/TestClass.class
 .idea/runConfigurations.xml
+.idea/encodings.xml
