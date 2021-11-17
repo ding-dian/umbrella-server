@@ -34,19 +34,20 @@ public class VolunteerController {
         VolunteerService volunteerService;
 
         @PostMapping("/register")
-        public ResponseEntity register( Volunteer register){
+        @ResponseBody
+        public Result register( Volunteer register){
 
             try {
                 int result = volunteerService.register(register);
                 if (result!=-1) {
-                    return ResponseEntity.ok("注册成功");
+                    return ResultGenerator.getSuccessResult("注册成功");
                 }else{
-                    return ResponseEntity.badRequest().body("请检查用户名，密码！");
+                    return ResultGenerator.getSuccessResult("请检查用户名，密码！");
                 }
 
             } catch (Exception exception) {
                 log.error("系统异常：{}",exception.getMessage());
-                return ResponseEntity.badRequest().body("网络异常，请稍后重试");
+                return ResultGenerator.getSuccessResult("网络异常，请稍后重试");
             }
 
         }
@@ -74,6 +75,7 @@ public class VolunteerController {
                 return ResultGenerator.getFailResult("系统异常");
             }
         }
+
         @PostMapping("/deleteList")
         @ResponseBody
         public Result deleteList(@RequestBody Ids ids){
@@ -85,5 +87,28 @@ public class VolunteerController {
                 return ResultGenerator.getFailResult("系统异常");
             }
         }
+
+    @GetMapping("/selectOne")
+    @ResponseBody
+    public Result selectOne(Integer id){
+        try {
+         Volunteer volunteer=volunteerService.selectOne(id);
+            return ResultGenerator.getSuccessResult(volunteer);
+        } catch (Exception exception) {
+            log.error("系统异常：{}",exception.getMessage());
+            return ResultGenerator.getFailResult("系统异常");
+        }
+    }
+    @PostMapping("/update")
+    @ResponseBody
+    public Result update(Volunteer volunteer){
+        try {
+          int date= volunteerService.update(volunteer);
+            return ResultGenerator.getSuccessResult(date);
+        } catch (Exception exception) {
+            log.error("系统异常：{}",exception.getMessage());
+            return ResultGenerator.getFailResult("系统异常");
+        }
+    }
 }
 

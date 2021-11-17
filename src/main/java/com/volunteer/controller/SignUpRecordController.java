@@ -1,6 +1,8 @@
 package com.volunteer.controller;
 
 
+import com.volunteer.entity.common.Result;
+import com.volunteer.entity.common.ResultGenerator;
 import com.volunteer.entity.vo.SignUpVo;
 import com.volunteer.service.SignUpRecordService;
 import com.volunteer.service.VolunteerService;
@@ -29,14 +31,14 @@ public class SignUpRecordController {
      */
     @PostMapping("/signUpActivity")
     @ResponseBody
-    public ResponseEntity signUpActivity(@RequestBody SignUpVo query) {
+    public Result signUpActivity(@RequestBody SignUpVo query) {
         try {
             signUpRecordService.signUp(query);
-            return ResponseEntity.ok("success");
+            return ResultGenerator.getSuccessResult("success");
         } catch (Exception exception) {
             exception.printStackTrace();
         }
-        return ResponseEntity.badRequest().body("系统错误，请联系管理员！");
+        return ResultGenerator.getFailResult("系统错误，请联系管理员！");
     }
 }
 

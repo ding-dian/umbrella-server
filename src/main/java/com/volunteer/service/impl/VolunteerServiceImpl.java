@@ -35,14 +35,14 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
 
     @Override
     public int register(Volunteer register) {
-
+        //如果志愿者名字和密码不为空，就判断是否以及注册
         if (register.getName()!=null&&register.getPassword()!=null){
+            //根据账号判断是否重复，deleted=0 未删除状态
             LambdaQueryWrapper<Volunteer> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.eq(Volunteer::getName,register.getName())
-                    .eq(Volunteer::getPassword,register.getPassword())
                     .eq(Volunteer::getDeleted,0);
-            System.out.println("se=sss");
             Volunteer volunteer = baseMapper.selectOne(queryWrapper);
+            //如果志愿者存在，返回-1 否则注册该志愿者账号
             if (ObjectUtil.isNotNull(volunteer)){
                 log.info("该用户已注册");
                 return -1;
@@ -59,7 +59,10 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
     @Override
     public IPage<Volunteer> selectList(Volunteer volunteer) {
         LambdaQueryWrapper<Volunteer> queryWrapper = new LambdaQueryWrapper<>();
-        // 查询条件
+        /**
+         * 查询条件 StrUtil.isNotEmpty 判断字符串是否为空，为空则不作为查询匹配条件
+         *        ObjectUtil.isNotNull 同理 判断 基本类型
+         */
         queryWrapper
                 .eq(StrUtil.isNotEmpty(volunteer.getName()),Volunteer::getName,volunteer.getName())
                 .eq(ObjectUtil.isNotNull(volunteer.getId()),Volunteer::getId,volunteer.getId())
@@ -68,7 +71,9 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
                 .eq(ObjectUtil.isNotNull(volunteer.getGrade()),Volunteer::getGrade,volunteer.getGrade())
                 .eq(ObjectUtil.isNotNull(volunteer.getMajor()),Volunteer::getMajor,volunteer.getMajor())
                 .eq(Volunteer::getDeleted,0);
-        // 分页
+        /**
+         * 俩个参数 pageNo 当前页 pageSize 页大小
+         */
         log.info("pageNo:【{}】，pageSize:【{}】",volunteer.getPageNo(),volunteer.getPageSize());
         Page<Volunteer> page = new Page<>();
         page.setCurrent(volunteer.getPageNo()).setSize(volunteer.getPageSize());
@@ -92,6 +97,31 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
     }
 
     /**
+     * 查询单个志愿者
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public Volunteer selectOne(Integer id) {
+        return baseMapper.selectById(id);
+    }
+
+    /**
+     * 更新志愿者信息
+     *
+     * @param volunteer
+     * @return
+     */
+    @Override
+    public int update(Volunteer volunteer) {
+        if (ObjectUtil.isNotNull(volunteer)){
+            return baseMapper.updateById(volunteer);
+        }
+            return 0;
+    }
+
+    /**
      * 删除一个志愿者
      *
      * @param id
@@ -101,6 +131,7 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
     @Override
     public int deleteVolunteer(Integer id) {
         Volunteer volunteer = baseMapper.selectById(id);
+        //根据id查询志愿者是否存在，存在才做逻辑删除 将delete设置为 1
         if (ObjectUtil.isNotNull(volunteer)){
             volunteer.setDeleted(1);
             return baseMapper.updateById(volunteer);

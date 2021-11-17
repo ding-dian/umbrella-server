@@ -40,6 +40,7 @@ public interface VolunteerService extends IService<Volunteer> {
 
     /**
      * 批量删除志愿者
+     *
      * @param ids
      * @return
      */
@@ -47,8 +48,17 @@ public interface VolunteerService extends IService<Volunteer> {
 
     /**
      * 查询单个志愿者
+     *
      * @param id
      * @return
      */
     Volunteer selectOne(Integer id);
+
+    /**
+     * 更新志愿者信息
+     * @param volunteer
+     * @return
+     */
+    int update(Volunteer volunteer);
+
 }
