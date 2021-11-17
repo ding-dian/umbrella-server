@@ -31,7 +31,7 @@ public class SignUpRecordController {
      */
     @PostMapping("/signUpActivity")
     @ResponseBody
-    public Result signUpActivity(@RequestBody SignUpVo query) {
+    public Result signUpActivity( SignUpVo query) {
         try {
             signUpRecordService.signUp(query);
             return ResultGenerator.getSuccessResult("success");
