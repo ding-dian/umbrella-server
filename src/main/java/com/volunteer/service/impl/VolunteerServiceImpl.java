@@ -3,10 +3,12 @@ package com.volunteer.service.impl;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.crypto.SecureUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.volunteer.entity.Volunteer;
+import com.volunteer.entity.common.AES;
 import com.volunteer.mapper.VolunteerMapper;
 import com.volunteer.service.VolunteerService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -48,6 +50,8 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
                 return -1;
             }else{
                 register.setCreateAt(LocalDateTime.now());
+                String password=AES.aesEncrypt(register.getPassword());
+                register.setPassword(password);
                 return baseMapper.insert(register);
             }
         }
@@ -104,7 +108,10 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
      */
     @Override
     public Volunteer selectOne(Integer id) {
-        return baseMapper.selectById(id);
+        Volunteer volunteer=baseMapper.selectById(id);
+        String password = AES.aesDecrypt(volunteer.getPassword());
+        volunteer.setPassword(password);
+        return volunteer;
     }
 
     /**

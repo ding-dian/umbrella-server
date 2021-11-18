@@ -1,6 +1,7 @@
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+
 import com.volunteer.VolunteerManagementApplication;
 import com.volunteer.entity.Volunteer;
+import com.volunteer.entity.common.AES;
 import com.volunteer.entity.vo.SignUpVo;
 import com.volunteer.mapper.VolunteerMapper;
 import com.volunteer.service.SignUpRecordService;
@@ -65,5 +66,23 @@ public class TestClass {
             volunteer.setCreateAt(LocalDateTime.now());
             volunteerMapper.insert(volunteer);
         }
+    }
+
+    @Test
+    public void testEncrypt() throws Exception {
+        {
+            String en = "xiyangyang";
+            String xx = AES.aesEncrypt(en);
+            System.out.println(xx);
+            String jm = AES.aesDecrypt(xx);
+            System.out.println(jm);
+            System.out.println("---------------");
+            byte[] encrypt = AES.encrypt(en,AES.key);
+            String decrypt = AES.decrypt(encrypt, AES.key);
+            System.out.println(encrypt);
+            System.out.println(decrypt);
+        }
+
+
     }
 }
