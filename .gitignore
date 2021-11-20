@@ -8,3 +8,4 @@ target/classes/com/volunteer/service/impl/VolunteerServiceImpl.class
 target/test-classes/TestClass.class
 .idea/runConfigurations.xml
 .idea/encodings.xml
+.idea/sonarlint/issuestore/index.pb
