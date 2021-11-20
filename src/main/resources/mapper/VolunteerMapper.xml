@@ -25,5 +25,9 @@
     <sql id="Base_Column_List">
         id, name, phone_number, email_address, student_id, password, institude, grade, major, points, deleted, create_at, create_by, update_at, update_by
     </sql>
+    
+    <select id="selectTest" parameterType="int" resultType="com.volunteer.entity.Volunteer">
+        select * from volunteer where id = #{id}
+    </select>
 
 </mapper>

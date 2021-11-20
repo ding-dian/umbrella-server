@@ -12,5 +12,5 @@ import com.volunteer.entity.Volunteer;
  * @since 2021-11-07
  */
 public interface VolunteerMapper extends BaseMapper<Volunteer> {
-
+    Volunteer selectTest(int id);
 }

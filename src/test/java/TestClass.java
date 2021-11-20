@@ -1,5 +1,6 @@
 
 import com.volunteer.VolunteerManagementApplication;
+import com.volunteer.component.RedisOperator;
 import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.common.AES;
 import com.volunteer.entity.vo.SignUpVo;
@@ -10,10 +11,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDateTime;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author VernHe
@@ -22,6 +26,9 @@ import java.util.Random;
 @SpringBootTest(classes = VolunteerManagementApplication.class)
 @RunWith(SpringRunner.class)
 public class TestClass {
+
+    @Autowired
+    private RedisOperator operator;
 
     @Autowired
     private VolunteerMapper volunteerMapper;
@@ -82,7 +89,16 @@ public class TestClass {
             System.out.println(encrypt);
             System.out.println(decrypt);
         }
+    }
 
+    @Test
+    public void testMapper() {
+        volunteerMapper.selectTest(1);
+    }
 
+    @Test
+    public void testRedisTemplate() {
+
+        System.out.println(operator.get("test1"));
     }
 }

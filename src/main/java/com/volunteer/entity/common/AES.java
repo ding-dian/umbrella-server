@@ -110,15 +110,21 @@ public  class AES {
             return "";
 
         }
+    /**
+     * 将base 64 code AES解密
+     *
+     * @param encryptStr 待解密的base 64 code
+     * @return 解密后的string //解密传String类型，返回String类型
+     * @throws Exception
+     */
 
-        /**
-         * 将base 64 code AES解密
-         *
-         * @param encryptStr 待解密的base 64 code
-         * @return 解密后的string //解密传String类型，返回String类型
-         * @throws Exception
-         */
-        public static String aesDecrypt(String encryptStr) {
+    /**
+     * 将base 64 code AES解密
+     *
+     * @param encryptStr
+     * @return
+     */
+    public static String aesDecrypt(String encryptStr) {
 
             try {
                 return decrypt(base64Decode(encryptStr), key);
@@ -126,7 +132,7 @@ public  class AES {
                 e.printStackTrace();
                 log.error("解密失败", e);
             }
-            return "f";
+            return "fail";
         }
     }
 

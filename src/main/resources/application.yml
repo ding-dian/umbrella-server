@@ -12,8 +12,9 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
   #Redis
   redis:
-    host: 127.0.0.1
+    host: 47.101.206.1
     port: 6379
+    password: volunteer
     jedis:
       pool:
         max-active: 8
@@ -21,20 +22,17 @@ spring:
         max-idle: 500
         min-idle: 0
 
-
-mybatis:
-  #MyBatis
-  mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: com.volunteer.entity
-
 logging:
   level:
     com.volunteer.mapper: debug
 
 mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.volunteer.entity
   global-config:
     db-config:
       logic-delete-field: deleted
       logic-delete-value: 1 # ??????(??? 1)
       logic-not-delete-value: 0 # ??????(??? 0)
+
 
