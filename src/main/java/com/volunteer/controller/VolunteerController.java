@@ -36,7 +36,6 @@ public class VolunteerController {
         @PostMapping("/register")
         @ResponseBody
         public Result register( Volunteer register){
-
             try {
                 int result = volunteerService.register(register);
                 if (result!=-1) {
@@ -44,7 +43,6 @@ public class VolunteerController {
                 }else{
                     return ResultGenerator.getSuccessResult("请检查用户名，密码！");
                 }
-
             } catch (Exception exception) {
                 log.error("系统异常：{}",exception.getMessage());
                 return ResultGenerator.getSuccessResult("网络异常，请稍后重试");

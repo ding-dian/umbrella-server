@@ -12,5 +12,18 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2021-11-07
  */
 public interface VolunteerActivityService extends IService<VolunteerActivity> {
+    /**
+     * 创建一个志愿者活动
+     * @param volunteerActivity
+     * @return
+     */
+    int createActivity(VolunteerActivity volunteerActivity) throws Exception;
+
+    /**
+     * 删除一个志愿者活动
+     * @param id
+     * @return
+     */
+    int deleteActivity(Integer id);
 
 }
