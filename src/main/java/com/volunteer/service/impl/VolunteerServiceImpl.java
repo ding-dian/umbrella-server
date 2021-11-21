@@ -6,10 +6,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.volunteer.entity.Volunteer;
-import com.volunteer.util.AES;
 import com.volunteer.mapper.VolunteerMapper;
 import com.volunteer.service.VolunteerService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.volunteer.util.AES;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +42,7 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
                 return -1;
             }else{
                 register.setCreateAt(LocalDateTime.now());
-                String password=AES.aesEncrypt(register.getPassword());
+                String password= AES.aesEncrypt(register.getPassword());
                 register.setPassword(password);
                 return baseMapper.insert(register);
             }
@@ -54,6 +54,29 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
 
     @Override
     public IPage<Volunteer> selectList(Volunteer volunteer) {
+        if (ObjectUtil.isNull(volunteer)){
+            volunteer = new Volunteer();
+            volunteer.setPageNo(1);
+            volunteer.setPageSize(20);
+        }else {
+            //如果传入页为空，默认第一页
+
+            if (ObjectUtil.isNotNull(volunteer.getPageNo())){
+                if (volunteer.getPageNo() < 1){
+                    throw new RuntimeException("页码不能小于1");
+                }
+            }else {
+                volunteer.setPageSize(20);
+            }
+            //如果页数据为空，默认十条
+            if (ObjectUtil.isNotNull(volunteer.getPageSize())){
+                if (volunteer.getPageSize() < 1){
+                    throw new RuntimeException("页数据不能小于1");
+                }
+            }else {
+                volunteer.setPageSize(20);
+            }
+        }
         LambdaQueryWrapper<Volunteer> queryWrapper = new LambdaQueryWrapper<>();
         /**
          * 查询条件 StrUtil.isNotEmpty 判断字符串是否为空，为空则不作为查询匹配条件

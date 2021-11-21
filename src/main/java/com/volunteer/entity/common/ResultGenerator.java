@@ -1,7 +1,6 @@
 package com.volunteer.entity.common;
 
 import cn.hutool.http.HttpStatus;
-import com.volunteer.util.Result;
 
 /**
  * 响应结果生成工具

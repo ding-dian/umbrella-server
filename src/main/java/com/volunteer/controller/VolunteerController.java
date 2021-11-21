@@ -3,10 +3,10 @@ package com.volunteer.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.volunteer.entity.Volunteer;
-import com.volunteer.util.Result;
 import com.volunteer.entity.common.ResultGenerator;
 import com.volunteer.entity.vo.Ids;
 import com.volunteer.service.VolunteerService;
+import com.volunteer.entity.common.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,7 +29,7 @@ public class VolunteerController {
 
         @PostMapping("/register")
         @ResponseBody
-        public Result register( Volunteer register){
+        public Result register(Volunteer register){
             try {
                 int result = volunteerService.register(register);
                 if (result!=-1) {
@@ -52,7 +52,7 @@ public class VolunteerController {
                 return ResultGenerator.getSuccessResult(data);
             }catch (Exception exception){
                 log.error("系统异常：{}",exception.getMessage());
-                return ResultGenerator.getFailResult("系统异常");
+                return ResultGenerator.getFailResult(exception.getMessage());
             }
         }
 
@@ -64,7 +64,7 @@ public class VolunteerController {
                 return ResultGenerator.getSuccessResult();
             } catch (Exception exception) {
                 log.error("系统异常：{}",exception.getMessage());
-                return ResultGenerator.getFailResult("系统异常");
+                return ResultGenerator.getFailResult(exception.getMessage());
             }
         }
 

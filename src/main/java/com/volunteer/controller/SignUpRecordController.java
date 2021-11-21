@@ -1,7 +1,7 @@
 package com.volunteer.controller;
 
 
-import com.volunteer.util.Result;
+import com.volunteer.entity.common.Result;
 import com.volunteer.entity.common.ResultGenerator;
 import com.volunteer.entity.vo.SignUpVo;
 import com.volunteer.service.SignUpRecordService;

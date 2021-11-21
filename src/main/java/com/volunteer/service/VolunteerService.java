@@ -3,9 +3,6 @@ package com.volunteer.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.volunteer.entity.Volunteer;
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.springframework.http.ResponseEntity;
-
-import java.util.List;
 
 /**
  * <p>

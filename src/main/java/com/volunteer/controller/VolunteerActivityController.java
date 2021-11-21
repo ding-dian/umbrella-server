@@ -3,7 +3,7 @@ package com.volunteer.controller;
 
 
 import com.volunteer.entity.VolunteerActivity;
-import com.volunteer.util.Result;
+import com.volunteer.entity.common.Result;
 import com.volunteer.entity.common.ResultGenerator;
 import com.volunteer.entity.vo.Ids;
 import com.volunteer.service.VolunteerActivityService;
