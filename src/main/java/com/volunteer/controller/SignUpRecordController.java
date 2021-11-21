@@ -1,13 +1,11 @@
 package com.volunteer.controller;
 
 
-import com.volunteer.entity.common.Result;
+import com.volunteer.util.Result;
 import com.volunteer.entity.common.ResultGenerator;
 import com.volunteer.entity.vo.SignUpVo;
 import com.volunteer.service.SignUpRecordService;
-import com.volunteer.service.VolunteerService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 /**

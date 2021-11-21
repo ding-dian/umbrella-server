@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.tomcat.jni.Local;
+import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * <p>
@@ -78,12 +79,14 @@ public class VolunteerActivity implements Serializable {
      * 活动开始时间
      */
     @TableField("start_time")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime startTime;
 
     /**
      * 活动结束时间
      */
     @TableField("end_time")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime endTime;
 
     /**

@@ -1,23 +1,28 @@
 
+
 import com.volunteer.VolunteerManagementApplication;
 import com.volunteer.component.RedisOperator;
 import com.volunteer.entity.Volunteer;
-import com.volunteer.entity.common.AES;
+import com.volunteer.util.AES;
+import com.volunteer.util.BeanMapUtil;
+import com.volunteer.util.JwtUtil;
+
 import com.volunteer.entity.vo.SignUpVo;
 import com.volunteer.mapper.VolunteerMapper;
 import com.volunteer.service.SignUpRecordService;
 import com.volunteer.service.VolunteerService;
+import io.jsonwebtoken.Claims;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author VernHe
@@ -100,5 +105,27 @@ public class TestClass {
     public void testRedisTemplate() {
 
         System.out.println(operator.get("test1"));
+    }
+
+
+    @Test
+    public void  JwtUtil(){
+        Volunteer volunteer =volunteerMapper.selectById(1);
+        Map<String, Object> stringMap = BeanMapUtil.beanToMap(volunteer);
+        String token = JwtUtil.generate(stringMap);
+        System.out.println(token);
+        System.out.println("claim:" + JwtUtil.getClaim(token).get("id"));
+        System.out.println("header:" + JwtUtil.getHeader(token));
+        //    System.out.println(getIssuedAt(token));
+        Claims claims=JwtUtil.getClaim(token);
+
+        //  System.out.println(getHeaderByBase64(token));
+        System.out.println(JwtUtil.getPayloadByBase64(token));
+
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy‐MM‐dd hh:mm:ss");
+       System.out.println("签发时间:"+sdf.format(claims.getIssuedAt()));
+        System.out.println("过期时间:"+sdf.format(claims.getExpiration()));
+       System.out.println("当前时间:"+sdf.format(new Date()) );
+
     }
 }

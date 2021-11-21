@@ -3,7 +3,7 @@ package com.volunteer.controller;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.volunteer.entity.Admin;
-import com.volunteer.entity.common.Result;
+import com.volunteer.util.Result;
 import com.volunteer.entity.common.ResultGenerator;
 import com.volunteer.entity.vo.LoginVo;
 import org.springframework.web.bind.annotation.*;
