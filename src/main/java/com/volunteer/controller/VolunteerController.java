@@ -29,6 +29,7 @@ import java.util.List;
 @Controller
 @RequestMapping("/volunteer")
 @Slf4j
+@CrossOrigin
 public class VolunteerController {
         @Autowired
         VolunteerService volunteerService;
