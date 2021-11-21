@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @RequestMapping("/volunteer")
 @Slf4j
+@CrossOrigin
 public class VolunteerController {
         @Autowired
         VolunteerService volunteerService;

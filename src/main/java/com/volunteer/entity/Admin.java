@@ -28,6 +28,11 @@ public class Admin {
     private String password;
 
     /**
+     * 头像
+     */
+    private String avatar;
+
+    /**
      * 描述
      */
     private String description;
