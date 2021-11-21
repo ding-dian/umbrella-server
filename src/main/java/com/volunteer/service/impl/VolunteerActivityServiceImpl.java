@@ -80,6 +80,27 @@ public class VolunteerActivityServiceImpl extends ServiceImpl<VolunteerActivityM
      */
     @Override
     public int deleteActivity(Integer id) {
+        if (id==null){
+            throw new RuntimeException("id为空");
+        }
         VolunteerActivity volunteerActivity=baseMapper.selectById(id);
+        //根据id查询志愿者活动是否存在，存在才做逻辑删除 将delete设置为 1
+        if (ObjectUtil.isNotNull(volunteerActivity)){
+            volunteerActivity.setDeleted(1);
+            return baseMapper.updateById(volunteerActivity);
+        }
+        return 0;
+    }
+
+    /**
+     * 批量删除志愿者活动
+     *
+     * @param ids
+     */
+    @Override
+    public void deleteListActivity(Integer[] ids) {
+        for (int i = 0; i < ids.length; i++) {
+            deleteActivity(ids[i]);
+        }
     }
 }

@@ -26,4 +26,10 @@ public interface VolunteerActivityService extends IService<VolunteerActivity> {
      */
     int deleteActivity(Integer id);
 
+    /**
+     * 批量删除志愿者活动
+     * @param ids
+     */
+     void deleteListActivity(Integer[] ids);
+
 }
