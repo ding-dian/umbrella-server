@@ -60,21 +60,18 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
             volunteer.setPageSize(20);
         }else {
             //如果传入页为空，默认第一页
-
-            if (ObjectUtil.isNotNull(volunteer.getPageNo())){
-                if (volunteer.getPageNo() < 1){
-                    throw new RuntimeException("页码不能小于1");
-                }
-            }else {
-                volunteer.setPageSize(20);
+            if (ObjectUtil.isNull(volunteer.getPageNo()) || volunteer.getPageNo() == 0){
+                //如果页码为null或者未赋值 设置默认值1
+                volunteer.setPageNo(1);
+            }else if (volunteer.getPageNo() < 0){
+                throw new RuntimeException("页码不能小于1");
             }
             //如果页数据为空，默认十条
-            if (ObjectUtil.isNotNull(volunteer.getPageSize())){
-                if (volunteer.getPageSize() < 1){
-                    throw new RuntimeException("页数据不能小于1");
-                }
-            }else {
+            if (ObjectUtil.isNull(volunteer.getPageSize()) || volunteer.getPageSize() == 0){
+                //如果页数据数为null或者未赋值 设置默认值20
                 volunteer.setPageSize(20);
+            }else if (volunteer.getPageSize() < 0){
+                throw new RuntimeException("页数据不能小于1");
             }
         }
         LambdaQueryWrapper<Volunteer> queryWrapper = new LambdaQueryWrapper<>();
