@@ -3,7 +3,7 @@ package com.volunteer.controller;
 
 
 import com.volunteer.entity.VolunteerActivity;
-import com.volunteer.entity.common.Result;
+import com.volunteer.util.Result;
 import com.volunteer.entity.common.ResultGenerator;
 import com.volunteer.entity.vo.Ids;
 import com.volunteer.service.VolunteerActivityService;
@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.awt.geom.RectangularShape;
 
 
 /**
@@ -32,6 +30,12 @@ import java.awt.geom.RectangularShape;
 public class VolunteerActivityController {
     @Autowired
     private VolunteerActivityService volunteerActivityService;
+
+    /**
+     * 创建志愿者活动
+     * @param volunteerActivity
+     * @return
+     */
 
     @PostMapping("/createActivity")
     @ResponseBody
@@ -50,6 +54,11 @@ public class VolunteerActivityController {
 
     }
 
+    /**
+     * 删除志愿者活动
+     * @param id
+     * @return
+     */
     @PostMapping("/deleteActivity")
     @ResponseBody
     public Result deleteActivity( Integer id){
@@ -62,6 +71,11 @@ public class VolunteerActivityController {
         }
     }
 
+    /**
+     * 批量删除志愿者活动
+     * @param ids
+     * @return
+     */
     @PostMapping("/deleteListActivity")
     @ResponseBody
     public Result deleteListActivity(@RequestBody Ids ids){

@@ -1,4 +1,4 @@
-package com.volunteer.entity.common;
+package com.volunteer.util;
 
 
 import lombok.extern.slf4j.Slf4j;

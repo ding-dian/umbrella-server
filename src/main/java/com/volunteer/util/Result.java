@@ -1,4 +1,4 @@
-package com.volunteer.entity.common;
+package com.volunteer.util;
 
 import lombok.Data;
 
