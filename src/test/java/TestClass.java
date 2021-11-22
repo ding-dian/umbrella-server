@@ -1,5 +1,6 @@
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.volunteer.VolunteerManagementApplication;
 import com.volunteer.component.RedisOperator;
 import com.volunteer.entity.Volunteer;
@@ -21,6 +22,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -127,5 +129,20 @@ public class TestClass {
         System.out.println("过期时间:"+sdf.format(claims.getExpiration()));
        System.out.println("当前时间:"+sdf.format(new Date()) );
 
+    }
+    @Test
+    public void updatePassword(){
+
+        for (int i=21;i<58;i++) {
+            Volunteer volunteer=volunteerMapper.selectById(i);
+            if (volunteer==null){
+                continue;
+            }
+            //VwuybRpgYLMP1NMcUdVyTg==
+            List<Volunteer> volunteers = volunteerMapper.selectList(new QueryWrapper<>());
+            String password= AES.aesEncrypt(volunteer.getPassword());
+            volunteer.setPassword(password);
+            volunteerMapper.updateById(volunteer);
+        }
     }
 }

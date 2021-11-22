@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.websocket.server.PathParam;
+
 /**
  * <p>
  *  前端控制器
@@ -30,7 +32,7 @@ public class VolunteerController {
 
         @PostMapping("/register")
         @ResponseBody
-        public Result register(Volunteer register){
+        public Result register(@RequestBody Volunteer register){
             try {
                 int result = volunteerService.register(register);
                 if (result!=-1) {
@@ -94,7 +96,7 @@ public class VolunteerController {
     }
     @PostMapping("/update")
     @ResponseBody
-    public Result update(Volunteer volunteer){
+    public Result update(@RequestBody Volunteer volunteer){
         try {
           int date= volunteerService.update(volunteer);
             return ResultGenerator.getSuccessResult(date);
