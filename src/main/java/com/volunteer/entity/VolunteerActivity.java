@@ -1,5 +1,8 @@
 package com.volunteer.entity;
 
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.date.LocalDateTimeUtil;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -82,12 +85,17 @@ public class VolunteerActivity implements Serializable {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime startTime;
 
+//    @TableField(exist = false)
+//    private String startTimeStr;
     /**
      * 活动结束时间
      */
     @TableField("end_time")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime endTime;
+
+//    @TableField(exist = false)
+//    private  String endTimeStr;
 
     /**
      * 状态【00:进行中，01:未开始，02:已结束】
@@ -132,5 +140,23 @@ public class VolunteerActivity implements Serializable {
     @TableField("is_audited")
     private Integer isAudited;
 
+    /**
+     * 预计志愿活动时长
+     */
+    @TableField("predict_duration")
+    private Double predictDuration;
 
+    /**
+     * 实际志愿活动时长
+     */
+    @TableField("actual_duration")
+    private Double actualDuration;
+
+    public void setStartTime(String startTime) {
+        this.startTime = LocalDateTimeUtil.parse(startTime, "yyyy-MM-dd HH:mm:ss");
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = LocalDateTimeUtil.parse(endTime, "yyyy-MM-dd HH:mm:ss");
+    }
 }

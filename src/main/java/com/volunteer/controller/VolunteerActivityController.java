@@ -39,7 +39,7 @@ public class VolunteerActivityController {
 
     @PostMapping("/createActivity")
     @ResponseBody
-    public Result createActivity(VolunteerActivity volunteerActivity){
+    public Result createActivity(@RequestBody VolunteerActivity volunteerActivity){
         try {
             int result = volunteerActivityService.createActivity( volunteerActivity);
             if (result==1){

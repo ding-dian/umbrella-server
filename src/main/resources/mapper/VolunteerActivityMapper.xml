@@ -21,6 +21,9 @@
         <result column="update_at" property="updateAt" />
         <result column="update_by" property="updateBy" />
         <result column="is_audited" property="isAudited" />
+        <result column="predict_duration" property="predictDuration" />
+        <result column="actual_duration" property="actualDuration" />
+
 
 
     </resultMap>

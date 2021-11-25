@@ -15,6 +15,7 @@ import com.volunteer.util.AES;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -32,6 +33,7 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
     @Autowired
     private VolunteerStatisticalInformationMapper volunteerStatisticalInformationMapper;
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int register(Volunteer register) {
         //如果志愿者名字和密码不为空，就判断是否以及注册
         if (register.getName()!=null&&register.getPassword()!=null){
