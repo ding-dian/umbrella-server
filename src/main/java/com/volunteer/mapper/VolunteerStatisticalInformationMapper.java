@@ -12,5 +12,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @since 2021-11-25
  */
 public interface VolunteerStatisticalInformationMapper extends BaseMapper<VolunteerStatisticalInformation> {
-
+        VolunteerStatisticalInformation selectByVolunteerId(Integer volunteerId);
 }

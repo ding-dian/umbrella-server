@@ -6,11 +6,14 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.volunteer.entity.Volunteer;
+import com.volunteer.entity.VolunteerStatisticalInformation;
 import com.volunteer.mapper.VolunteerMapper;
+import com.volunteer.mapper.VolunteerStatisticalInformationMapper;
 import com.volunteer.service.VolunteerService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.volunteer.util.AES;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -26,7 +29,8 @@ import java.time.LocalDateTime;
 @Service
 @Slf4j
 public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer> implements VolunteerService {
-
+    @Autowired
+    private VolunteerStatisticalInformationMapper volunteerStatisticalInformationMapper;
     @Override
     public int register(Volunteer register) {
         //如果志愿者名字和密码不为空，就判断是否以及注册
@@ -44,7 +48,13 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
                 register.setCreateAt(LocalDateTime.now());
                 String password= AES.aesEncrypt(register.getPassword());
                 register.setPassword(password);
-                return baseMapper.insert(register);
+                register.setCreateAt(LocalDateTime.now());
+                int result = baseMapper.insert(register);
+                VolunteerStatisticalInformation volunteerStatisticalInformation=new VolunteerStatisticalInformation();
+                volunteerStatisticalInformation.setCreateAt(LocalDateTime.now());
+                volunteerStatisticalInformation.setVolunteerId(register.getId());
+                volunteerStatisticalInformationMapper.insert(volunteerStatisticalInformation);
+                return result;
             }
         }
         log.info("用户名或密码为空");

@@ -13,9 +13,9 @@
         <result column="deleted" property="deleted" />
     </resultMap>
 
-    <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
-        id, volunteer_id, volunteer_durations, volunteer_attendes, activity_numbers, create_at, deleted
-    </sql>
+
+    <select id="selectByVolunteerId" resultMap="BaseResultMap">
+        select * from volunteer_statistical_information where volunteer_id = #{volunteerId}
+    </select>
 
 </mapper>

@@ -2,6 +2,8 @@ package com.volunteer.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.io.Serializable;
 import lombok.Data;
@@ -32,7 +34,7 @@ public class VolunteerStatisticalInformation implements Serializable {
     /**
      * 志愿者总时长
      */
-    private LocalDateTime volunteerDurations;
+    private BigDecimal volunteerDurations;
 
     /**
      * 志愿者总积分
