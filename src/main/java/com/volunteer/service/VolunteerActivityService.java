@@ -2,6 +2,7 @@ package com.volunteer.service;
 
 import com.volunteer.entity.VolunteerActivity;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.volunteer.entity.vo.AuditeActivityVo;
 
 /**
  * <p>
@@ -31,5 +32,12 @@ public interface VolunteerActivityService extends IService<VolunteerActivity> {
      * @param ids
      */
      void deleteListActivity(Integer[] ids);
+
+    /**
+     * 审核志愿者活动接口
+     * @param auditeActivity
+     * @return
+     */
+    VolunteerActivity isAuditedActivity(AuditeActivityVo auditeActivity);
 
 }

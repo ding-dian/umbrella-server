@@ -13,7 +13,6 @@
         <result column="institude" property="institude" />
         <result column="grade" property="grade" />
         <result column="major" property="major" />
-        <result column="points" property="points" />
         <result column="deleted" property="deleted" />
         <result column="create_at" property="createAt" />
         <result column="create_by" property="createBy" />

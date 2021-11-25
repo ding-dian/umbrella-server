@@ -5,6 +5,7 @@ package com.volunteer.controller;
 import com.volunteer.entity.VolunteerActivity;
 import com.volunteer.entity.common.Result;
 import com.volunteer.entity.common.ResultGenerator;
+import com.volunteer.entity.vo.AuditeActivityVo;
 import com.volunteer.entity.vo.Ids;
 import com.volunteer.service.VolunteerActivityService;
 import lombok.extern.slf4j.Slf4j;
@@ -89,5 +90,16 @@ public class VolunteerActivityController {
         }
     }
 
+    @PostMapping("/isAuditeActivity")
+    @ResponseBody
+    public  Result isAuditeActivity(AuditeActivityVo auditeActivity) {
+        try {
+            VolunteerActivity auditedActivity = volunteerActivityService.isAuditedActivity(auditeActivity);
+            return ResultGenerator.getSuccessResult(auditedActivity);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultGenerator.getFailResult(e.getMessage());
+        }
+    }
 }
 

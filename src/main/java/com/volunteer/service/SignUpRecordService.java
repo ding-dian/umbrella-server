@@ -2,7 +2,10 @@ package com.volunteer.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.volunteer.entity.SignUpRecord;
+import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.vo.SignUpVo;
+
+import java.util.List;
 
 /**
  * <p>
@@ -19,4 +22,6 @@ public interface SignUpRecordService extends IService<SignUpRecord> {
      * @return
      */
     int signUp(SignUpVo query);
+
+
 }
