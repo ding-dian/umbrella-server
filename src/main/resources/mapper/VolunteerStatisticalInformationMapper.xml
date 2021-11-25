@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.volunteer.mapper.VolunteerStatisticalInformationMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.volunteer.entity.VolunteerStatisticalInformation">
+        <id column="id" property="id" />
+        <result column="volunteer_id" property="volunteerId" />
+        <result column="volunteer_durations" property="volunteerDurations" />
+        <result column="volunteer_attendes" property="volunteerAttendes" />
+        <result column="activity_numbers" property="activityNumbers" />
+        <result column="create_at" property="createAt" />
+        <result column="deleted" property="deleted" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, volunteer_id, volunteer_durations, volunteer_attendes, activity_numbers, create_at, deleted
+    </sql>
+
+</mapper>

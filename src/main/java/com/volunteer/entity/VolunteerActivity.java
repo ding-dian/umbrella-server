@@ -126,5 +126,11 @@ public class VolunteerActivity implements Serializable {
     @TableField("update_by")
     private String updateBy;
 
+    /**
+     * 【0:未审核，1:已审核】
+     */
+    @TableField("is_audited")
+    private Integer isAudited;
+
 
 }

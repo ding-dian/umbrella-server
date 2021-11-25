@@ -20,6 +20,9 @@
         <result column="create_by" property="createBy" />
         <result column="update_at" property="updateAt" />
         <result column="update_by" property="updateBy" />
+        <result column="is_audited" property="isAudited" />
+
+
     </resultMap>
 
     <!-- 通用查询结果列 -->
