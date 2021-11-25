@@ -80,12 +80,12 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
          *        ObjectUtil.isNotNull 同理 判断 基本类型
          */
         queryWrapper
-                .eq(StrUtil.isNotEmpty(volunteer.getName()),Volunteer::getName,volunteer.getName())
+                .like(StrUtil.isNotEmpty(volunteer.getName()),Volunteer::getName,volunteer.getName())
                 .eq(ObjectUtil.isNotNull(volunteer.getId()),Volunteer::getId,volunteer.getId())
                 .eq(ObjectUtil.isNotNull(volunteer.getPhoneNumber()),Volunteer::getPhoneNumber,volunteer.getPhoneNumber())
                 .eq(StrUtil.isNotEmpty(volunteer.getInstitude()),Volunteer::getInstitude,volunteer.getInstitude())
-                .eq(ObjectUtil.isNotNull(volunteer.getGrade()),Volunteer::getGrade,volunteer.getGrade())
-                .eq(ObjectUtil.isNotNull(volunteer.getMajor()),Volunteer::getMajor,volunteer.getMajor())
+                .like(ObjectUtil.isNotNull(volunteer.getGrade()),Volunteer::getGrade,volunteer.getGrade())
+                .like(ObjectUtil.isNotNull(volunteer.getMajor()),Volunteer::getMajor,volunteer.getMajor())
                 .eq(Volunteer::getDeleted,0);
         /**
          * 俩个参数 pageNo 当前页 pageSize 页大小

@@ -133,16 +133,17 @@ public class TestClass {
     @Test
     public void updatePassword(){
 
-        for (int i=21;i<58;i++) {
-            Volunteer volunteer=volunteerMapper.selectById(i);
-            if (volunteer==null){
-                continue;
-            }
-            //VwuybRpgYLMP1NMcUdVyTg==
-            List<Volunteer> volunteers = volunteerMapper.selectList(new QueryWrapper<>());
-            String password= AES.aesEncrypt(volunteer.getPassword());
-            volunteer.setPassword(password);
-            volunteerMapper.updateById(volunteer);
-        }
+
+        List<Volunteer> volunteers = volunteerMapper.selectList(new QueryWrapper<>());
+//        for (int i=21;i<58;i++) {volunteerMapper.selectById(i);
+//            Volunteer volunteer=
+//            if (volunteer==null){
+//                continue;
+//            }
+//            //VwuybRpgYLMP1NMcUdVyTg==
+//            String password= AES.aesEncrypt(volunteer.getPassword());
+//            volunteer.setPassword(password);
+//            volunteerMapper.updateById(volunteer);
+//        }
     }
 }
