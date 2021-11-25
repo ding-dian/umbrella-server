@@ -1,24 +1,21 @@
 package com.volunteer.entity;
 
-import cn.hutool.core.date.DateTime;
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.LocalDateTimeUtil;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.time.LocalDateTime;
-import java.io.Serializable;
-import java.util.Date;
-
 import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.volunteer.entity.common.DataFormats;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.apache.tomcat.jni.Local;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author hefuren
@@ -28,7 +25,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @EqualsAndHashCode(callSuper = false)
 public class VolunteerActivity implements Serializable {
 
-    private static final long serialVersionUID=1L;
+    private static final long serialVersionUID = 1L;
 
     /**
      * 志愿活动ID
@@ -85,17 +82,12 @@ public class VolunteerActivity implements Serializable {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime startTime;
 
-//    @TableField(exist = false)
-//    private String startTimeStr;
     /**
      * 活动结束时间
      */
     @TableField("end_time")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime endTime;
-
-//    @TableField(exist = false)
-//    private  String endTimeStr;
 
     /**
      * 状态【00:进行中，01:未开始，02:已结束】
@@ -153,10 +145,10 @@ public class VolunteerActivity implements Serializable {
     private Double actualDuration;
 
     public void setStartTime(String startTime) {
-        this.startTime = LocalDateTimeUtil.parse(startTime, "yyyy-MM-dd HH:mm:ss");
+        this.startTime = LocalDateTimeUtil.parse(startTime, DataFormats.VO_FORMAT);
     }
 
     public void setEndTime(String endTime) {
-        this.endTime = LocalDateTimeUtil.parse(endTime, "yyyy-MM-dd HH:mm:ss");
+        this.endTime = LocalDateTimeUtil.parse(endTime, DataFormats.VO_FORMAT);
     }
 }
