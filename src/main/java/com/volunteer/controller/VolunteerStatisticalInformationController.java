@@ -4,14 +4,13 @@ package com.volunteer.controller;
 import com.volunteer.entity.VolunteerStatisticalInformation;
 import com.volunteer.entity.common.Result;
 import com.volunteer.entity.common.ResultGenerator;
+import com.volunteer.entity.vo.AuditeActivityVo;
 import com.volunteer.service.VolunteerStatisticalInformationService;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * <p>
@@ -38,6 +37,18 @@ public class VolunteerStatisticalInformationController {
             e.printStackTrace();
             return ResultGenerator.getFailResult(e.getMessage());
         }
+    }
+    @PostMapping("/updateVoluteerStaticalInfo")
+    @ResponseBody
+    public Result updateVoluteerStaticalInfo(@RequestBody AuditeActivityVo auditeActivity){
+        try {
+            volunteerStatisticalInformationService.updateVoluteerStaticalInformation(auditeActivity);
+            return ResultGenerator.getSuccessResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultGenerator.getFailResult(e.getMessage());
+        }
+
     }
 }
 

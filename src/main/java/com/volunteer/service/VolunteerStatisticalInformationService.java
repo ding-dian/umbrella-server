@@ -2,6 +2,7 @@ package com.volunteer.service;
 
 import com.volunteer.entity.VolunteerStatisticalInformation;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.volunteer.entity.vo.AuditeActivityVo;
 
 /**
  * <p>
@@ -18,4 +19,11 @@ public interface VolunteerStatisticalInformationService extends IService<Volunte
      * @return
      */
     VolunteerStatisticalInformation selectVoluteerStaticalInformation(Integer volunteerId);
+
+    /**
+     * 活动结束后更新志愿者统计信息表
+     * @param auditeActivity
+     * @return
+     */
+    void updateVoluteerStaticalInformation(AuditeActivityVo auditeActivity);
 }

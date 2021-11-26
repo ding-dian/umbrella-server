@@ -7,7 +7,7 @@
         <id column="id" property="id" />
         <result column="volunteer_id" property="volunteerId" />
         <result column="volunteer_durations" property="volunteerDurations" />
-        <result column="volunteer_attendes" property="volunteerAttendes" />
+        <result column="volunteer_points" property="volunteerPoints" />
         <result column="activity_numbers" property="activityNumbers" />
         <result column="create_at" property="createAt" />
         <result column="deleted" property="deleted" />

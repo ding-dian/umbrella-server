@@ -12,8 +12,9 @@
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="Base_Column_List">
-        id, volunteer_id, volunteer_activity_id, deleted, create_at
-    </sql>
+
+    <select id="selectByVolunteerActivityID" resultType="com.volunteer.entity.SignUpRecord">
+        select * from sign_up_record where volunteer_activity_id=#{volunteerActivityId}
+    </select>
 
 </mapper>
