@@ -1,6 +1,7 @@
 package com.volunteer.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 
 import java.math.BigDecimal;
@@ -39,7 +40,8 @@ public class VolunteerStatisticalInformation implements Serializable {
     /**
      * 志愿者总积分
      */
-    private Integer volunteerAttendes;
+    @TableField("volunteer_points")
+    private Integer volunteerPoints;
 
     private Integer activityNumbers;
 

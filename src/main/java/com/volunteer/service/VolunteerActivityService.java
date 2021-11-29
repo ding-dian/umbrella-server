@@ -2,6 +2,7 @@ package com.volunteer.service;
 
 import com.volunteer.entity.VolunteerActivity;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.volunteer.entity.VolunteerStatisticalInformation;
 import com.volunteer.entity.vo.AuditeActivityVo;
 
 /**
@@ -34,10 +35,18 @@ public interface VolunteerActivityService extends IService<VolunteerActivity> {
      void deleteListActivity(Integer[] ids);
 
     /**
-     * 审核志愿者活动接口
+     * 活动结束更新志愿者活动真实时长和状态接口
      * @param auditeActivity
      * @return
      */
-    VolunteerActivity isAuditedActivity(AuditeActivityVo auditeActivity);
+    VolunteerActivity updateActivityStatus(AuditeActivityVo auditeActivity);
+
+    /**
+     * 审核志愿者活动接口
+     *
+     * @param auditeActivity
+     * @return
+     */
+    Boolean isAuditedActivity(AuditeActivityVo auditeActivity);
 
 }

@@ -116,19 +116,19 @@ public class VolunteerActivityServiceImpl extends ServiceImpl<VolunteerActivityM
      * @param auditeActivity
      * @return
      */
-    @Override
-    public VolunteerActivity isAuditedActivity(AuditeActivityVo auditeActivity) {
+    public Boolean isAuditedActivity(AuditeActivityVo auditeActivity) {
         //判断是否传入参数
         if (ObjectUtil.isNull(auditeActivity)) {
             throw new RuntimeException("请输入活动id和真实志愿活动时长");
         }
         //判断传入id是否和法
         if (ObjectUtil.isNull(auditeActivity.getId()) || auditeActivity.getId() < 0) {
-            throw new RuntimeException("id为空或id<0");
+            throw new RuntimeException("id有误，请检查后重试");
         }
+        //真实志愿时长不能为空
         //判断志愿时长是否正常
-        if (auditeActivity.getActualDuration() < 0 ) {
-            throw new RuntimeException("单次志愿活动时长不能小于零");
+        if (ObjectUtil.isNull(auditeActivity.getActualDuration()) || auditeActivity.getActualDuration() < 0 ) {
+            throw new RuntimeException("志愿时长有误，请检查后重试");
         }
         //判断志愿活动是否存在
         VolunteerActivity volunteerActivity = baseMapper.selectById(auditeActivity.getId());
@@ -144,12 +144,21 @@ public class VolunteerActivityServiceImpl extends ServiceImpl<VolunteerActivityM
         }
         //判断活动是否已经被审核
         if (volunteerActivity.getIsAudited() == 1) {
-            throw new RuntimeException("该志愿活动已经被审核");
+           return false;
         }
-        volunteerActivity.setActualDuration(auditeActivity.getActualDuration());
-        volunteerActivity.setIsAudited(1);
-        baseMapper.updateById(volunteerActivity);
-
+        return true;
+    }
+    /**
+     * 跟更新活动状态和真实时长
+     */
+    public  VolunteerActivity updateActivityStatus(AuditeActivityVo auditeActivity){
+        Boolean result = isAuditedActivity(auditeActivity);
+        VolunteerActivity volunteerActivity = baseMapper.selectById(auditeActivity.getId());
+        if (result){
+            volunteerActivity.setActualDuration(auditeActivity.getActualDuration());
+            volunteerActivity.setIsAudited(1);
+            baseMapper.updateById(volunteerActivity);
+        }
         return volunteerActivity;
     }
 }

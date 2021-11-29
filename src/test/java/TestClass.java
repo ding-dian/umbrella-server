@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.volunteer.VolunteerManagementApplication;
 import com.volunteer.component.RedisOperator;
 import com.volunteer.entity.Volunteer;
+import com.volunteer.entity.VolunteerStatisticalInformation;
+import com.volunteer.mapper.VolunteerStatisticalInformationMapper;
+import com.volunteer.service.VolunteerStatisticalInformationService;
 import com.volunteer.util.AES;
 import com.volunteer.util.BeanMapUtil;
 import com.volunteer.util.JwtUtil;
@@ -45,6 +48,9 @@ public class TestClass {
 
     @Autowired
     private VolunteerService volunteerService;
+
+    @Autowired
+    private VolunteerStatisticalInformationMapper volunteerStatisticalInformationMapper;
 
     @Test
     public void test() {
@@ -145,5 +151,11 @@ public class TestClass {
 //            volunteer.setPassword(password);
 //            volunteerMapper.updateById(volunteer);
 //        }
+    }
+
+    @Test
+    public void xxx(){
+        VolunteerStatisticalInformation volunteerStatisticalInformation = volunteerStatisticalInformationMapper.selectByVolunteerId(1);
+        System.out.println(volunteerStatisticalInformation);
     }
 }
