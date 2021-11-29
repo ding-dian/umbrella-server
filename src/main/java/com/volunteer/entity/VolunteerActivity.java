@@ -144,6 +144,18 @@ public class VolunteerActivity implements Serializable {
     @TableField("actual_duration")
     private Double actualDuration;
 
+    /**
+     * 页号
+     */
+    @TableField(exist = false)
+    private int pageNo;
+
+    /**
+     * 每页大小
+     */
+    @TableField(exist = false)
+    private int pageSize;
+
     public void setStartTime(String startTime) {
         this.startTime = LocalDateTimeUtil.parse(startTime, DataFormats.VO_FORMAT);
     }

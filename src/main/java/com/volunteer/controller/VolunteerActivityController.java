@@ -2,6 +2,8 @@ package com.volunteer.controller;
 
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.VolunteerActivity;
 import com.volunteer.entity.common.Result;
 import com.volunteer.entity.common.ResultGenerator;
@@ -14,7 +16,6 @@ import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.stereotype.Controller;
 
 
 /**
@@ -92,6 +93,11 @@ public class VolunteerActivityController {
         }
     }
 
+    /**
+     * 更新志愿者活动状态
+     * @param auditeActivity
+     * @return
+     */
     @PostMapping("/updateActivityStatus")
     @ResponseBody
     public  Result updateActivityStatus(AuditeActivityVo auditeActivity) {
@@ -103,5 +109,49 @@ public class VolunteerActivityController {
             return ResultGenerator.getFailResult(e.getMessage());
         }
     }
+
+    /**
+     * 查询单个志愿者活动
+     * @param id
+     * @return
+     */
+    @GetMapping("/selectOneActivity")
+    @ResponseBody
+    public Result selectOneActivity(Integer id){
+        try {
+            VolunteerActivity volunteerActivity=volunteerActivityService.selectOne(id);
+            return ResultGenerator.getSuccessResult(volunteerActivity);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            log.info("系统异常：{}",exception.getMessage());
+            return ResultGenerator.getFailResult(exception.getMessage());
+        }
+    }
+
+
+    @PostMapping("/updateActivity")
+    @ResponseBody
+    public Result updateActivity(@RequestBody VolunteerActivity volunteerActivity){
+        try {
+            int date= volunteerActivityService.updateActivity(volunteerActivity);
+            return ResultGenerator.getSuccessResult(date);
+        } catch (Exception exception) {
+            log.error("系统异常：{}",exception.getMessage());
+            return ResultGenerator.getFailResult(exception.getMessage());
+        }
+    }
+
+    @GetMapping("/selectListActivity")
+    @ResponseBody
+    public Result selectListActivity(VolunteerActivity volunteerActivity){
+        try {
+            IPage<VolunteerActivity> data = volunteerActivityService.selectListActivity(volunteerActivity);
+            return ResultGenerator.getSuccessResult(data);
+        }catch (Exception exception){
+            log.error("系统异常：{}",exception.getMessage());
+            return ResultGenerator.getFailResult(exception.getMessage());
+        }
+    }
+
 }
 
