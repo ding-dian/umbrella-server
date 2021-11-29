@@ -33,6 +33,7 @@ public class VolunteerController {
         @PostMapping("/register")
         @ResponseBody
         public Result register(@RequestBody Volunteer register){
+            System.out.println("进入Controller");
             try {
                 int result = volunteerService.register(register);
                 if (result!=-1) {
@@ -40,7 +41,8 @@ public class VolunteerController {
                 }else{
                     return ResultGenerator.getSuccessResult("请检查用户名，密码！");
                 }
-            } catch (Exception exception) {
+            }
+            catch (Exception exception) {
                 log.error("系统异常：{}",exception.getMessage());
                 return ResultGenerator.getSuccessResult("网络异常，请稍后重试");
             }
@@ -61,7 +63,7 @@ public class VolunteerController {
 
         @PostMapping("/deleteOne")
         @ResponseBody
-        public Result deleteOne( Integer id){
+        public Result deleteOne(@PathParam("id") Integer id){
             try {
                  volunteerService.deleteVolunteer(id);
                 return ResultGenerator.getSuccessResult();
