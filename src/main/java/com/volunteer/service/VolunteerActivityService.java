@@ -1,5 +1,7 @@
 package com.volunteer.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.VolunteerActivity;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.volunteer.entity.VolunteerStatisticalInformation;
@@ -48,5 +50,28 @@ public interface VolunteerActivityService extends IService<VolunteerActivity> {
      * @return
      */
     Boolean isAuditedActivity(AuditeActivityVo auditeActivity);
+
+    /**
+     * 查询单个活动
+     *
+     * @param id
+     * @return
+     */
+    VolunteerActivity selectOne(Integer id);
+
+    /**
+     * 更新志愿者活动信息
+     * @param volunteerActivity
+     * @return
+     */
+    int updateActivity(VolunteerActivity volunteerActivity);
+
+    /**
+     * 根据条件查询志愿者列表
+     *
+     * @param volunteerActivity
+     * @return
+     */
+    IPage<VolunteerActivity> selectListActivity(VolunteerActivity volunteerActivity);
 
 }

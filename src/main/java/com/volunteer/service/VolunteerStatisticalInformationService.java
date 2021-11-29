@@ -26,4 +26,6 @@ public interface VolunteerStatisticalInformationService extends IService<Volunte
      * @return
      */
     void updateVoluteerStaticalInformation(AuditeActivityVo auditeActivity);
+
+
 }

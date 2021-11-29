@@ -2,11 +2,17 @@ package com.volunteer.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.VolunteerActivity;
 import com.volunteer.entity.vo.AuditeActivityVo;
 import com.volunteer.mapper.VolunteerActivityMapper;
 import com.volunteer.service.VolunteerActivityService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.volunteer.util.AES;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,6 +26,7 @@ import java.time.LocalDateTime;
  * @since 2021-11-07
  */
 @Service
+@Slf4j
 public class VolunteerActivityServiceImpl extends ServiceImpl<VolunteerActivityMapper, VolunteerActivity> implements VolunteerActivityService {
 
     /**
@@ -127,7 +134,7 @@ public class VolunteerActivityServiceImpl extends ServiceImpl<VolunteerActivityM
         }
         //真实志愿时长不能为空
         //判断志愿时长是否正常
-        if (ObjectUtil.isNull(auditeActivity.getActualDuration()) || auditeActivity.getActualDuration() < 0 ) {
+        if (ObjectUtil.isNull(auditeActivity.getActualDuration()) || auditeActivity.getActualDuration() < 0) {
             throw new RuntimeException("志愿时长有误，请检查后重试");
         }
         //判断志愿活动是否存在
@@ -139,22 +146,108 @@ public class VolunteerActivityServiceImpl extends ServiceImpl<VolunteerActivityM
         //判断活动是否结束 如果活动结束时间大于当前时间则已结束
         if (volunteerActivity.getEndTime().isBefore(LocalDateTime.now())) {
             volunteerActivity.setStatus("02");
-        }else {
+        } else {
             throw new RuntimeException("活动还未结束，还无法进行审核");
         }
         //判断活动是否已经被审核
         if (volunteerActivity.getIsAudited() == 1) {
-           return false;
+            return false;
         }
         return true;
     }
+
+    /**
+     * 查询单个活动
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public VolunteerActivity selectOne(Integer id) {
+        //参数判断
+        if (ObjectUtil.isNull(id) || id < 0) {
+            throw new RuntimeException("请正确合法id");
+        }
+        VolunteerActivity volunteerActivity = baseMapper.selectById(id);
+        if (ObjectUtil.isNull(volunteerActivity)) {
+            throw new RuntimeException("活动信息不存在");
+        }
+        return volunteerActivity;
+    }
+
+    /**
+     * 更新志愿者活动信息
+     *
+     * @param volunteerActivity
+     * @return
+     */
+    @Override
+    public int updateActivity(VolunteerActivity volunteerActivity) {
+        if (ObjectUtil.isNotNull(volunteerActivity)) {
+            return baseMapper.updateById(volunteerActivity);
+        }
+        return 0;
+    }
+
+
+    /**
+     * 根据条件查询志愿者列表
+     *
+     * @param volunteerActivity
+     * @return
+     */
+    @Override
+    public IPage<VolunteerActivity> selectListActivity(VolunteerActivity volunteerActivity) {
+        if (ObjectUtil.isNull(volunteerActivity)) {
+            volunteerActivity = new VolunteerActivity();
+            volunteerActivity.setPageNo(1);
+            volunteerActivity.setPageSize(20);
+        } else {
+            //如果传入页为空，默认第一页
+            if (ObjectUtil.isNull(volunteerActivity.getPageNo()) || volunteerActivity.getPageNo() == 0) {
+                //如果页码为null或者未赋值 设置默认值1
+                volunteerActivity.setPageNo(1);
+            } else if (volunteerActivity.getPageNo() < 0) {
+                throw new RuntimeException("页码不能小于1");
+            }
+            //如果页数据为空，默认十条
+            if (ObjectUtil.isNull(volunteerActivity.getPageSize()) || volunteerActivity.getPageSize() == 0) {
+                //如果页数据数为null或者未赋值 设置默认值20
+                volunteerActivity.setPageSize(20);
+            } else if (volunteerActivity.getPageSize() < 0) {
+                throw new RuntimeException("页数据不能小于1");
+            }
+        }
+        LambdaQueryWrapper<VolunteerActivity> queryWrapper = new LambdaQueryWrapper<>();
+        /**
+         * 查询条件 StrUtil.isNotEmpty 判断字符串是否为空，为空则不作为查询匹配条件
+         *        ObjectUtil.isNotNull 同理 判断 基本类型
+         */
+        queryWrapper
+                .like(StrUtil.isNotEmpty(volunteerActivity.getActivityName()), VolunteerActivity::getActivityName, volunteerActivity.getActivityName())
+                .eq(ObjectUtil.isNotNull(volunteerActivity.getId()), VolunteerActivity::getId, volunteerActivity.getId())
+                .like(ObjectUtil.isNotNull(volunteerActivity.getActualDuration()), VolunteerActivity::getActualDuration, volunteerActivity.getActualDuration())
+                .eq(StrUtil.isNotEmpty(volunteerActivity.getStatus()), VolunteerActivity::getStatus, volunteerActivity.getStatus())
+                .like(ObjectUtil.isNotNull(volunteerActivity.getActivityAddress()), VolunteerActivity::getActivityAddress, volunteerActivity.getActivityAddress())
+                .eq(ObjectUtil.isNotNull(volunteerActivity.getIsAudited()), VolunteerActivity::getIsAudited, volunteerActivity.getIsAudited())
+                .eq(VolunteerActivity::getDeleted, 0);
+        /**
+         * 俩个参数 pageNo 当前页 pageSize 页大小
+         */
+
+        log.info("pageNo:【{}】，pageSize:【{}】", volunteerActivity.getPageNo(), volunteerActivity.getPageSize());
+        Page<VolunteerActivity> page = new Page<>();
+        page.setCurrent(volunteerActivity.getPageNo()).setSize(volunteerActivity.getPageSize());
+        return baseMapper.selectPage(page, queryWrapper);
+    }
+
     /**
      * 跟更新活动状态和真实时长
      */
-    public  VolunteerActivity updateActivityStatus(AuditeActivityVo auditeActivity){
+    public VolunteerActivity updateActivityStatus(AuditeActivityVo auditeActivity) {
         Boolean result = isAuditedActivity(auditeActivity);
         VolunteerActivity volunteerActivity = baseMapper.selectById(auditeActivity.getId());
-        if (result){
+        if (result) {
             volunteerActivity.setActualDuration(auditeActivity.getActualDuration());
             volunteerActivity.setIsAudited(1);
             baseMapper.updateById(volunteerActivity);
