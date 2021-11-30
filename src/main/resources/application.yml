@@ -47,4 +47,7 @@ fdfs:
   tracker-list:            #TrackerList参数,支持多个
     - 47.101.206.1:22122
 
+vm:
+  host: 47.101.206.1
+  nginx-port: 8080
 

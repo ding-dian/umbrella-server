@@ -165,7 +165,7 @@ public class TestClass {
 
     @Test
     public void testFastDFS() throws IOException {
-        File file = new File("C:/Users/Administrator/Desktop/截图/校园卡反面.jpg");
+        File file = new File("C:/Users/lenovo/Desktop/QQ截图20211130114207.png");
         // 上传普通文件
 //        String uploadFile = fastDFSClient.uploadFile();
         // 上传图片带缩略图

@@ -84,6 +84,20 @@ public class FastDFSClient {
         }
         return null;
     }
+    /**
+     * 上传图片
+     * @param file
+     * @return
+     * @throws FileNotFoundException
+     */
+    public String uploadImageAndCrtThumbImage(MultipartFile file) throws IOException {
+        if (isImageFile(file)) {
+            StorePath storePath = storageClient.uploadImageAndCrtThumbImage(file.getInputStream(), file.getSize(),
+                    FilenameUtils.getExtension(file.getOriginalFilename()), null);
+            return getResAccessUrl(storePath);
+        }
+        return null;
+    }
 
     /**
      * 是否为图片
@@ -92,6 +106,22 @@ public class FastDFSClient {
      */
     private boolean isImageFile(File file) {
         String ext = FilenameUtils.getExtension(file.getName());
+        for (String str : imgExt) {
+            if (StringUtils.equalsIgnoreCase(str,ext)) {
+                return true;
+            }
+        }
+        logger.info("文件后缀：【{}】,不是图片",ext);
+        return false;
+    }
+
+    /**
+     * 是否为图片
+     * @param file
+     * @return
+     */
+    private boolean isImageFile(MultipartFile file) {
+        String ext = FilenameUtils.getExtension(file.getOriginalFilename());
         for (String str : imgExt) {
             if (StringUtils.equalsIgnoreCase(str,ext)) {
                 return true;
