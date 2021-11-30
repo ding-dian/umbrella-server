@@ -1,7 +1,9 @@
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.github.tobato.fastdfs.service.GenerateStorageClient;
 import com.volunteer.VolunteerManagementApplication;
+import com.volunteer.component.FastDFSClient;
 import com.volunteer.component.RedisOperator;
 import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.VolunteerStatisticalInformation;
@@ -22,6 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -50,7 +54,7 @@ public class TestClass {
     private VolunteerService volunteerService;
 
     @Autowired
-    private VolunteerStatisticalInformationMapper volunteerStatisticalInformationMapper;
+    private FastDFSClient fastDFSClient;
 
     @Test
     public void test() {
@@ -153,9 +157,22 @@ public class TestClass {
 //        }
     }
 
+//    @Test
+//    public void xxx(){
+//        VolunteerStatisticalInformation volunteerStatisticalInformation = volunteerStatisticalInformationMapper.selectByVolunteerId(1);
+//        System.out.println(volunteerStatisticalInformation);
+//    }
+
     @Test
-    public void xxx(){
-        VolunteerStatisticalInformation volunteerStatisticalInformation = volunteerStatisticalInformationMapper.selectByVolunteerId(1);
-        System.out.println(volunteerStatisticalInformation);
+    public void testFastDFS() throws IOException {
+        File file = new File("C:/Users/Administrator/Desktop/截图/校园卡反面.jpg");
+        // 上传普通文件
+//        String uploadFile = fastDFSClient.uploadFile();
+        // 上传图片带缩略图
+        String uploadFile = fastDFSClient.uploadImageAndCrtThumbImage(file);
+        System.out.println(uploadFile);
+
+        // 删除
+//        fastDFSClient.deleteFile("group1/M00/00/00/rBgar2GkgTuAF_qYABBlZbhgEOQ365.jpg");
     }
 }
