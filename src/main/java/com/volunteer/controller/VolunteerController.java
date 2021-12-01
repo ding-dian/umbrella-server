@@ -25,7 +25,6 @@ import javax.websocket.server.PathParam;
 @Controller
 @RequestMapping("/volunteer")
 @Slf4j
-@CrossOrigin
 public class VolunteerController {
         @Autowired
         VolunteerService volunteerService;

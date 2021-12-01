@@ -39,7 +39,6 @@ public class VolunteerActivityController {
      * @param volunteerActivity
      * @return
      */
-
     @ApiOperation(value = "方法的value")
     @PostMapping("/createActivity")
     @ResponseBody
@@ -65,7 +64,7 @@ public class VolunteerActivityController {
      */
     @PostMapping("/deleteActivity")
     @ResponseBody
-    public Result deleteActivity( Integer id){
+    public Result deleteActivity(Integer id){
         try {
             volunteerActivityService.deleteActivity(id);
             return ResultGenerator.getSuccessResult();
