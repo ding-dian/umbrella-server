@@ -5,8 +5,10 @@ import com.github.tobato.fastdfs.service.GenerateStorageClient;
 import com.volunteer.VolunteerManagementApplication;
 import com.volunteer.component.FastDFSClient;
 import com.volunteer.component.RedisOperator;
+import com.volunteer.entity.AdminInfo;
 import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.VolunteerStatisticalInformation;
+import com.volunteer.mapper.AdminInfoMapper;
 import com.volunteer.mapper.VolunteerStatisticalInformationMapper;
 import com.volunteer.service.VolunteerStatisticalInformationService;
 import com.volunteer.util.AES;
@@ -45,6 +47,8 @@ public class TestClass {
     private RedisOperator operator;
 
     @Autowired
+    private AdminInfoMapper adminInfoMapper;
+    @Autowired
     private VolunteerMapper volunteerMapper;
 
     @Autowired
@@ -55,6 +59,9 @@ public class TestClass {
 
     @Autowired
     private FastDFSClient fastDFSClient;
+
+    @Autowired
+    private RedisOperator redisOperator;
 
     @Test
     public void test() {
@@ -95,7 +102,7 @@ public class TestClass {
     @Test
     public void testEncrypt() throws Exception {
         {
-            String en = "xiyangyang";
+            String en = "admin";
             String xx = AES.aesEncrypt(en);
             System.out.println(xx);
             String jm = AES.aesDecrypt(xx);
@@ -174,5 +181,13 @@ public class TestClass {
 
         // 删除
 //        fastDFSClient.deleteFile("group1/M00/00/00/rBgar2GkgTuAF_qYABBlZbhgEOQ365.jpg");
+    }
+    @Test
+    public void tests(){
+//        AdminInfo adminInfo=adminInfoMapper.selectById(1);
+//        adminInfo.setUsername("admin");
+//        adminInfo.setPassword(AES.aesEncrypt("admin"));
+//        adminInfoMapper.updateById(adminInfo);
+        System.out.println(redisOperator.get("450c2bd0-6243-4c59-8501-34020b90b3a5"));
     }
 }

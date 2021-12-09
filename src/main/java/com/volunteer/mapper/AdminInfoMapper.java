@@ -12,5 +12,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @since 2021-12-06
  */
 public interface AdminInfoMapper extends BaseMapper<AdminInfo> {
-
+    AdminInfo selectByUserName(String userName);
 }
