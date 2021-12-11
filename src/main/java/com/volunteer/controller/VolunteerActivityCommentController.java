@@ -1,6 +1,7 @@
 package com.volunteer.controller;
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.volunteer.entity.VolunteerActivityComment;
 import com.volunteer.entity.common.Result;
 import com.volunteer.entity.common.ResultGenerator;
@@ -59,5 +60,37 @@ public class VolunteerActivityCommentController {
             return ResultGenerator.getFailResult(e.getMessage());
         }
     }
+
+    @GetMapping("/selectVolunteerAllComment")
+    @ResponseBody
+    public  Result selectVolunteerAllComment(Integer volunteerId,
+                                             @RequestParam(defaultValue = "1") Integer pageNo,
+                                             @RequestParam(defaultValue = "20") Integer pageSize){
+        try {
+            IPage<VolunteerActivityComment> page =
+                    volunteerActivityCommentService.selectVolunteerAllComment(volunteerId, pageNo, pageSize);
+            return ResultGenerator.getSuccessResult(page);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultGenerator.getFailResult(e.getMessage());
+        }
+    }
+
+    @GetMapping("/selectActivityAllComment")
+    @ResponseBody
+    public  Result selectActivityAllComment(Integer volunteerActivityId,
+                                             @RequestParam(defaultValue = "1") Integer pageNo,
+                                             @RequestParam(defaultValue = "20") Integer pageSize){
+        try {
+            IPage<VolunteerActivityComment> page =
+                    volunteerActivityCommentService.selectActivityAllComment(volunteerActivityId, pageNo, pageSize);
+            return ResultGenerator.getSuccessResult(page);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultGenerator.getFailResult(e.getMessage());
+        }
+    }
+
+
 }
 
