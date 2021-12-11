@@ -12,5 +12,4 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @since 2021-12-10
  */
 public interface VolunteerActivityCommentMapper extends BaseMapper<VolunteerActivityComment> {
-
 }
