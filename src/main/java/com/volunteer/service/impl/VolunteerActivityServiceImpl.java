@@ -244,6 +244,7 @@ public class VolunteerActivityServiceImpl extends ServiceImpl<VolunteerActivityM
     /**
      * 跟更新活动状态和真实时长
      */
+    @Override
     public VolunteerActivity updateActivityStatus(AuditeActivityVo auditeActivity) {
         Boolean result = isAuditedActivity(auditeActivity);
         VolunteerActivity volunteerActivity = baseMapper.selectById(auditeActivity.getId());

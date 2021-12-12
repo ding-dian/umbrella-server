@@ -143,6 +143,7 @@ public class VolunteerActivityController {
     @GetMapping("/selectListActivity")
     @ResponseBody
     public Result selectListActivity(VolunteerActivity volunteerActivity){
+        System.out.println(volunteerActivity);
         try {
             IPage<VolunteerActivity> data = volunteerActivityService.selectListActivity(volunteerActivity);
             return ResultGenerator.getSuccessResult(data);

@@ -2,6 +2,9 @@ package com.volunteer.entity.vo;
 
 import lombok.Data;
 
+/**
+ * @author 何福任
+ */
 @Data
 public class AdminVo {
     /**

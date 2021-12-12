@@ -2,7 +2,10 @@ package com.volunteer.entity.common;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
+/**
+ * 连接虚拟机时使用的常量
+ * @author 何福任
+ */
 @Component
 public class VmProperties {
 
@@ -12,9 +15,7 @@ public class VmProperties {
 
     public static final String COLON = ":";
 
-
     public static String VM_HOST;
-
 
     public static String VM_NGINX_PORT;
 
