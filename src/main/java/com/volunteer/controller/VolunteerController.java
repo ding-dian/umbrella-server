@@ -3,16 +3,15 @@ package com.volunteer.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.volunteer.entity.Volunteer;
+import com.volunteer.entity.common.Result;
 import com.volunteer.entity.common.ResultGenerator;
 import com.volunteer.entity.vo.Ids;
 import com.volunteer.service.VolunteerService;
-import com.volunteer.entity.common.Result;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import javax.websocket.server.PathParam;
 
 /**
  * <p>
@@ -22,15 +21,16 @@ import javax.websocket.server.PathParam;
  * @author hefuren
  * @since 2021-11-07
  */
-@Controller
+@Api(tags = "志愿者模块")
+@RestController
 @RequestMapping("/volunteer")
 @Slf4j
 public class VolunteerController {
         @Autowired
         VolunteerService volunteerService;
 
+        @ApiOperation("注册接口")
         @PostMapping("/register")
-        @ResponseBody
         public Result register(@RequestBody Volunteer register){
             System.out.println("进入Controller");
             try {
@@ -48,9 +48,9 @@ public class VolunteerController {
 
         }
 
+        @ApiOperation("分页查询接口")
         @GetMapping("/selectList")
-        @ResponseBody
-        public Result selectList(Volunteer volunteer){
+        public Result selectList(@RequestBody Volunteer volunteer){
             try {
                 IPage<Volunteer> data = volunteerService.selectList(volunteer);
                 return ResultGenerator.getSuccessResult(data);
@@ -59,10 +59,9 @@ public class VolunteerController {
                 return ResultGenerator.getFailResult(exception.getMessage());
             }
         }
-
+        @ApiOperation("删除接口")
         @PostMapping("/deleteOne")
-        @ResponseBody
-        public Result deleteOne(@PathParam("id") Integer id){
+        public Result deleteOne(@RequestParam Integer id){
             try {
                  volunteerService.deleteVolunteer(id);
                 return ResultGenerator.getSuccessResult();
@@ -71,9 +70,8 @@ public class VolunteerController {
                 return ResultGenerator.getFailResult(exception.getMessage());
             }
         }
-
+        @ApiOperation("批量删除接口")
         @PostMapping("/deleteList")
-        @ResponseBody
         public Result deleteList(@RequestBody Ids ids){
             try {
                 volunteerService.deleteList(ids.getIds());
@@ -83,10 +81,9 @@ public class VolunteerController {
                 return ResultGenerator.getFailResult("系统异常");
             }
         }
-
+    @ApiOperation("查询接口")
     @GetMapping("/selectOne")
-    @ResponseBody
-    public Result selectOne(Integer id){
+    public Result selectOne(@RequestParam Integer id){
         try {
          Volunteer volunteer=volunteerService.selectOne(id);
             return ResultGenerator.getSuccessResult(volunteer);
@@ -95,8 +92,8 @@ public class VolunteerController {
             return ResultGenerator.getFailResult("系统异常");
         }
     }
+    @ApiOperation("更新接口")
     @PostMapping("/update")
-    @ResponseBody
     public Result update(@RequestBody Volunteer volunteer){
         try {
           int date= volunteerService.update(volunteer);

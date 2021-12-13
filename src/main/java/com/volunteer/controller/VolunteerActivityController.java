@@ -1,9 +1,7 @@
 package com.volunteer.controller;
 
 
-
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.VolunteerActivity;
 import com.volunteer.entity.common.Result;
 import com.volunteer.entity.common.ResultGenerator;
@@ -12,7 +10,6 @@ import com.volunteer.entity.vo.Ids;
 import com.volunteer.service.VolunteerActivityService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
  * @author hefuren
  * @since 2021-11-07
  */
-@Api(value = "value",tags = {"tags"})
+@Api(tags = "志愿者活动模块")
 @RestController
 @RequestMapping("/volunteerActivity")
 @Slf4j
@@ -39,10 +36,9 @@ public class VolunteerActivityController {
      * @param volunteerActivity
      * @return
      */
-    @ApiOperation(value = "方法的value")
+    @ApiOperation(value = "活动创建接口")
     @PostMapping("/createActivity")
-    @ResponseBody
-    public Result createActivity(@RequestBody @ApiParam(name = "志愿者名字",value = "传入json格式",required = true) VolunteerActivity volunteerActivity){
+    public Result createActivity(@RequestBody VolunteerActivity volunteerActivity){
         try {
             int result = volunteerActivityService.createActivity( volunteerActivity);
             if (result==1){
@@ -62,9 +58,9 @@ public class VolunteerActivityController {
      * @param id
      * @return
      */
+    @ApiOperation(value = "活动删除接口")
     @PostMapping("/deleteActivity")
-    @ResponseBody
-    public Result deleteActivity(Integer id){
+    public Result deleteActivity(@RequestBody Integer id){
         try {
             volunteerActivityService.deleteActivity(id);
             return ResultGenerator.getSuccessResult();
@@ -80,7 +76,7 @@ public class VolunteerActivityController {
      * @return
      */
     @PostMapping("/deleteListActivity")
-    @ResponseBody
+    @ApiOperation(value = "活动批量创建接口")
     public Result deleteListActivity(@RequestBody Ids ids){
         System.out.println(ids);
         try {
@@ -97,8 +93,8 @@ public class VolunteerActivityController {
      * @param auditeActivity
      * @return
      */
+    @ApiOperation(value = "活动更新接口")
     @PostMapping("/updateActivityStatus")
-    @ResponseBody
     public  Result updateActivityStatus(AuditeActivityVo auditeActivity) {
         try {
             VolunteerActivity volunteerActivity = volunteerActivityService.updateActivityStatus(auditeActivity);
@@ -114,8 +110,8 @@ public class VolunteerActivityController {
      * @param id
      * @return
      */
+    @ApiOperation(value = "活动查询接口")
     @GetMapping("/selectOneActivity")
-    @ResponseBody
     public Result selectOneActivity(Integer id){
         try {
             VolunteerActivity volunteerActivity=volunteerActivityService.selectOne(id);
@@ -127,9 +123,13 @@ public class VolunteerActivityController {
         }
     }
 
-
+    /**
+     * 更新活动接口
+     * @param volunteerActivity
+     * @return
+     */
     @PostMapping("/updateActivity")
-    @ResponseBody
+    @ApiOperation(value = "活动更新接口")
     public Result updateActivity(@RequestBody VolunteerActivity volunteerActivity){
         try {
             int date= volunteerActivityService.updateActivity(volunteerActivity);
@@ -140,8 +140,13 @@ public class VolunteerActivityController {
         }
     }
 
+    /**
+     * 分页查询活动接口
+     * @param volunteerActivity
+     * @return
+     */
+    @ApiOperation(value = "活动分页查询接口")
     @GetMapping("/selectListActivity")
-    @ResponseBody
     public Result selectListActivity(VolunteerActivity volunteerActivity){
         System.out.println(volunteerActivity);
         try {

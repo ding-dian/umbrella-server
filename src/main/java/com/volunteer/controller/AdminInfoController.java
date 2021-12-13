@@ -1,19 +1,14 @@
 package com.volunteer.controller;
 
 
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
-import com.baomidou.mybatisplus.extension.api.R;
 import com.volunteer.entity.AdminInfo;
 import com.volunteer.entity.common.Result;
 import com.volunteer.entity.common.ResultGenerator;
-import com.volunteer.entity.vo.LoginVo;
 import com.volunteer.service.AdminInfoService;
-import lombok.val;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import org.springframework.stereotype.Controller;
 
 /**
  * <p>
@@ -23,15 +18,17 @@ import org.springframework.stereotype.Controller;
  * @author xiaoyao
  * @since 2021-12-06
  */
-@Controller
+@Api(tags = "管理员模块")
+@RestController
 @RequestMapping("/adminInfo")
 public class AdminInfoController {
     @Autowired
     AdminInfoService adminInfoService;
 
+    @ApiOperation(value = "登录接口")
     @PostMapping("/login")
-    @ResponseBody
-    public Result loginAdmin(String username, String password) {
+    public Result loginAdmin(@RequestBody String username,
+                             @RequestBody String password) {
         try {
             String token = adminInfoService.adminLogin(username, password);
             return  ResultGenerator.getSuccessResult(token);
@@ -40,9 +37,10 @@ public class AdminInfoController {
             return ResultGenerator.getFailResult(e.getMessage());
         }
     }
+
+    @ApiOperation(value = "注销接口")
     @GetMapping("/logout")
-    @ResponseBody
-    public Result logout(String token){
+    public Result logout(@RequestBody String token){
         try {
              adminInfoService.logout(token);
         } catch (Exception e) {
@@ -51,9 +49,9 @@ public class AdminInfoController {
         return ResultGenerator.getSuccessResult("注销成功");
     }
 
+    @ApiOperation(value = "注册接口")
     @PostMapping("/register")
-    @ResponseBody
-    public Result register(AdminInfo adminInfo){
+    public Result register(@RequestBody AdminInfo adminInfo){
         try {
             adminInfoService.register(adminInfo);
             return ResultGenerator.getSuccessResult("注册成功");

@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.volunteer.entity.common.DataFormats;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -22,6 +24,7 @@ import java.time.LocalDateTime;
  * @since 2021-11-07
  */
 @Data
+@ApiModel(value = "活动实体类",description = "接收活动参数的实体类")
 @EqualsAndHashCode(callSuper = false)
 public class VolunteerActivity implements Serializable {
 
@@ -30,6 +33,7 @@ public class VolunteerActivity implements Serializable {
     /**
      * 志愿活动ID
      */
+    @ApiModelProperty(name = "活动ID",required = false,example = "1")
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 

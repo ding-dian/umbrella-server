@@ -10,7 +10,7 @@ import lombok.Data;
  * @description 用于接收登录时的用户名和密码
  */
 @Data
-@ApiModel(value = "表单对象",description = "用于接收登录时的用户名和密码")
+@ApiModel(value = "对象",description = "用于接收登录时的用户名和密码")
 public class LoginVo {
 
     @ApiModelProperty(name = "用户名", required = true, example = "admin")

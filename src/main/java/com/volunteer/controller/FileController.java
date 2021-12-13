@@ -1,16 +1,17 @@
 package com.volunteer.controller;
 
-import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.druid.util.StringUtils;
 import com.volunteer.component.FastDFSClient;
 import com.volunteer.entity.common.Result;
 import com.volunteer.entity.common.ResultGenerator;
 import com.volunteer.entity.common.VmProperties;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 /**
  * 文件和图片上传
  */
+@Api(tags = "文件系统模块")
 @RestController
 @RequestMapping("/file")
 @Slf4j
@@ -25,8 +27,8 @@ public class FileController {
     @Autowired
     private FastDFSClient fastDFSClient;
 
+    @ApiOperation("图片上传接口")
     @PostMapping("/uploadImg")
-    @ResponseBody
     public Result uploadImgMethod(MultipartFile file) {
 
         try {
@@ -38,8 +40,8 @@ public class FileController {
         }
     }
 
+    @ApiOperation("文件上传接口")
     @PostMapping("/uploadFile")
-    @ResponseBody
     public Result uploadFileMethod(MultipartFile file) {
 
         try {
@@ -52,6 +54,8 @@ public class FileController {
         }
     }
 
+    @ApiOperation("查询上传路径接口")
+    @GetMapping("/getPath")
     private Result getPath(String path, String errMsg) {
         StringBuilder stringBuilder = new StringBuilder();
         if (!StringUtils.isEmpty(path)) {

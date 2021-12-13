@@ -1,16 +1,16 @@
 package com.volunteer.controller;
 
-
 import com.volunteer.entity.VolunteerStatisticalInformation;
 import com.volunteer.entity.common.Result;
 import com.volunteer.entity.common.ResultGenerator;
 import com.volunteer.entity.vo.AuditeActivityVo;
 import com.volunteer.service.VolunteerStatisticalInformationService;
-import org.apache.ibatis.annotations.Param;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import org.springframework.stereotype.Controller;
+import javax.websocket.server.PathParam;
 
 /**
  * <p>
@@ -20,15 +20,16 @@ import org.springframework.stereotype.Controller;
  * @author xiaoyao
  * @since 2021-11-25
  */
-@Controller
+@Api(tags = "志愿者信息统计模块")
+@RestController
 @RequestMapping("/volunteerStatisticalInformation")
 public class VolunteerStatisticalInformationController {
     @Autowired
     private VolunteerStatisticalInformationService volunteerStatisticalInformationService;
 
-    @GetMapping("getselectVoluteerStaticalInformation")
-    @ResponseBody
-    public Result getVoluteerStaticalInformation(@Param("volunteerId")Integer volunteerId){
+    @ApiOperation("查询接口")
+    @GetMapping("getselectVolunteerStaticalInformation")
+    public Result getVolunteerStaticalInformation(@RequestParam int volunteerId){
         try {
             System.out.println(volunteerId);
             VolunteerStatisticalInformation volunteerStatisticalInformation = volunteerStatisticalInformationService.selectVoluteerStaticalInformation(volunteerId);
@@ -38,9 +39,9 @@ public class VolunteerStatisticalInformationController {
             return ResultGenerator.getFailResult(e.getMessage());
         }
     }
-    @PostMapping("/updateVoluteerStaticalInfo")
-    @ResponseBody
-    public Result updateVoluteerStaticalInfo(@RequestBody AuditeActivityVo auditeActivity){
+    @ApiOperation("更新接口")
+    @PostMapping("/updateVolunteerStaticalInfo")
+    public Result updateVolunteerStaticalInfo(@RequestBody AuditeActivityVo auditeActivity){
         try {
             volunteerStatisticalInformationService.updateVoluteerStaticalInformation(auditeActivity);
             return ResultGenerator.getSuccessResult();

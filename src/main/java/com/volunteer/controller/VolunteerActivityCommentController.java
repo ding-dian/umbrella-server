@@ -7,8 +7,9 @@ import com.volunteer.entity.common.Result;
 import com.volunteer.entity.common.ResultGenerator;
 import com.volunteer.entity.vo.ActivityCommentVo;
 import com.volunteer.service.VolunteerActivityCommentService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -19,14 +20,16 @@ import org.springframework.web.bind.annotation.*;
  * @author xiaoyao
  * @since 2021-12-10
  */
-@Controller
+
+@Api(tags = "活动评论模块")
+@RestController
 @RequestMapping("/volunteerActivityComment")
 public class VolunteerActivityCommentController {
     @Autowired
     VolunteerActivityCommentService volunteerActivityCommentService;
 
+    @ApiOperation("添加接口")
     @PostMapping("/addComment")
-    @ResponseBody
     public Result addComment(@RequestBody ActivityCommentVo activityCommentVo) {
         try {
             volunteerActivityCommentService.addComment(activityCommentVo);
@@ -37,6 +40,7 @@ public class VolunteerActivityCommentController {
         }
     }
 
+    @ApiOperation("删除接口")
     @PostMapping("/deletedComment")
     @ResponseBody
     public Result deletedComment(Integer id) {
@@ -48,7 +52,7 @@ public class VolunteerActivityCommentController {
             return ResultGenerator.getFailResult(e.getMessage());
         }
     }
-
+    @ApiOperation("查询接口")
     @GetMapping("/findOneComment")
     @ResponseBody
     public Result findOneComment(Integer id) {
@@ -60,7 +64,7 @@ public class VolunteerActivityCommentController {
             return ResultGenerator.getFailResult(e.getMessage());
         }
     }
-
+    @ApiOperation("查询接口")
     @GetMapping("/selectVolunteerAllComment")
     @ResponseBody
     public  Result selectVolunteerAllComment(Integer volunteerId,
@@ -75,7 +79,7 @@ public class VolunteerActivityCommentController {
             return ResultGenerator.getFailResult(e.getMessage());
         }
     }
-
+    @ApiOperation("分页查询接口")
     @GetMapping("/selectActivityAllComment")
     @ResponseBody
     public  Result selectActivityAllComment(Integer volunteerActivityId,
