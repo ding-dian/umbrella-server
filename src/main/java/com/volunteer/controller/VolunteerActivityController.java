@@ -158,5 +158,16 @@ public class VolunteerActivityController {
         }
     }
 
+    @ApiOperation(value = "活动状态分页查询接口")
+    @GetMapping("/findListByStutas")
+    public Result findListByStutas(@RequestParam String status,Integer pageNo,Integer pageSize){
+        try {
+            IPage<VolunteerActivity> listByStutas = volunteerActivityService.findListByStutas(status, pageNo, pageSize);
+            return ResultGenerator.getSuccessResult(listByStutas);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultGenerator.getFailResult(e.getMessage());
+        }
+    }
 }
 

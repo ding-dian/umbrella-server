@@ -14,6 +14,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.volunteer.util.AES;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -239,6 +240,35 @@ public class VolunteerActivityServiceImpl extends ServiceImpl<VolunteerActivityM
         Page<VolunteerActivity> page = new Page<>();
         page.setCurrent(volunteerActivity.getPageNo()).setSize(volunteerActivity.getPageSize());
         return baseMapper.selectPage(page, queryWrapper);
+    }
+
+    /**
+     * 根据活动状态查询志愿活动列表
+     *
+     * @param stutas
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public IPage<VolunteerActivity> findListByStutas(String stutas,Integer pageNo,Integer pageSize) {
+        if (ObjectUtil.isEmpty(stutas)){
+            throw new RuntimeException("请输入活动状态");
+        }
+        if (!stutas.equals("00")&&!stutas.equals("01")&&!stutas.equals("02")){
+            throw new RuntimeException("活动状态错误");
+        }
+        //默认第一页
+        if (ObjectUtil.isNull(pageNo)){
+            pageNo=1;
+        }
+        //默认十条
+        if (ObjectUtil.isNull(pageSize)){
+            pageSize=10;
+        }
+        LambdaQueryWrapper<VolunteerActivity> queryWrapper=new LambdaQueryWrapper();
+        queryWrapper.eq(VolunteerActivity::getStatus,stutas);
+        Page page=new Page<>(pageNo,pageSize);
+        return baseMapper.selectPage(page,queryWrapper);
     }
 
     /**

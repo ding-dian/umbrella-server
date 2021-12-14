@@ -72,4 +72,10 @@ public interface VolunteerActivityService extends IService<VolunteerActivity> {
      */
     IPage<VolunteerActivity> selectListActivity(VolunteerActivity volunteerActivity);
 
+    /**
+     * 根据活动状态查询志愿活动列表
+     * @param stutas
+     * @return
+     */
+    IPage<VolunteerActivity> findListByStutas(String stutas ,Integer pageNo,Integer pageSize);
 }
