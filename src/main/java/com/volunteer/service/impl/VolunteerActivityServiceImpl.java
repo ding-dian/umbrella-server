@@ -268,6 +268,7 @@ public class VolunteerActivityServiceImpl extends ServiceImpl<VolunteerActivityM
         }
         LambdaQueryWrapper<VolunteerActivity> queryWrapper=new LambdaQueryWrapper();
         queryWrapper.eq(VolunteerActivity::getStatus,stutas)
+                .eq(VolunteerActivity::getDeleted,0)
                 .orderByDesc(VolunteerActivity::getCreateAt);
         Page page=new Page<>(pageNo,pageSize);
         return baseMapper.selectPage(page,queryWrapper);

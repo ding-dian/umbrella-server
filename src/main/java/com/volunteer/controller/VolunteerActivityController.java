@@ -1,6 +1,7 @@
 package com.volunteer.controller;
 
 
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.volunteer.entity.VolunteerActivity;
 import com.volunteer.entity.common.Result;
@@ -10,9 +11,12 @@ import com.volunteer.entity.vo.Ids;
 import com.volunteer.service.VolunteerActivityService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 
 /**
@@ -76,7 +80,7 @@ public class VolunteerActivityController {
      * @return
      */
     @PostMapping("/deleteListActivity")
-    @ApiOperation(value = "活动批量创建接口")
+    @ApiOperation(value = "活动批量删除接口")
     public Result deleteListActivity(@RequestBody Ids ids){
         System.out.println(ids);
         try {
@@ -159,8 +163,12 @@ public class VolunteerActivityController {
     }
 
     @ApiOperation(value = "活动状态分页查询接口")
-    @GetMapping("/findListByStutas")
-    public Result findListByStutas(@RequestParam String status,Integer pageNo,Integer pageSize){
+    @PostMapping("/findListByStutas")
+    public Result findListByStutas(@RequestBody Map<String,String> map){
+        JSONObject jsonObject =new JSONObject(map);
+        String status=jsonObject.getStr("status");
+        Integer pageNo= jsonObject.getInt("pageNo");
+        Integer pageSize= jsonObject.getInt("pageSize");
         try {
             IPage<VolunteerActivity> listByStutas = volunteerActivityService.findListByStutas(status, pageNo, pageSize);
             return ResultGenerator.getSuccessResult(listByStutas);
