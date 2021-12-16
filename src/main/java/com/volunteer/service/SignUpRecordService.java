@@ -23,5 +23,9 @@ public interface SignUpRecordService extends IService<SignUpRecord> {
      */
     int signUp(SignUpVo query);
 
-
+    /**
+     *
+     * @param query
+     */
+    void abolishSignUp(SignUpVo query);
 }
