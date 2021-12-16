@@ -93,7 +93,7 @@ public class VolunteerActivityController {
      * @param auditeActivity
      * @return
      */
-    @ApiOperation(value = "活动更新接口")
+    @ApiOperation(value = "活动状态更新接口")
     @PostMapping("/updateActivityStatus")
     public  Result updateActivityStatus(AuditeActivityVo auditeActivity) {
         try {
