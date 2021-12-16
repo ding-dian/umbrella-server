@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * <p>
- *  报名记录控制器
+ * 报名记录控制器
  * </p>
  *
  * @author hefuren
@@ -29,6 +29,7 @@ public class SignUpRecordController {
 
     /**
      * 志愿者报名参加志愿活动接口
+     *
      * @return
      */
     @ApiOperation("报名接口")
@@ -41,6 +42,23 @@ public class SignUpRecordController {
             exception.printStackTrace();
         }
         return ResultGenerator.getFailResult("系统错误，请联系管理员！");
+    }
+
+    /**
+     * 志愿者取消报名志愿活动接口
+     *
+     * @return
+     */
+    @ApiOperation("取消报名接口")
+    @PostMapping("/ablishSignUpActivity")
+    public Result ablishSignUpActivity(@RequestBody SignUpVo query) {
+        try {
+            signUpRecordService.abolishSignUp(query);
+            return ResultGenerator.getSuccessResult("success");
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return ResultGenerator.getFailResult(exception.getMessage());
+        }
     }
 }
 

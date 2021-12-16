@@ -15,12 +15,13 @@ import com.volunteer.mapper.VolunteerMapper;
 import com.volunteer.service.SignUpRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author hefuren
@@ -45,7 +46,7 @@ public class SignUpRecordServiceImpl extends ServiceImpl<SignUpRecordMapper, Sig
             if (activity.getStatus().equals(ActivityStatus.NOT_STARTED)) {
                 // 检查是否已经报名，如果已经报名则立刻结束，如果未报名就新增一条报名记录
                 LambdaQueryWrapper<SignUpRecord> queryWrapper = new LambdaQueryWrapper<>();
-                queryWrapper.eq(SignUpRecord::getVolunteerId, query.getVolunteerId()).eq(SignUpRecord::getVolunteerActivityId,query.getActivityId());
+                queryWrapper.eq(SignUpRecord::getVolunteerId, query.getVolunteerId()).eq(SignUpRecord::getVolunteerActivityId, query.getActivityId());
                 List<SignUpRecord> signUpRecords = baseMapper.selectList(queryWrapper);
                 // 如果之前没报名
                 if (CollectionUtil.isEmpty(signUpRecords)) {
@@ -56,5 +57,31 @@ public class SignUpRecordServiceImpl extends ServiceImpl<SignUpRecordMapper, Sig
             }
         }
         return 0;
+    }
+
+    /**
+     * @param query
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void abolishSignUp(SignUpVo query) {
+        //参数判断
+        if (ObjectUtil.isNull(query)) {
+            throw new RuntimeException("参数为空");
+        }
+        if (query.getVolunteerId() < 1 || query.getActivityId() < 1) {
+            throw new RuntimeException("参数不合法");
+        }
+        //查询是否已经报名该活动
+        LambdaQueryWrapper<SignUpRecord> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SignUpRecord::getVolunteerId, query.getVolunteerId())
+                .eq(SignUpRecord::getVolunteerActivityId, query.getActivityId());
+        SignUpRecord signUpRecord = baseMapper.selectOne(queryWrapper);
+        //如果报名记录表中不存在就是未报名
+        if (ObjectUtil.isNull(signUpRecord)) {
+            throw new RuntimeException("还未报名该活动无法取消报名");
+        }
+        signUpRecord.setDeleted(1);
+        baseMapper.updateById(signUpRecord);
     }
 }
