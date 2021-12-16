@@ -1,5 +1,6 @@
 package com.volunteer.service;
 
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.volunteer.entity.Volunteer;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -57,5 +58,19 @@ public interface VolunteerService extends IService<Volunteer> {
      * @return
      */
     int update(Volunteer volunteer);
+
+    /**
+     * 根据OpenId获取志愿者信息
+     * @param openId
+     * @return
+     */
+    Volunteer getByOpenId(String openId);
+
+    /**
+     * 解析jsonObject并存入数据库
+     * @param jsonObject
+     * @return
+     */
+    Volunteer register(JSONObject jsonObject);
 
 }

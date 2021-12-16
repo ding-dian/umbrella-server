@@ -29,4 +29,8 @@
         select * from volunteer where id = #{id}
     </select>
 
+    <select id="selectByOpenid" resultType="com.volunteer.entity.Volunteer">
+        select * from volunteer where openid = #{openid}
+    </select>
+
 </mapper>

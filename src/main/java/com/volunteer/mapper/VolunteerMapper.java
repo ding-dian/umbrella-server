@@ -13,4 +13,11 @@ import com.volunteer.entity.Volunteer;
  */
 public interface VolunteerMapper extends BaseMapper<Volunteer> {
     Volunteer selectTest(int id);
+
+    /**
+     * 根据OpenId查询志愿者信息
+     * @param openid
+     * @return
+     */
+    Volunteer selectByOpenid(String openid);
 }

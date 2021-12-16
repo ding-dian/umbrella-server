@@ -47,7 +47,12 @@ fdfs:
   tracker-list:            #TrackerList参数,支持多个
     - 47.101.206.1:22122
 
+#云服务器的配置信息
 vm:
   host: 47.101.206.1
   nginx-port: 8080
 
+#小程序的配置信息
+mini-program:
+  appId: wx7fb72aa57c11f260
+  appSecret: ffd2811e2bb4deb45e1fbca8a897d870

@@ -2,6 +2,7 @@ package com.volunteer.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * <p>
@@ -150,6 +152,40 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
             return baseMapper.updateById(volunteer);
         }
         return 0;
+    }
+
+    /**
+     * 根据OpenId获取志愿者信息
+     * @param openid
+     * @return
+     */
+    @Override
+    public Volunteer getByOpenId(String openId) {
+        return baseMapper.selectByOpenid(openId);
+    }
+
+    /**
+     * 解析jsonObject并存入数据库
+     * @param jsonObject
+     * @return
+     */
+    @Override
+    public Volunteer register(JSONObject jsonObject) {
+        // 插入之前先检查是否已经存在
+        Volunteer volunteer = baseMapper.selectByOpenid(jsonObject.getStr("openid"));
+        if (Objects.isNull(volunteer)) {
+            volunteer = new Volunteer();
+            volunteer.setOpenid(jsonObject.getStr("openid"))
+                    .setNickName(jsonObject.getStr("nickName"))
+                    .setGender(jsonObject.getInt("gender"))
+                    .setAvatarUrl(jsonObject.getStr("avatarUrl"));
+            if (baseMapper.insert(volunteer) == 0) {
+                log.info("志愿者新增异常");
+                return null;
+            }
+        }
+        log.info("志愿者已经存在,昵称:{}",volunteer.getNickName());
+        return volunteer;
     }
 
     /**

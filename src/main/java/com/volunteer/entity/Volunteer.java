@@ -38,52 +38,77 @@ public class Volunteer implements Serializable {
     private Integer id;
 
     /**
+     * 用户在小程序端唯一的ID
+     */
+    @ApiModelProperty(required = true,example = "openid")
+    private String openid;
+
+    /**
      * 姓名
      */
-    @ApiModelProperty(required = true,example = "佩奇")
+    @ApiModelProperty(required = false,example = "佩奇")
     private String name;
 
     /**
      * 手机号
      */
-    @ApiModelProperty(required = true,example = "123456")
+    @ApiModelProperty(required = false,example = "123456")
     private Long phoneNumber;
 
     /**
      * 邮箱
      */
-    @ApiModelProperty(required = true,example = "232323")
+    @ApiModelProperty(required = false,example = "xxxx@foxmail.com")
     private String emailAddress;
 
     /**
      * 学号
      */
-    @ApiModelProperty(required = true ,example = "456456")
+    @ApiModelProperty(required = false ,example = "18020333222")
     private Long studentId;
 
     /**
      * 密码
      */
-    @ApiModelProperty(required = true,example = "123456")
+    @ApiModelProperty(required = false,example = "123456")
     private String password;
 
     /**
      * 学院
      */
-    @ApiModelProperty(required = true,example = "计信")
+    @ApiModelProperty(required = false,example = "计信")
     private String institude;
 
     /**
      * 年级
      */
-    @ApiModelProperty(required = true,example = "2")
+    @ApiModelProperty(required = false,example = "2")
     private Integer grade;
 
     /**
      * 专业
      */
-    @ApiModelProperty(required = true,example = "网络")
+    @ApiModelProperty(required = false,example = "网络")
     private String major;
+
+    /**
+     * 昵称
+     */
+    @ApiModelProperty(required = false,example = "昵称")
+    @TableField(value = "nick_name")
+    private String nickName;
+
+    /**
+     * 性别
+     */
+    @ApiModelProperty(required = false,notes = "【0:未知,1:男,2:女】",example = "1")
+    private Integer gender;
+
+    /**
+     * 头像
+     */
+    @ApiModelProperty(required = false,example = "https://thirdwx.qlogo.cn/mmopen/vi_32/DYAIOgq83eplWzPJuvFyWeY5KjG5mOv6a7YNHNDvyxCibSCv58iaxicjyjPD08FoicQDBibMoCF64urOjYFEicM5KTeQ/132")
+    private String avatarUrl;
 
 
     /**
