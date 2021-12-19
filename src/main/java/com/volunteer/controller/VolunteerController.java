@@ -1,6 +1,9 @@
 package com.volunteer.controller;
 
 
+import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.common.Result;
@@ -82,16 +85,20 @@ public class VolunteerController {
             }
         }
     @ApiOperation("查询接口")
-    @GetMapping("/selectOne")
-    public Result selectOne(@RequestParam Integer id){
+    @PostMapping("/selectOne")
+    public Result selectOne(@RequestBody String id){
+        JSONObject jsonObject =new JSONObject(id);
+        Integer ids = jsonObject.getInt("id");
+        System.out.println(ids);
         try {
-         Volunteer volunteer=volunteerService.selectOne(id);
+         Volunteer volunteer=volunteerService.selectOne(ids);
             return ResultGenerator.getSuccessResult(volunteer);
         } catch (Exception exception) {
             log.error("系统异常：{}",exception.getMessage());
             return ResultGenerator.getFailResult("系统异常");
         }
     }
+
     @ApiOperation("更新接口")
     @PostMapping("/update")
     public Result update(@RequestBody Volunteer volunteer){

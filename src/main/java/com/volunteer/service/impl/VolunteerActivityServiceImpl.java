@@ -4,6 +4,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.VolunteerActivity;
@@ -266,7 +267,9 @@ public class VolunteerActivityServiceImpl extends ServiceImpl<VolunteerActivityM
             pageSize=10;
         }
         LambdaQueryWrapper<VolunteerActivity> queryWrapper=new LambdaQueryWrapper();
-        queryWrapper.eq(VolunteerActivity::getStatus,stutas);
+        queryWrapper.eq(VolunteerActivity::getStatus,stutas)
+                .eq(VolunteerActivity::getDeleted,0)
+                .orderByDesc(VolunteerActivity::getCreateAt);
         Page page=new Page<>(pageNo,pageSize);
         return baseMapper.selectPage(page,queryWrapper);
     }
