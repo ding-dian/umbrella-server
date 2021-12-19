@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.VolunteerActivity;
+import com.volunteer.entity.vo.ActivityListVo;
 import com.volunteer.entity.vo.AuditeActivityVo;
 import com.volunteer.mapper.VolunteerActivityMapper;
 import com.volunteer.service.VolunteerActivityService;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -251,7 +253,7 @@ public class VolunteerActivityServiceImpl extends ServiceImpl<VolunteerActivityM
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public IPage<VolunteerActivity> findListByStutas(String stutas,Integer pageNo,Integer pageSize) {
+    public ActivityListVo findListByStutas(String stutas, Integer pageNo, Integer pageSize) {
         if (ObjectUtil.isEmpty(stutas)){
             throw new RuntimeException("请输入活动状态");
         }
@@ -271,7 +273,11 @@ public class VolunteerActivityServiceImpl extends ServiceImpl<VolunteerActivityM
                 .eq(VolunteerActivity::getDeleted,0)
                 .orderByDesc(VolunteerActivity::getCreateAt);
         Page page=new Page<>(pageNo,pageSize);
-        return baseMapper.selectPage(page,queryWrapper);
+        IPage iPage = baseMapper.selectPage(page, queryWrapper);
+        ActivityListVo vo = new ActivityListVo();
+        vo.setList(iPage.getRecords());
+        vo.setTotal(iPage.getTotal());
+        return vo;
     }
 
     /**

@@ -170,6 +170,7 @@ public class VolunteerActivityController {
         Integer pageSize= jsonObject.getInt("pageSize");
         try {
             IPage<VolunteerActivity> listByStutas = volunteerActivityService.findListByStutas(status, pageNo, pageSize);
+
             return ResultGenerator.getSuccessResult(listByStutas);
         } catch (Exception e) {
             e.printStackTrace();
