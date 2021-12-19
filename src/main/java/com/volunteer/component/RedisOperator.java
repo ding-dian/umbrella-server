@@ -21,9 +21,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class RedisOperator {
 
-// @Autowired
-//    private RedisTemplate<String, Object> redisTemplate;
-
     @Autowired
     private StringRedisTemplate redisTemplate;
 
@@ -97,6 +94,18 @@ public class RedisOperator {
      */
     public void set(String key, String value, long timeout) {
         redisTemplate.opsForValue().set(key, value, timeout, TimeUnit.SECONDS);
+    }
+
+    /**
+     * 实现命令：SET key value EX seconds，设置key-value和超时时间，时间单位需要自己指定
+     *
+     * @param key
+     * @param value
+     * @param timeout
+     * @param timeUnit
+     */
+    public void set(String key, String value, long timeout,TimeUnit timeUnit) {
+        redisTemplate.opsForValue().set(key, value, timeout, timeUnit);
     }
 
     /**

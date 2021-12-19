@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.tobato.fastdfs.service.GenerateStorageClient;
 import com.volunteer.VolunteerManagementApplication;
 import com.volunteer.component.FastDFSClient;
+import com.volunteer.component.MiniProgramOperator;
 import com.volunteer.component.RedisOperator;
 import com.volunteer.entity.AdminInfo;
 import com.volunteer.entity.Volunteer;
@@ -62,6 +63,9 @@ public class TestClass {
 
     @Autowired
     private RedisOperator redisOperator;
+
+    @Autowired
+    private MiniProgramOperator miniProgramOperator;
 
     @Test
     public void test() {
@@ -189,5 +193,11 @@ public class TestClass {
 //        adminInfo.setPassword(AES.aesEncrypt("admin"));
 //        adminInfoMapper.updateById(adminInfo);
         System.out.println(redisOperator.get("450c2bd0-6243-4c59-8501-34020b90b3a5"));
+    }
+
+    @Test
+    public void testGetAccessToken() {
+//        System.out.println(miniProgramOperator.getAccessTokenFromWx().toStringPretty());
+        System.out.println(miniProgramOperator.getPhoneNumber("0713ZrFa1BFIiC0bvgHa1F8trz33ZrFP"));
     }
 }

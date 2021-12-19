@@ -4,6 +4,7 @@ import cn.hutool.crypto.digest.DigestUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.volunteer.component.RedisOperator;
 import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.common.Result;
 import com.volunteer.entity.common.ResultGenerator;
@@ -36,10 +37,13 @@ public class VolunteerLoginController {
     @Autowired
     private VolunteerService volunteerService;
 
+    @Autowired
+    private RedisOperator redisOperator;
+
     /**
-     * 小程序端登录
-     * @param map
-     * @return
+     * 小程序端登录,获取token
+     * @param map  传入code
+     * @return  token
      */
     @PostMapping("/login")
     public Result login(@RequestBody Map<String,String> map) {
@@ -55,7 +59,29 @@ public class VolunteerLoginController {
             log.info("用户不存在，openid:{}",openid);
             return ResultGenerator.getFailResult("用户未授权，请在授权后重试");
         }
-        return ResultGenerator.getSuccessResult(volunteer);
+        // 将志愿者信息存如Redis中
+        String jsonStr = JSONUtil.parseObj(volunteer).toStringPretty();
+        String token = DigestUtil.md5Hex(jsonStr);
+        redisOperator.set(token,jsonStr,7200);
+        return ResultGenerator.getSuccessResult(token);
+    }
+
+    /**
+     * 根据Token去获取用户信息
+     * @param map
+     * @return
+     */
+    @GetMapping("/getInfo")
+    public Result getUserInfoByToken(@RequestParam String token) {
+        if (StringUtils.isEmpty(token)) {
+            return ResultGenerator.getFailResult("token有误!");
+        }
+        String jsonStr = redisOperator.get(token);
+        if (StringUtils.isEmpty(jsonStr)) {
+            return ResultGenerator.getFailResult("请登录后重试");
+        }
+        JSONObject jsonObject = JSONUtil.parseObj(jsonStr);
+        return ResultGenerator.getSuccessResult(jsonObject);
     }
 
     /**
@@ -73,7 +99,7 @@ public class VolunteerLoginController {
             return ResultGenerator.getFailResult("参数有误，请检查后重试");
         }
         try {
-            JSONObject userInfo = getUserInfo(resolveCode(code).getStr("session_key"), rawData, signature);
+            JSONObject userInfo = getUserInfoFromWx(resolveCode(code).getStr("session_key"), rawData, signature);
             if (Objects.isNull(userInfo)) {
                 return ResultGenerator.getFailResult("签名校验失败");
             }
@@ -98,7 +124,7 @@ public class VolunteerLoginController {
      * @param signature1
      * @return
      */
-    private JSONObject getUserInfo(String session_key, String rawData, String signature1) {
+    private JSONObject getUserInfoFromWx(String session_key, String rawData, String signature1) {
         String signature2 = DigestUtil.sha1Hex(rawData + session_key);
         // 校验签名
         log.info("rawData:{},session_key:{}",rawData,session_key);

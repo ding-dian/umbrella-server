@@ -148,7 +148,6 @@ public class VolunteerActivityController {
     @ApiOperation(value = "活动分页查询接口")
     @GetMapping("/selectListActivity")
     public Result selectListActivity(VolunteerActivity volunteerActivity){
-        System.out.println(volunteerActivity);
         try {
             IPage<VolunteerActivity> data = volunteerActivityService.selectListActivity(volunteerActivity);
             return ResultGenerator.getSuccessResult(data);
