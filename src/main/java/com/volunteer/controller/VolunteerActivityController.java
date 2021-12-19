@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.volunteer.entity.VolunteerActivity;
 import com.volunteer.entity.common.Result;
 import com.volunteer.entity.common.ResultGenerator;
+import com.volunteer.entity.vo.ActivityListVo;
 import com.volunteer.entity.vo.AuditeActivityVo;
 import com.volunteer.entity.vo.Ids;
 import com.volunteer.service.VolunteerActivityService;
@@ -169,7 +170,7 @@ public class VolunteerActivityController {
         Integer pageNo= jsonObject.getInt("pageNo");
         Integer pageSize= jsonObject.getInt("pageSize");
         try {
-            IPage<VolunteerActivity> listByStutas = volunteerActivityService.findListByStutas(status, pageNo, pageSize);
+            ActivityListVo listByStutas = volunteerActivityService.findListByStutas(status, pageNo, pageSize);
 
             return ResultGenerator.getSuccessResult(listByStutas);
         } catch (Exception e) {
