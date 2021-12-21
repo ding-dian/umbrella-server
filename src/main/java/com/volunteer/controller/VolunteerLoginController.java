@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -66,15 +67,19 @@ public class VolunteerLoginController {
             return ResultGenerator.getFailResult("code参数有误!");
         }
         JSONObject jsonObject = resolveCode(code);
-        // 根据OpenId从数据库中获取数据
+        // 根据OpenId从数据库中获取数据,数据库中没有表示没有授权
         String openid = jsonObject.getStr("openid");
         Volunteer volunteer = volunteerService.getByOpenId(openid);
+        // 如果用户没有授权过
         if (Objects.isNull(volunteer)) {
             log.info("用户不存在，openid:{}", openid);
-            return ResultGenerator.getFailResult("用户未授权，请在授权后重试");
+            Result result = new Result();
+            // 600表示没有授权
+            result.setCode(600).setMessage("请授权后再登录");
+            return result;
         }
         // 将志愿者信息存如Redis中
-        String jsonStr = JSONUtil.parseObj(volunteer).toStringPretty();
+        String jsonStr = JSONUtil.parseObj(volunteer).toString();
         String token = DigestUtil.md5Hex(jsonStr);
         redisOperator.set(token, jsonStr, 7200);
         return ResultGenerator.getSuccessResult(token);
@@ -115,22 +120,30 @@ public class VolunteerLoginController {
             return ResultGenerator.getFailResult("参数有误，请检查后重试");
         }
         try {
-            JSONObject userInfo = getUserInfoFromWx(resolveCode(code).getStr("session_key"), rawData, signature);
+            JSONObject codeResult = resolveCode(code);
+            JSONObject userInfo = getUserInfoFromWx(codeResult.getStr("session_key"), rawData, signature);
             if (Objects.isNull(userInfo)) {
-                return ResultGenerator.getFailResult("签名校验失败");
+                return ResultGenerator.getFailResult("数据签名校验失败");
             }
             // 将用户信息保存至数据库中
-            Volunteer volunteer = volunteerService.register(userInfo);
+            Volunteer volunteer = volunteerService.register(userInfo,codeResult.getStr("openid"));
             if (Objects.isNull(volunteer)) {
-                return ResultGenerator.getFailResult("志愿者添加失败");
+                return ResultGenerator.getFailResult("注册失败，请稍后重试");
             }
-            log.info("解析得到的用户信息:{}", userInfo.toStringPretty());
-            return ResultGenerator.getSuccessResult(volunteer);
+            String jsonStr = userInfo.toString();
+            log.info("解析从微信服务器获得的用户信息:{}", jsonStr);
+            // 将用户信息保存至redis中，然后返回token
+            String token = DigestUtil.md5Hex(jsonStr);
+            redisOperator.set(token,jsonStr);
+            Map<String,String> data = new HashMap<>();
+            data.put("token",token);
+            data.put("userInfo", jsonStr);
+            return ResultGenerator.getSuccessResult(data);
         } catch (Exception e) {
             e.printStackTrace();
             log.info("异常信息：{}", e.getMessage());
+            return ResultGenerator.getFailResult("服务器出现异常，请联系管理员");
         }
-        return ResultGenerator.getFailResult("服务器出现异常，请联系管理员");
     }
 
     /**

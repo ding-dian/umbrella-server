@@ -71,7 +71,7 @@ public interface VolunteerService extends IService<Volunteer> {
      * @param jsonObject
      * @return
      */
-    Volunteer register(JSONObject jsonObject);
+    Volunteer register(JSONObject jsonObject, String openid);
 
     /**
      * 检查手机号是否已经被绑定

@@ -157,6 +157,7 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
 
     /**
      * 根据OpenId获取志愿者信息
+     *
      * @param openid
      * @return
      */
@@ -167,30 +168,33 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
 
     /**
      * 解析jsonObject并存入数据库
+     *
      * @param jsonObject
      * @return
      */
     @Override
-    public Volunteer register(JSONObject jsonObject) {
+    public Volunteer register(JSONObject jsonObject, String openid) {
         // 插入之前先检查是否已经存在
         Volunteer volunteer = baseMapper.selectByOpenid(jsonObject.getStr("openid"));
         if (Objects.isNull(volunteer)) {
             volunteer = new Volunteer();
-            volunteer.setOpenid(jsonObject.getStr("openid"))
+            volunteer.setOpenid(openid)
                     .setNickName(jsonObject.getStr("nickName"))
                     .setGender(jsonObject.getInt("gender"))
-                    .setAvatarUrl(jsonObject.getStr("avatarUrl"));
+                    .setAvatarUrl(jsonObject.getStr("avatarUrl"))
+                    .setCreateAt(LocalDateTime.now());
             if (baseMapper.insert(volunteer) == 0) {
                 log.info("志愿者新增异常");
                 return null;
             }
         }
-        log.info("志愿者已经存在,昵称:{}",volunteer.getNickName());
+        log.info("志愿者已经存在,昵称:{}", volunteer.getNickName());
         return volunteer;
     }
 
     /**
      * 检查手机号是否已经被绑定
+     *
      * @param phoneNumber
      * @return
      */
