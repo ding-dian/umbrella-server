@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -186,6 +187,18 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
         }
         log.info("志愿者已经存在,昵称:{}",volunteer.getNickName());
         return volunteer;
+    }
+
+    /**
+     * 检查手机号是否已经被绑定
+     * @param phoneNumber
+     * @return
+     */
+    @Override
+    public boolean phoneNumberIsBound(String phoneNumber) {
+        List<Volunteer> list = baseMapper.selectList(new LambdaQueryWrapper<Volunteer>().eq(Volunteer::getPhoneNumber, phoneNumber));
+        log.info("size: {}", list.size());
+        return !list.isEmpty();
     }
 
     /**

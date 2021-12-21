@@ -73,4 +73,11 @@ public interface VolunteerService extends IService<Volunteer> {
      */
     Volunteer register(JSONObject jsonObject);
 
+    /**
+     * 检查手机号是否已经被绑定
+     * @param phoneNumber
+     * @return
+     */
+    boolean phoneNumberIsBound(String phoneNumber);
+
 }

@@ -1,5 +1,6 @@
 
 
+import cn.hutool.core.util.NumberUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.tobato.fastdfs.service.GenerateStorageClient;
 import com.tencentcloudapi.common.Credential;
@@ -315,7 +316,7 @@ public class TestClass {
     }
 
     @Test
-    public void testOperator(){
-        System.out.println(smsOperator.sendSms());
+    public void testOperator() throws Exception {
+        System.out.println(smsOperator.sendSms("15367985269","123456"));
     }
 }

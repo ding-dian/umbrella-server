@@ -56,3 +56,16 @@ vm:
 mini-program:
   appId: wx7fb72aa57c11f260
   appSecret: ffd2811e2bb4deb45e1fbca8a897d870
+
+#腾讯云的配置信息
+tencent-cloud:
+  secretId: AKIDCDxRfcIhpgGZbNt86oFQKyKPDk0zg6G9
+  secretKey: e18yXprc6JFuIPFp8AvRgeLktlMgkX3I
+  #短信SdkAppId在 [短信控制台] 添加应用后生成的实际SdkAppId
+  sdkAppId: 1400613395
+  #短信签名，短信【】中的内容
+  signName: VernHe
+  #短信模板ID
+  templateId: 1248012
+  #验证码的有效期,单位是分钟
+  expires: 3

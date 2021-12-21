@@ -1,14 +1,18 @@
 package com.volunteer.controller;
 
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.volunteer.component.RedisOperator;
+import com.volunteer.component.TencentSmsOperator;
 import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.common.Result;
 import com.volunteer.entity.common.ResultGenerator;
+import com.volunteer.exception.PhoneNumberInvalidException;
 import com.volunteer.service.VolunteerService;
+import com.volunteer.util.RegularUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,19 +38,29 @@ public class VolunteerLoginController {
     @Value("${mini-program.appSecret}")
     private String appSecret;
 
+    /**
+     * 验证码的有效时间，单位是分钟
+     */
+    @Value("${tencent-cloud.expires}")
+    private Integer expires;
+
     @Autowired
     private VolunteerService volunteerService;
 
     @Autowired
     private RedisOperator redisOperator;
 
+    @Autowired
+    private TencentSmsOperator smsOperator;
+
     /**
      * 小程序端登录,获取token
-     * @param map  传入code
-     * @return  token
+     *
+     * @param map 传入code
+     * @return token
      */
     @PostMapping("/login")
-    public Result login(@RequestBody Map<String,String> map) {
+    public Result login(@RequestBody Map<String, String> map) {
         String code = map.get("code");
         if (StringUtils.isEmpty(code)) {
             return ResultGenerator.getFailResult("code参数有误!");
@@ -56,19 +70,20 @@ public class VolunteerLoginController {
         String openid = jsonObject.getStr("openid");
         Volunteer volunteer = volunteerService.getByOpenId(openid);
         if (Objects.isNull(volunteer)) {
-            log.info("用户不存在，openid:{}",openid);
+            log.info("用户不存在，openid:{}", openid);
             return ResultGenerator.getFailResult("用户未授权，请在授权后重试");
         }
         // 将志愿者信息存如Redis中
         String jsonStr = JSONUtil.parseObj(volunteer).toStringPretty();
         String token = DigestUtil.md5Hex(jsonStr);
-        redisOperator.set(token,jsonStr,7200);
+        redisOperator.set(token, jsonStr, 7200);
         return ResultGenerator.getSuccessResult(token);
     }
 
     /**
      * 根据Token去获取用户信息
-     * @param map
+     *
+     * @param token
      * @return
      */
     @GetMapping("/getInfo")
@@ -86,11 +101,12 @@ public class VolunteerLoginController {
 
     /**
      * 如果未授权，则需要授权后再注册
-     * @Param code,rawData,signature
+     *
      * @return
+     * @Param code, rawData, signature
      */
     @PostMapping("/registry")
-    public Result registry(@RequestBody Map<String,String> map) {
+    public Result registry(@RequestBody Map<String, String> map) {
         // 参数校验
         String code = map.get("code");
         String rawData = map.get("rawData");
@@ -112,13 +128,55 @@ public class VolunteerLoginController {
             return ResultGenerator.getSuccessResult(volunteer);
         } catch (Exception e) {
             e.printStackTrace();
-            log.info("异常信息：{}",e.getMessage());
+            log.info("异常信息：{}", e.getMessage());
         }
         return ResultGenerator.getFailResult("服务器出现异常，请联系管理员");
     }
 
     /**
-     * 获取用户信息
+     * 验证码发送接口
+     * @param map
+     * @return  code 验证码
+     */
+    @PostMapping("/sendCode")
+    public Result senSms(@RequestBody Map<String, String> map) {
+        // 获取并校验参数
+        String phoneNumber = map.get("phone");
+        if (StringUtils.isEmpty(phoneNumber) || !RegularUtil.checkPhoneNumber(phoneNumber)) {
+            return ResultGenerator.getFailResult("手机号有误，请检查后重试");
+        }
+        // 校验是否已经被绑定过
+        if (volunteerService.phoneNumberIsBound(phoneNumber)) {
+            return ResultGenerator.getFailResult("该手机号已被绑定");
+        }
+        // 检查验证码是否已经过期，如果没有过期则继续使用，而不是再次生成
+        String code = redisOperator.get(DigestUtil.md5Hex(phoneNumber));
+        if (StringUtils.isEmpty(code)) {
+            // 生成6位的验证码
+            code = RandomUtil.randomNumbers(6);
+        }
+        try {
+            // 发送验证码
+            if (smsOperator.sendSms(phoneNumber, code)) {
+                // 将验证码保存至Redis,手机号属于铭感信息，因此加密保存，而不是用明文
+                redisOperator.set(DigestUtil.md5Hex(phoneNumber), code, 60 * expires);
+                return ResultGenerator.getSuccessResult(code);
+            } else {
+                return ResultGenerator.getFailResult("验证码发送失败，请联系管理员");
+            }
+        } catch (PhoneNumberInvalidException e) {
+            // 手机号格式错误
+            return ResultGenerator.getFailResult(e.getMessage());
+        } catch (Exception e) {
+            // 其他原因发送失败
+            log.error(e.getMessage());
+            return ResultGenerator.getFailResult("验证码发送失败，请联系管理员");
+        }
+    }
+
+    /**
+     * 从微信端获取用户信息
+     *
      * @param session_key
      * @param rawData
      * @param signature1
@@ -127,8 +185,8 @@ public class VolunteerLoginController {
     private JSONObject getUserInfoFromWx(String session_key, String rawData, String signature1) {
         String signature2 = DigestUtil.sha1Hex(rawData + session_key);
         // 校验签名
-        log.info("rawData:{},session_key:{}",rawData,session_key);
-        log.info("计算得到的签名：{},微信发送的签名：{}",signature2,signature1);
+        log.info("rawData:{},session_key:{}", rawData, session_key);
+        log.info("计算得到的签名：{},微信发送的签名：{}", signature2, signature1);
         if (!signature1.equals(signature2)) {
             log.info("签名校验失败");
             return null;
@@ -141,15 +199,17 @@ public class VolunteerLoginController {
 
     /**
      * 根据Code从微信端获取OpenId（小程序用户的唯一表示）和 session_key
+     *
      * @return
      */
     private JSONObject resolveCode(String code) {
         // GET https://api.weixin.qq.com/sns/jscode2session?appid=APPID&secret=SECRET&js_code=JSCODE&grant_type=authorization_code
         String path = "https://api.weixin.qq.com/sns/jscode2session?appid=" + appId + "&secret=" + appSecret + "&js_code=" + code + "&grant_type=authorization_code";
-        log.info("code:{},appid:{},appSecret:{}",code,appId,appSecret);
+        log.info("code:{},appid:{},appSecret:{}", code, appId, appSecret);
         // {"session_key":"oWcaQF82p6+Ogk\/0Pd1A7Q==","openid":"ozLwX5aDHI2DtkhZZWo7djNnEtls"}
         String jsonStr = HttpUtil.get(path);
-        log.info("返回的数据：{}",jsonStr);
+        log.info("返回的数据：{}", jsonStr);
         return JSONUtil.parseObj(jsonStr);
     }
+
 }
