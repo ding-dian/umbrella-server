@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @Api(tags = "活动评论模块")
 @RestController
 @RequestMapping("/volunteerActivityComment")
-public class VolunteerActivityCommentController {
+public class CommentController {
     @Autowired
     VolunteerActivityCommentService volunteerActivityCommentService;
 

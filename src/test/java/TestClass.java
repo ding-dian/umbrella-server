@@ -92,10 +92,10 @@ public class TestClass {
 
     @Test
     public void testSignUp() {
-        SignUpVo query = new SignUpVo();
-        query.setVolunteerId(1).setActivityId(1);
+//        SignUpVo query = new SignUpVo();
+//        query.setVolunteerId(1).setActivityId(1);
 
-        System.out.println(signUpRecordService.signUp(query));
+//        System.out.println(signUpRecordService.signUp(query));
     }
 
     @Test

@@ -15,10 +15,10 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class SignUpVo {
     /**
-     * 报名的志愿者ID
+     * 报名时携带的token
      */
-    @ApiModelProperty(required = true, example = "1")
-    private Integer volunteerId;
+    @ApiModelProperty(required = true, example = "hghtrsdfdgu445dsdfg4h7gs5fs")
+    private String token;
 
     /**
      * 所报名的活动的ID

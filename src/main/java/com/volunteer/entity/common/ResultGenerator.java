@@ -43,4 +43,16 @@ public class ResultGenerator {
                 .setCode(HttpStatus.HTTP_BAD_REQUEST)
                 .setMessage(message);
     }
+
+    /**
+     * 失败
+     * @param message
+     * @param code
+     * @return
+     */
+    public static Result getFailResult(String message,int code) {
+        return new Result()
+                .setCode(code)
+                .setMessage(message);
+    }
 }

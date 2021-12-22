@@ -10,11 +10,9 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.websocket.server.PathParam;
-
 /**
  * <p>
- *  前端控制器
+ * 前端控制器
  * </p>
  *
  * @author xiaoyao
@@ -23,25 +21,26 @@ import javax.websocket.server.PathParam;
 @Api(tags = "志愿者信息统计模块")
 @RestController
 @RequestMapping("/volunteerStatisticalInformation")
-public class VolunteerStatisticalInformationController {
+public class StatisticalInformationController {
     @Autowired
     private VolunteerStatisticalInformationService volunteerStatisticalInformationService;
 
     @ApiOperation("查询接口")
     @GetMapping("getselectVolunteerStaticalInformation")
-    public Result getVolunteerStaticalInformation(@RequestParam int volunteerId){
+    public Result getVolunteerStaticalInformation(@RequestParam int volunteerId) {
         try {
             System.out.println(volunteerId);
             VolunteerStatisticalInformation volunteerStatisticalInformation = volunteerStatisticalInformationService.selectVoluteerStaticalInformation(volunteerId);
-                return ResultGenerator.getSuccessResult(volunteerStatisticalInformation);
+            return ResultGenerator.getSuccessResult(volunteerStatisticalInformation);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultGenerator.getFailResult(e.getMessage());
         }
     }
+
     @ApiOperation("更新接口")
     @PostMapping("/updateVolunteerStaticalInfo")
-    public Result updateVolunteerStaticalInfo(@RequestBody AuditeActivityVo auditeActivity){
+    public Result updateVolunteerStaticalInfo(@RequestBody AuditeActivityVo auditeActivity) {
         try {
             volunteerStatisticalInformationService.updateVoluteerStaticalInformation(auditeActivity);
             return ResultGenerator.getSuccessResult();

@@ -17,15 +17,15 @@ import java.util.List;
  */
 public interface SignUpRecordService extends IService<SignUpRecord> {
     /**
-     * 志愿者报名
+     * 报名
      * @param query
-     * @return
+     * @return  0失败，1成功，2已报名，3未登录
      */
     int signUp(SignUpVo query);
 
     /**
-     *
+     * 取消报名
      * @param query
      */
-    void abolishSignUp(SignUpVo query);
+    void cancelRegistration(SignUpVo query);
 }
