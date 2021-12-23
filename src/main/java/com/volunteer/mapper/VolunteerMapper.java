@@ -1,5 +1,6 @@
 package com.volunteer.mapper;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.volunteer.entity.Volunteer;
 
@@ -20,4 +21,11 @@ public interface VolunteerMapper extends BaseMapper<Volunteer> {
      * @return
      */
     Volunteer selectByOpenid(String openid);
+
+    /**
+     * 根据 UpdateWrapper 条件，更新记录 需要设置sqlset
+     * @param updateWrapper
+     * @return
+     */
+    boolean update(Wrapper<Volunteer> updateWrapper);
 }

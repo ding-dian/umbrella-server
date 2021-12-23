@@ -1,6 +1,7 @@
 package com.volunteer.service;
 
 import cn.hutool.json.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.volunteer.entity.Volunteer;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -60,6 +61,12 @@ public interface VolunteerService extends IService<Volunteer> {
     int update(Volunteer volunteer);
 
     /**
+     * 根据 UpdateWrapper 条件，更新记录 需要设置sqlset
+     * @param updateWrapper
+     * @return
+     */
+    boolean update(Wrapper<Volunteer> updateWrapper);
+    /**
      * 根据OpenId获取志愿者信息
      * @param openId
      * @return
@@ -79,5 +86,12 @@ public interface VolunteerService extends IService<Volunteer> {
      * @return
      */
     boolean phoneNumberIsBound(String phoneNumber);
+
+    /**
+     * 根据用户的openID更新用户的电话
+     * @param openID 用户的唯一标识
+     * @return
+     */
+    Integer updateByOpenID(String openID);
 
 }

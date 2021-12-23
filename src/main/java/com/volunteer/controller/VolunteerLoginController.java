@@ -5,6 +5,7 @@ import cn.hutool.crypto.digest.DigestUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.volunteer.component.RedisOperator;
 import com.volunteer.component.TencentSmsOperator;
 import com.volunteer.entity.Volunteer;
@@ -12,7 +13,10 @@ import com.volunteer.entity.common.Result;
 import com.volunteer.entity.common.ResultGenerator;
 import com.volunteer.exception.PhoneNumberInvalidException;
 import com.volunteer.service.VolunteerService;
+
+import com.volunteer.util.AES;
 import com.volunteer.util.RegularUtil;
+import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +31,7 @@ import java.util.Objects;
  * @author VernHe
  * @date 2021年12月14日 17:37
  */
-
+@Api(tags ="小程序登录模块")
 @Slf4j
 @RestController
 @RequestMapping("/miniProgram")
@@ -39,6 +43,8 @@ public class VolunteerLoginController {
     @Value("${mini-program.appSecret}")
     private String appSecret;
 
+    @Value("${AES-secret}")
+    private String AESSecret;
     /**
      * 验证码的有效时间，单位是分钟
      */
@@ -53,6 +59,46 @@ public class VolunteerLoginController {
 
     @Autowired
     private TencentSmsOperator smsOperator;
+
+
+    /**
+     * 保存用户的电话
+     * @param map 传入的信息有用户的手机号，和openID
+     * @return
+     */
+    @PostMapping("/saveUserPhoneNumber")
+    public Result saveUserPhoneNumber(@RequestBody Map<String,String> map) {
+        String code=map.get("code");
+        String phoneNumber=map.get("PhoneNumber");
+        //根据用户的code拿到openID
+        JSONObject codeResult = resolveCode(code);
+        String openID=codeResult.getStr("openid");
+        log.info(openID,codeResult);
+        //参数校验
+        if (StringUtils.isEmpty(openID) || StringUtils.isEmpty(phoneNumber)) {
+            return ResultGenerator.getFailResult("参数有误，请检查后重试");
+        }
+        //手机号为敏感信息需要先加密再存入数据库
+        String encrypt;
+        try {
+            //使用用户的openID作为密钥
+            encrypt = AES.aesEncrypt(AES.base64Encode(AES.encrypt(phoneNumber, AESSecret)));
+        } catch (Exception e) {
+            log.info("异常信息：{}", e.getMessage());
+            return ResultGenerator.getFailResult("加密失败");
+        }
+        //先检查手机号是否已经被绑定并且用户信息存在
+        if(!volunteerService.phoneNumberIsBound(encrypt)&&volunteerService.getByOpenId(openID)!=null){
+            //验证通过存入数据库
+            UpdateWrapper<Volunteer> updateWrapper=new UpdateWrapper<>();
+            updateWrapper.set("phone_number",encrypt);
+            updateWrapper.eq("openID",openID);
+            volunteerService.update(updateWrapper);
+            return ResultGenerator.getSuccessResult();
+        }else {
+            return ResultGenerator.getFailResult("手机号已经被绑定或用户未授权");
+        }
+    }
 
     /**
      * 小程序端登录,获取token
@@ -78,7 +124,7 @@ public class VolunteerLoginController {
             result.setCode(600).setMessage("请授权后再登录");
             return result;
         }
-        // 将志愿者信息存如Redis中
+        // 将志愿者信息存入Redis中
         String jsonStr = JSONUtil.parseObj(volunteer).toString();
         String token = DigestUtil.md5Hex(jsonStr);
         redisOperator.set(token, jsonStr, 7200);
@@ -192,7 +238,7 @@ public class VolunteerLoginController {
      *
      * @param session_key
      * @param rawData
-     * @param signature1
+     * @param signature1 微信发送的签名
      * @return
      */
     private JSONObject getUserInfoFromWx(String session_key, String rawData, String signature1) {

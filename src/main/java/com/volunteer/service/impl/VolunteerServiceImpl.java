@@ -3,6 +3,7 @@ package com.volunteer.service.impl;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -33,13 +35,13 @@ import java.util.Objects;
 @Service
 @Slf4j
 public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer> implements VolunteerService {
-    @Autowired
+    @Resource
     private VolunteerStatisticalInformationMapper volunteerStatisticalInformationMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int register(Volunteer register) {
-        //如果志愿者名字和密码不为空，就判断是否以及注册
+        //如果志愿者名字和密码不为空，就判断是否已经注册
         if (register.getName() != null && register.getPassword() != null) {
             //根据账号判断是否重复，deleted=0 未删除状态
             LambdaQueryWrapper<Volunteer> queryWrapper = new LambdaQueryWrapper<>();
@@ -156,9 +158,22 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
     }
 
     /**
+     * 根据 UpdateWrapper 条件，更新记录 需要设置sqlset
+     * @param updateWrapper 修改条件
+     * @return true成功<br>false失败
+     */
+    @Override
+    public boolean update(Wrapper<Volunteer> updateWrapper) {
+        if (ObjectUtil.isNotNull(updateWrapper)) {
+            return baseMapper.update(null,updateWrapper)==1;
+        }
+        return true;
+    }
+
+    /**
      * 根据OpenId获取志愿者信息
      *
-     * @param openid
+     * @param openId
      * @return
      */
     @Override
@@ -203,6 +218,11 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
         List<Volunteer> list = baseMapper.selectList(new LambdaQueryWrapper<Volunteer>().eq(Volunteer::getPhoneNumber, phoneNumber));
         log.info("size: {}", list.size());
         return !list.isEmpty();
+    }
+
+    @Override
+    public Integer updateByOpenID(String openID) {
+        return null;
     }
 
     /**

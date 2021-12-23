@@ -24,8 +24,6 @@
         <result column="predict_duration" property="predictDuration" />
         <result column="actual_duration" property="actualDuration" />
 
-
-
     </resultMap>
 
     <!-- 通用查询结果列 -->

@@ -53,7 +53,7 @@ public class Volunteer implements Serializable {
      * 手机号
      */
     @ApiModelProperty(required = false,example = "123456")
-    private Long phoneNumber;
+    private String phoneNumber;
 
     /**
      * 邮箱
