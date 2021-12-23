@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.volunteer.component.SecretOperator;
 import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.VolunteerStatisticalInformation;
 import com.volunteer.mapper.VolunteerMapper;
@@ -37,6 +38,9 @@ import java.util.Objects;
 public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer> implements VolunteerService {
     @Resource
     private VolunteerStatisticalInformationMapper volunteerStatisticalInformationMapper;
+
+    @Autowired
+    private SecretOperator secretOperator;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -215,7 +219,8 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
      */
     @Override
     public boolean phoneNumberIsBound(String phoneNumber) {
-        List<Volunteer> list = baseMapper.selectList(new LambdaQueryWrapper<Volunteer>().eq(Volunteer::getPhoneNumber, phoneNumber));
+        String encryptStr = secretOperator.aesEncrypt(phoneNumber);
+        List<Volunteer> list = baseMapper.selectList(new LambdaQueryWrapper<Volunteer>().eq(Volunteer::getPhoneNumber, encryptStr));
         log.info("size: {}", list.size());
         return !list.isEmpty();
     }
