@@ -35,7 +35,7 @@ import java.util.Objects;
 @Slf4j
 @RestController
 @RequestMapping("/miniProgram")
-public class VolunteerLoginController {
+public class LoginController {
 
     @Value("${mini-program.appId}")
     private String appId;

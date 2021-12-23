@@ -43,4 +43,16 @@ public class ResultGenerator {
                 .setMessage(DEFAULT_SUCCESS_MESSAGE)
                 .setData(data);
     }
+
+    /**
+     * 失败
+     * @param message
+     * @param code
+     * @return
+     */
+    public static Result getFailResult(String message,int code) {
+        return new Result()
+                .setCode(code)
+                .setMessage(message);
+    }
 }
