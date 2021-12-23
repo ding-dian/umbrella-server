@@ -167,7 +167,7 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
         if (ObjectUtil.isNotNull(updateWrapper)) {
             return baseMapper.update(null,updateWrapper)==1;
         }
-        return true;
+        return false;
     }
 
     /**

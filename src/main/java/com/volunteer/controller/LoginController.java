@@ -63,25 +63,28 @@ public class LoginController {
 
     /**
      * 保存用户的电话
-     * @param map 传入的信息有用户的手机号，和openID
+     * @param map 传入的信息有用户的token和手机号
      * @return
      */
     @PostMapping("/saveUserPhoneNumber")
     public Result saveUserPhoneNumber(@RequestBody Map<String,String> map) {
-        String code=map.get("code");
+        String token=map.get("token");
         String phoneNumber=map.get("PhoneNumber");
-        //根据用户的code拿到openID
-        JSONObject codeResult = resolveCode(code);
-        String openID=codeResult.getStr("openid");
-        log.info(openID,codeResult);
+        //从缓存中根据token获得用户信息
+        String jsonStr = redisOperator.get(token);
+        if(StringUtils.isEmpty(jsonStr)){
+            return ResultGenerator.getFailResult("token有误");
+        }
+        JSONObject userInfo=JSONUtil.parseObj(jsonStr);
+        //获得openID
+        String openID=userInfo.getStr("openid");
         //参数校验
-        if (StringUtils.isEmpty(openID) || StringUtils.isEmpty(phoneNumber)) {
+        if (StringUtils.isEmpty(token) || StringUtils.isEmpty(phoneNumber)) {
             return ResultGenerator.getFailResult("参数有误，请检查后重试");
         }
         //手机号为敏感信息需要先加密再存入数据库
         String encrypt;
         try {
-            //使用用户的openID作为密钥
             encrypt = AES.aesEncrypt(AES.base64Encode(AES.encrypt(phoneNumber, AESSecret)));
         } catch (Exception e) {
             log.info("异常信息：{}", e.getMessage());
