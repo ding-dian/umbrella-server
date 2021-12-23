@@ -1,6 +1,10 @@
 
 
+import cn.hutool.core.codec.Base64;
 import cn.hutool.core.util.NumberUtil;
+import cn.hutool.crypto.SecureUtil;
+import cn.hutool.crypto.symmetric.SymmetricAlgorithm;
+import cn.hutool.jwt.signers.AlgorithmUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.tobato.fastdfs.service.GenerateStorageClient;
 import com.tencentcloudapi.common.Credential;
@@ -17,10 +21,7 @@ import com.tencentcloudapi.sms.v20210111.SmsClient;
 import com.tencentcloudapi.sms.v20210111.models.SendSmsRequest;
 import com.tencentcloudapi.sms.v20210111.models.SendSmsResponse;
 import com.volunteer.VolunteerManagementApplication;
-import com.volunteer.component.FastDFSClient;
-import com.volunteer.component.MiniProgramOperator;
-import com.volunteer.component.RedisOperator;
-import com.volunteer.component.TencentSmsOperator;
+import com.volunteer.component.*;
 import com.volunteer.entity.AdminInfo;
 import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.VolunteerStatisticalInformation;
@@ -84,6 +85,9 @@ public class TestClass {
 
     @Autowired
     private TencentSmsOperator smsOperator;
+
+    @Autowired
+    private SecretOperator secretOperator;
 
     @Test
     public void test() {
@@ -318,5 +322,12 @@ public class TestClass {
     @Test
     public void testOperator() throws Exception {
         System.out.println(smsOperator.sendSms("15367985269","123456"));
+    }
+
+    @Test
+    public void testAES() {
+        String s = secretOperator.aesEncrypt("17670459756");
+        System.out.println(s);
+        System.out.println(secretOperator.aesDecrypt(s));
     }
 }

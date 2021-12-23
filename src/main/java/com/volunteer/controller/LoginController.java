@@ -1,5 +1,6 @@
 package com.volunteer.controller;
 
+import cn.hutool.core.codec.Base64;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import cn.hutool.http.HttpUtil;
@@ -45,6 +46,8 @@ public class LoginController {
 
     @Value("${AES-secret}")
     private String AESSecret;
+
+
     /**
      * 验证码的有效时间，单位是分钟
      */

@@ -115,7 +115,7 @@ public class ActivityController {
      * @return
      */
     @ApiOperation(value = "活动查询接口")
-    @GetMapping("/selectOneActivity")
+    @GetMapping("/getActivityInfo")
     public Result selectOneActivity(Integer id){
         try {
             VolunteerActivity volunteerActivity=volunteerActivityService.selectOne(id);
