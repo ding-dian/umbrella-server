@@ -219,6 +219,8 @@ public class LoginController {
         if (StringUtils.isEmpty(code)) {
             // 生成6位的验证码
             code = RandomUtil.randomNumbers(6);
+            // 测试时使用下面的代码，将上面的代码注释，验证码写死了为：111111
+//            code = "111111";
         }
         try {
             // 发送验证码
@@ -229,6 +231,9 @@ public class LoginController {
             } else {
                 return ResultGenerator.getFailResult("验证码发送失败，请联系管理员");
             }
+            // 测试时用下面代码，然后上面的代码注释
+//            redisOperator.set(DigestUtil.md5Hex(phoneNumber), code, 60 * expires);
+//            return ResultGenerator.getSuccessResult(code);
         } catch (PhoneNumberInvalidException e) {
             // 手机号格式错误
             return ResultGenerator.getFailResult(e.getMessage());
