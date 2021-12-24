@@ -170,7 +170,6 @@ public class ActivityController {
         Integer pageSize= jsonObject.getInt("pageSize");
         try {
             ActivityListVo listByStutas = volunteerActivityService.findListByStutas(status, pageNo, pageSize);
-
             return ResultGenerator.getSuccessResult(listByStutas);
         } catch (Exception e) {
             e.printStackTrace();
