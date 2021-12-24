@@ -326,4 +326,9 @@ public class TestClass {
         System.out.println(s);
         System.out.println(secretOperator.aesDecrypt(s));
     }
+
+    @Test
+    public void testToken() {
+        System.out.println(redisOperator.getObjectByToken("29063cbc978de92d3df57191c0b85a60", Volunteer.class));
+    }
 }

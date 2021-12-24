@@ -4,6 +4,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
+import com.volunteer.entity.Volunteer;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
@@ -194,6 +199,25 @@ public class RedisOperator {
      */
     public long rpush(String key, String value) {
         return redisTemplate.opsForList().rightPush(key, value);
+    }
+
+    /**
+     * 根据token获得实体类
+     * @param token
+     * @param tClass
+     * @param <T>
+     * @return
+     */
+    public <T> T getObjectByToken(String token,Class<T> tClass) {
+        String jsonStr = get(token);
+        if (StringUtils.isNotEmpty(jsonStr)) {
+            JSONObject jsonObject = JSONUtil.parseObj(jsonStr);
+            if (ObjectUtil.isNotNull(jsonObject)) {
+                T object = JSONUtil.toBean(jsonObject,tClass);
+                return object;
+            }
+        }
+        return null;
     }
 
 }

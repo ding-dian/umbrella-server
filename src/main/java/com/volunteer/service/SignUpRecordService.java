@@ -28,4 +28,11 @@ public interface SignUpRecordService extends IService<SignUpRecord> {
      * @param query
      */
     void cancelRegistration(SignUpVo query);
+
+    /**
+     * 检查报名状态
+     * @param query
+     * @return
+     */
+    boolean checkSignUpState(SignUpVo query);
 }

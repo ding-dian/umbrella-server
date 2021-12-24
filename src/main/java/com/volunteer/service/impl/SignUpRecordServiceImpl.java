@@ -110,4 +110,17 @@ public class SignUpRecordServiceImpl extends ServiceImpl<SignUpRecordMapper, Sig
             baseMapper.updateById(signUpRecord);
         }
     }
+
+    @Override
+    public boolean checkSignUpState(SignUpVo query) {
+        Volunteer volunteer = redisOperator.getObjectByToken(query.getToken(), Volunteer.class);
+        if (ObjectUtil.isNotNull(volunteer)) {
+            LambdaQueryWrapper<SignUpRecord> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(SignUpRecord::getVolunteerId,volunteer.getId())
+                    .eq(SignUpRecord::getVolunteerActivityId,query.getActivityId());
+            return baseMapper.selectCount(queryWrapper) > 0;
+        } else {
+            throw new RuntimeException("请重新登陆后重试");
+        }
+    }
 }

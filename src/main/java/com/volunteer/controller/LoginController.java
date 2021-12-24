@@ -1,6 +1,7 @@
 package com.volunteer.controller;
 
 import cn.hutool.core.codec.Base64;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import cn.hutool.http.HttpUtil;
@@ -62,6 +63,27 @@ public class LoginController {
 
     @Autowired
     private TencentSmsOperator smsOperator;
+
+    /**
+     * 检查登录状态
+     * @param map
+     * @return
+     */
+    @PostMapping("/checkLoginState")
+    public Result checkLoginState(@RequestBody Map<String,String> map) {
+        String token=map.get("token");
+        if (StringUtils.isEmpty(token)) {
+            return ResultGenerator.getFailResult("参数有误，请检查后重试");
+        }
+        String jsonStr = redisOperator.get(token);
+        if (ObjectUtil.isNull(jsonStr)) {
+            // token已过期
+            return ResultGenerator.getSuccessResult(false);
+        }
+        // token未过期,刷新过期时间
+        redisOperator.expire(token,7200);
+        return ResultGenerator.getSuccessResult(true);
+    }
 
 
     /**
@@ -218,22 +240,22 @@ public class LoginController {
         String code = redisOperator.get(DigestUtil.md5Hex(phoneNumber));
         if (StringUtils.isEmpty(code)) {
             // 生成6位的验证码
-            code = RandomUtil.randomNumbers(6);
+//            code = RandomUtil.randomNumbers(6);
             // 测试时使用下面的代码，将上面的代码注释，验证码写死了为：111111
-//            code = "111111";
+            code = "111111";
         }
         try {
             // 发送验证码
-            if (smsOperator.sendSms(phoneNumber, code)) {
-                // 将验证码保存至Redis,手机号属于铭感信息，因此加密保存，而不是用明文
-                redisOperator.set(DigestUtil.md5Hex(phoneNumber), code, 60 * expires);
-                return ResultGenerator.getSuccessResult(code);
-            } else {
-                return ResultGenerator.getFailResult("验证码发送失败，请联系管理员");
-            }
+//            if (smsOperator.sendSms(phoneNumber, code)) {
+//                // 将验证码保存至Redis,手机号属于铭感信息，因此加密保存，而不是用明文
+//                redisOperator.set(DigestUtil.md5Hex(phoneNumber), code, 60 * expires);
+//                return ResultGenerator.getSuccessResult(code);
+//            } else {
+//                return ResultGenerator.getFailResult("验证码发送失败，请联系管理员");
+//            }
             // 测试时用下面代码，然后上面的代码注释
-//            redisOperator.set(DigestUtil.md5Hex(phoneNumber), code, 60 * expires);
-//            return ResultGenerator.getSuccessResult(code);
+            redisOperator.set(DigestUtil.md5Hex(phoneNumber), code, 60 * expires);
+            return ResultGenerator.getSuccessResult(code);
         } catch (PhoneNumberInvalidException e) {
             // 手机号格式错误
             return ResultGenerator.getFailResult(e.getMessage());

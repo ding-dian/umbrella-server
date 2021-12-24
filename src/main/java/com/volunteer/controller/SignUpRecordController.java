@@ -10,6 +10,7 @@ import com.volunteer.entity.vo.SignUpVo;
 import com.volunteer.service.SignUpRecordService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,7 +47,7 @@ public class SignUpRecordController {
             if (signUpStatus == SignUpStatus.NOT_LOGIN) {
                 return ResultGenerator.getFailResult("请重新登陆");
             } else if (signUpStatus == SignUpStatus.ALREADY_SIGNED_UP) {
-                return ResultGenerator.getFailResult("您已经报名");
+                return ResultGenerator.getFailResult("您已经报名",601);
             } else if (signUpStatus == SignUpStatus.SIGN_UP_FAIL) {
                 return ResultGenerator.getFailResult("报名失败，请稍后重试");
             }
@@ -71,6 +72,25 @@ public class SignUpRecordController {
         } catch (Exception exception) {
             exception.printStackTrace();
             return ResultGenerator.getFailResult(exception.getMessage());
+        }
+    }
+
+    /**
+     * 检查报名状态
+     * @return  true：已报名，false：未报名
+     */
+    @ApiOperation("报名状态查询接口")
+    @PostMapping("/checkState")
+    public Result checkSignUpState(@RequestBody SignUpVo query) {
+        try {
+            if (StringUtils.isNotEmpty(query.getToken()) && ObjectUtil.isNotNull(query.getActivityId())) {
+                boolean result = signUpRecordService.checkSignUpState(query);
+                return ResultGenerator.getSuccessResult(result);
+            } else {
+                return ResultGenerator.getFailResult("请检查参数后重试");
+            }
+        } catch (Exception e) {
+            return ResultGenerator.getFailResult(e.getMessage());
         }
     }
 }
