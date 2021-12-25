@@ -58,10 +58,10 @@ vm:
 
 #小程序的配置信息
 mini-program:
-  appId: wx7fb72aa57c11f260
-  appSecret: ffd2811e2bb4deb45e1fbca8a897d870
-#  appId: wx93c0ea617266b2e7
-#  appSecret: e670ef525dfc30ffa54f610bbafd3409
+#  appId: wx7fb72aa57c11f260
+#  appSecret: ffd2811e2bb4deb45e1fbca8a897d870
+  appId: wx93c0ea617266b2e7
+  appSecret: e670ef525dfc30ffa54f610bbafd3409
 
 
 #腾讯云的配置信息

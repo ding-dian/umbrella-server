@@ -2,6 +2,7 @@ package com.volunteer.entity.vo;
 
 import com.volunteer.entity.VolunteerActivity;
 import lombok.Data;
+import lombok.Getter;
 
 import java.util.List;
 
@@ -11,6 +12,7 @@ import java.util.List;
  * Description:
  */
 @Data
+@Getter
 public class ActivityListVo {
     /*
      *需要的字段

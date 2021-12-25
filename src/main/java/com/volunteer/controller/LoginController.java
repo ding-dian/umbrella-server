@@ -91,10 +91,13 @@ public class LoginController {
      * @param map 传入的信息有用户的token和手机号
      * @return
      */
-    @PostMapping("/saveUserPhoneNumber")
-    public Result saveUserPhoneNumber(@RequestBody Map<String,String> map) {
+    @PostMapping("/updateUserInfoByToken")
+    public Result updateUserInfoByToken(@RequestBody Map<String,String> map) {
         String token=map.get("token");
-        String phoneNumber=map.get("PhoneNumber");
+        String phoneNumber=map.get("phoneNumber");
+        String name=map.get("userName");
+        String qqNumber=map.get("qqNumber");
+        String studentNumber=map.get("studentNumber");
         //从缓存中根据token获得用户信息
         String jsonStr = redisOperator.get(token);
         if(StringUtils.isEmpty(jsonStr)){
@@ -120,6 +123,9 @@ public class LoginController {
             //验证通过存入数据库
             UpdateWrapper<Volunteer> updateWrapper=new UpdateWrapper<>();
             updateWrapper.set("phone_number",encrypt);
+            updateWrapper.set("name",name);
+            updateWrapper.set("qq_number",qqNumber);
+            updateWrapper.set("student_id",studentNumber);
             updateWrapper.eq("openID",openID);
             volunteerService.update(updateWrapper);
             return ResultGenerator.getSuccessResult();
@@ -240,22 +246,22 @@ public class LoginController {
         String code = redisOperator.get(DigestUtil.md5Hex(phoneNumber));
         if (StringUtils.isEmpty(code)) {
             // 生成6位的验证码
-//            code = RandomUtil.randomNumbers(6);
-            // 测试时使用下面的代码，将上面的代码注释，验证码写死了为：111111
-            code = "111111";
+            code = RandomUtil.randomNumbers(6);
+           //  测试时使用下面的代码，将上面的代码注释，验证码写死了为：111111
+//            code = "111111";
         }
         try {
             // 发送验证码
-//            if (smsOperator.sendSms(phoneNumber, code)) {
-//                // 将验证码保存至Redis,手机号属于铭感信息，因此加密保存，而不是用明文
-//                redisOperator.set(DigestUtil.md5Hex(phoneNumber), code, 60 * expires);
-//                return ResultGenerator.getSuccessResult(code);
-//            } else {
-//                return ResultGenerator.getFailResult("验证码发送失败，请联系管理员");
-//            }
+            if (smsOperator.sendSms(phoneNumber, code)) {
+                // 将验证码保存至Redis,手机号属于铭感信息，因此加密保存，而不是用明文
+                redisOperator.set(DigestUtil.md5Hex(phoneNumber), code, 60 * expires);
+                return ResultGenerator.getSuccessResult(code);
+            } else {
+                return ResultGenerator.getFailResult("验证码发送失败，请联系管理员");
+            }
             // 测试时用下面代码，然后上面的代码注释
-            redisOperator.set(DigestUtil.md5Hex(phoneNumber), code, 60 * expires);
-            return ResultGenerator.getSuccessResult(code);
+//            redisOperator.set(DigestUtil.md5Hex(phoneNumber), code, 60 * expires);
+//            return ResultGenerator.getSuccessResult(code);
         } catch (PhoneNumberInvalidException e) {
             // 手机号格式错误
             return ResultGenerator.getFailResult(e.getMessage());

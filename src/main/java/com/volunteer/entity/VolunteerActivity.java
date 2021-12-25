@@ -5,11 +5,14 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.volunteer.entity.common.DataFormats;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
@@ -24,6 +27,8 @@ import java.time.LocalDateTime;
  * @since 2021-11-07
  */
 @Data
+@Getter
+@Setter
 @ApiModel(value = "活动实体类",description = "接收活动参数的实体类")
 @EqualsAndHashCode(callSuper = false)
 public class VolunteerActivity implements Serializable {
@@ -84,6 +89,7 @@ public class VolunteerActivity implements Serializable {
      */
     @TableField("start_time")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = DataFormats.VO_FORMAT)
     private LocalDateTime startTime;
 
     /**
@@ -91,6 +97,7 @@ public class VolunteerActivity implements Serializable {
      */
     @TableField("end_time")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = DataFormats.VO_FORMAT)
     private LocalDateTime endTime;
 
     /**
