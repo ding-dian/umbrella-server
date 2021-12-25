@@ -331,4 +331,9 @@ public class TestClass {
     public void testToken() {
         System.out.println(redisOperator.getObjectByToken("29063cbc978de92d3df57191c0b85a60", Volunteer.class));
     }
+
+    @Test
+    public void testSignUpRecordService() {
+        System.out.println(signUpRecordService.getSignUpList(18));
+    }
 }

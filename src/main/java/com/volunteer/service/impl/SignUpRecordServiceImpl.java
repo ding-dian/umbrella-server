@@ -1,6 +1,7 @@
 package com.volunteer.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -10,8 +11,8 @@ import com.volunteer.component.RedisOperator;
 import com.volunteer.entity.SignUpRecord;
 import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.VolunteerActivity;
-import com.volunteer.entity.common.ActivityStatus;
 import com.volunteer.entity.common.SignUpStatus;
+import com.volunteer.entity.vo.SignUpListVo;
 import com.volunteer.entity.vo.SignUpVo;
 import com.volunteer.mapper.SignUpRecordMapper;
 import com.volunteer.mapper.VolunteerActivityMapper;
@@ -23,7 +24,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * <p>
@@ -47,10 +53,10 @@ public class SignUpRecordServiceImpl extends ServiceImpl<SignUpRecordMapper, Sig
 
     /**
      * 报名
-     * @param query
      * @return  0失败，1成功，2已报名，3未登录
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int signUp(SignUpVo query) {
         // 根据token从redis中获取用户信息
         String jsonStr = redisOperator.get(query.getToken());
@@ -75,21 +81,23 @@ public class SignUpRecordServiceImpl extends ServiceImpl<SignUpRecordMapper, Sig
                     }
                     // 之前取消了报名，现在又重新报名了
                     signUpRecord.setDeleted(0);
+                    // 更新报名人数
+                    activity.setNumberOfAttendees(activity.getNumberOfAttendees() + 1);
+                    volunteerActivityMapper.updateById(activity);
                     return baseMapper.updateById(signUpRecord);
                 }
                 // 报名
                 signUpRecord = new SignUpRecord();
                 signUpRecord.setVolunteerId(volunteer.getId()).setVolunteerActivityId(activity.getId()).setCreateAt(LocalDateTime.now()).setDeleted(0);
-                int result = baseMapper.insert(signUpRecord);
-                return result;
+                // 更新报名人数
+                activity.setNumberOfAttendees(activity.getNumberOfAttendees() + 1);
+                volunteerActivityMapper.updateById(activity);
+                return baseMapper.insert(signUpRecord);
             }
         }
         return SignUpStatus.SIGN_UP_FAIL;
     }
 
-    /**
-     * @param query
-     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void cancelRegistration(SignUpVo query) {
@@ -123,4 +131,32 @@ public class SignUpRecordServiceImpl extends ServiceImpl<SignUpRecordMapper, Sig
             throw new RuntimeException("请重新登陆后重试");
         }
     }
+
+    @Override
+    public List<SignUpListVo> getSignUpList(Integer activityId) {
+        if (Objects.nonNull(activityId)) {
+            LambdaQueryWrapper<SignUpRecord> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(SignUpRecord::getVolunteerActivityId,activityId);
+            List<SignUpRecord> signUpRecords = baseMapper.selectList(queryWrapper);
+            if (CollectionUtil.isNotEmpty(signUpRecords)) {
+                DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                List<SignUpListVo> result = new ArrayList<>();
+                signUpRecords.forEach((record) -> {
+                    Volunteer volunteer = volunteerMapper.selectById(record.getVolunteerId());
+                    if (Objects.nonNull(volunteer)) {
+                        SignUpListVo vo = new SignUpListVo();
+                        LocalDateTime createAt = record.getCreateAt();
+                        if (Objects.nonNull(createAt)) {
+                            vo.setDate(createAt.format(dateTimeFormatter));
+                        }
+                        vo.setAvatar(volunteer.getAvatarUrl());
+                        result.add(vo);
+                    }
+                });
+                return result;
+            }
+        }
+        return Collections.emptyList();
+    }
+
 }

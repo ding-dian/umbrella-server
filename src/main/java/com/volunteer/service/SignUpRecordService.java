@@ -3,6 +3,7 @@ package com.volunteer.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.volunteer.entity.SignUpRecord;
 import com.volunteer.entity.Volunteer;
+import com.volunteer.entity.vo.SignUpListVo;
 import com.volunteer.entity.vo.SignUpVo;
 
 import java.util.List;
@@ -35,4 +36,11 @@ public interface SignUpRecordService extends IService<SignUpRecord> {
      * @return
      */
     boolean checkSignUpState(SignUpVo query);
+
+    /**
+     * 获取报名列表
+     * @param activityId
+     * @return
+     */
+    List<SignUpListVo> getSignUpList(Integer activityId);
 }

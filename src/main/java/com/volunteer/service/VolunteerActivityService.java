@@ -2,6 +2,7 @@ package com.volunteer.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.volunteer.entity.SignUpRecord;
 import com.volunteer.entity.VolunteerActivity;
 import com.volunteer.entity.vo.ActivityListVo;
 import com.volunteer.entity.vo.AuditeActivityVo;

@@ -9,6 +9,8 @@ import com.volunteer.entity.common.ResultGenerator;
 import com.volunteer.entity.vo.ActivityListVo;
 import com.volunteer.entity.vo.AuditeActivityVo;
 import com.volunteer.entity.vo.Ids;
+import com.volunteer.entity.vo.SignUpListVo;
+import com.volunteer.service.SignUpRecordService;
 import com.volunteer.service.VolunteerActivityService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -16,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -32,8 +35,12 @@ import java.util.Map;
 @RequestMapping("/volunteerActivity")
 @Slf4j
 public class ActivityController {
+
     @Autowired
     private VolunteerActivityService volunteerActivityService;
+
+    @Autowired
+    private SignUpRecordService signUpRecordService;
 
     /**
      * 创建志愿者活动
@@ -130,7 +137,6 @@ public class ActivityController {
     /**
      * 更新活动接口
      * @param volunteerActivity
-     * @return
      */
     @PostMapping("/updateActivity")
     @ApiOperation(value = "活动更新接口")
@@ -147,7 +153,6 @@ public class ActivityController {
     /**
      * 分页查询活动接口
      * @param volunteerActivity
-     * @return
      */
     @ApiOperation(value = "活动分页查询接口")
     @GetMapping("/selectListActivity")
@@ -175,6 +180,18 @@ public class ActivityController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResultGenerator.getFailResult(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "获取最近报名的")
+    @GetMapping("/getSignUpList")
+    public Result getSignUpList(Integer activityId) {
+        try {
+            List<SignUpListVo> signUpList = signUpRecordService.getSignUpList(activityId);
+            return ResultGenerator.getSuccessResult(signUpList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultGenerator.getFailResult("系统异常，请联系管理员");
         }
     }
 }
