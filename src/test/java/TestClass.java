@@ -24,6 +24,7 @@ import com.volunteer.entity.VolunteerStatisticalInformation;
 import com.volunteer.mapper.AdminInfoMapper;
 import com.volunteer.mapper.VolunteerStatisticalInformationMapper;
 import com.volunteer.service.VolunteerStatisticalInformationService;
+import com.volunteer.service.impl.RabbiMQService;
 import com.volunteer.util.AES;
 import com.volunteer.util.BeanMapUtil;
 import com.volunteer.util.JwtUtil;
@@ -36,7 +37,9 @@ import io.jsonwebtoken.Claims;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.File;
@@ -84,6 +87,13 @@ public class TestClass {
 
     @Autowired
     private SecretOperator secretOperator;
+
+    @Autowired
+    private RabbiMQService rabbiMQService;
+
+    @Autowired
+    @Qualifier("taskExecutor")
+    private ThreadPoolTaskExecutor taskExecutor;
 
     @Test
     public void test() {
@@ -335,5 +345,16 @@ public class TestClass {
     @Test
     public void testSignUpRecordService() {
         System.out.println(signUpRecordService.getSignUpList(18));
+    }
+
+    @Test
+    public void testRabbiMQ() {
+        rabbiMQService.testSendMsg();
+    }
+
+    @Test
+    public void testTaskPool() {
+        System.out.println(taskExecutor.getCorePoolSize());
+        System.out.println(taskExecutor.getMaxPoolSize());
     }
 }

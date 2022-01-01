@@ -1,6 +1,5 @@
 package com.volunteer.controller;
 
-import cn.hutool.core.codec.Base64;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.digest.DigestUtil;
@@ -9,13 +8,11 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.volunteer.component.RedisOperator;
-import com.volunteer.component.TencentSmsOperator;
 import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.common.Result;
 import com.volunteer.entity.common.ResultGenerator;
-import com.volunteer.exception.PhoneNumberInvalidException;
+import com.volunteer.service.LoginService;
 import com.volunteer.service.VolunteerService;
-
 import com.volunteer.util.AES;
 import com.volunteer.util.RegularUtil;
 import io.swagger.annotations.Api;
@@ -33,7 +30,7 @@ import java.util.Objects;
  * @author VernHe
  * @date 2021年12月14日 17:37
  */
-@Api(tags ="小程序登录模块")
+@Api(tags = "小程序登录模块")
 @Slf4j
 @RestController
 @RequestMapping("/miniProgram")
@@ -48,7 +45,6 @@ public class LoginController {
     @Value("${AES-secret}")
     private String AESSecret;
 
-
     /**
      * 验证码的有效时间，单位是分钟
      */
@@ -62,16 +58,17 @@ public class LoginController {
     private RedisOperator redisOperator;
 
     @Autowired
-    private TencentSmsOperator smsOperator;
+    private LoginService loginService;
 
     /**
      * 检查登录状态
+     *
      * @param map
      * @return
      */
     @PostMapping("/checkLoginState")
-    public Result checkLoginState(@RequestBody Map<String,String> map) {
-        String token=map.get("token");
+    public Result checkLoginState(@RequestBody Map<String, String> map) {
+        String token = map.get("token");
         if (StringUtils.isEmpty(token)) {
             return ResultGenerator.getFailResult("参数有误，请检查后重试");
         }
@@ -81,31 +78,32 @@ public class LoginController {
             return ResultGenerator.getSuccessResult(false);
         }
         // token未过期,刷新过期时间
-        redisOperator.expire(token,7200);
+        redisOperator.expire(token, 7200);
         return ResultGenerator.getSuccessResult(true);
     }
 
 
     /**
      * 保存用户的电话
+     *
      * @param map 传入的信息有用户的token和手机号
      * @return
      */
     @PostMapping("/updateUserInfoByToken")
-    public Result updateUserInfoByToken(@RequestBody Map<String,String> map) {
-        String token=map.get("token");
-        String phoneNumber=map.get("phoneNumber");
-        String name=map.get("userName");
-        String qqNumber=map.get("qqNumber");
-        String studentNumber=map.get("studentNumber");
+    public Result updateUserInfoByToken(@RequestBody Map<String, String> map) {
+        String token = map.get("token");
+        String phoneNumber = map.get("phoneNumber");
+        String name = map.get("userName");
+        String qqNumber = map.get("qqNumber");
+        String studentNumber = map.get("studentNumber");
         //从缓存中根据token获得用户信息
         String jsonStr = redisOperator.get(token);
-        if(StringUtils.isEmpty(jsonStr)){
+        if (StringUtils.isEmpty(jsonStr)) {
             return ResultGenerator.getFailResult("token有误");
         }
-        JSONObject userInfo=JSONUtil.parseObj(jsonStr);
+        JSONObject userInfo = JSONUtil.parseObj(jsonStr);
         //获得openID
-        String openID=userInfo.getStr("openid");
+        String openID = userInfo.getStr("openid");
         //参数校验
         if (StringUtils.isEmpty(token) || StringUtils.isEmpty(phoneNumber)) {
             return ResultGenerator.getFailResult("参数有误，请检查后重试");
@@ -119,17 +117,17 @@ public class LoginController {
             return ResultGenerator.getFailResult("加密失败");
         }
         //先检查手机号是否已经被绑定并且用户信息存在
-        if(!volunteerService.phoneNumberIsBound(encrypt)&&volunteerService.getByOpenId(openID)!=null){
+        if (!volunteerService.phoneNumberIsBound(encrypt) && volunteerService.getByOpenId(openID) != null) {
             //验证通过存入数据库
-            UpdateWrapper<Volunteer> updateWrapper=new UpdateWrapper<>();
-            updateWrapper.set("phone_number",encrypt);
-            updateWrapper.set("name",name);
-            updateWrapper.set("qq_number",qqNumber);
-            updateWrapper.set("student_id",studentNumber);
-            updateWrapper.eq("openID",openID);
+            UpdateWrapper<Volunteer> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.set("phone_number", encrypt);
+            updateWrapper.set("name", name);
+            updateWrapper.set("qq_number", qqNumber);
+            updateWrapper.set("student_id", studentNumber);
+            updateWrapper.eq("openID", openID);
             volunteerService.update(updateWrapper);
             return ResultGenerator.getSuccessResult();
-        }else {
+        } else {
             return ResultGenerator.getFailResult("手机号已经被绑定或用户未授权");
         }
     }
@@ -206,17 +204,16 @@ public class LoginController {
                 return ResultGenerator.getFailResult("数据签名校验失败");
             }
             // 将用户信息保存至数据库中
-            Volunteer volunteer = volunteerService.register(userInfo,codeResult.getStr("openid"));
+            Volunteer volunteer = volunteerService.register(userInfo, codeResult.getStr("openid"));
             if (Objects.isNull(volunteer)) {
                 return ResultGenerator.getFailResult("注册失败，请稍后重试");
             }
-            String jsonStr = userInfo.toString();
-            log.info("解析从微信服务器获得的用户信息:{}", jsonStr);
+            String jsonStr = JSONUtil.toJsonStr(volunteer);
             // 将用户信息保存至redis中，然后返回token
             String token = DigestUtil.md5Hex(jsonStr);
-            redisOperator.set(token,jsonStr);
-            Map<String,String> data = new HashMap<>();
-            data.put("token",token);
+            redisOperator.set(token, jsonStr, 7200);
+            Map<String, String> data = new HashMap<>();
+            data.put("token", token);
             data.put("userInfo", jsonStr);
             return ResultGenerator.getSuccessResult(data);
         } catch (Exception e) {
@@ -228,8 +225,9 @@ public class LoginController {
 
     /**
      * 验证码发送接口
+     *
      * @param map
-     * @return  code 验证码
+     * @return code 验证码
      */
     @PostMapping("/sendCode")
     public Result senSms(@RequestBody Map<String, String> map) {
@@ -247,29 +245,12 @@ public class LoginController {
         if (StringUtils.isEmpty(code)) {
             // 生成6位的验证码
             code = RandomUtil.randomNumbers(6);
-           //  测试时使用下面的代码，将上面的代码注释，验证码写死了为：111111
+            //  测试时使用下面的代码，将上面的代码注释，验证码写死了为：111111
 //            code = "111111";
         }
-        try {
-            // 发送验证码
-            if (smsOperator.sendSms(phoneNumber, code)) {
-                // 将验证码保存至Redis,手机号属于铭感信息，因此加密保存，而不是用明文
-                redisOperator.set(DigestUtil.md5Hex(phoneNumber), code, 60 * expires);
-                return ResultGenerator.getSuccessResult(code);
-            } else {
-                return ResultGenerator.getFailResult("验证码发送失败，请联系管理员");
-            }
-            // 测试时用下面代码，然后上面的代码注释
-//            redisOperator.set(DigestUtil.md5Hex(phoneNumber), code, 60 * expires);
-//            return ResultGenerator.getSuccessResult(code);
-        } catch (PhoneNumberInvalidException e) {
-            // 手机号格式错误
-            return ResultGenerator.getFailResult(e.getMessage());
-        } catch (Exception e) {
-            // 其他原因发送失败
-            log.error(e.getMessage());
-            return ResultGenerator.getFailResult("验证码发送失败，请联系管理员");
-        }
+//        redisOperator.set(DigestUtil.md5Hex(phoneNumber), code, 60 * expires
+        loginService.sendSms(phoneNumber, code, expires);
+        return ResultGenerator.getSuccessResult(code);
     }
 
     /**
@@ -277,7 +258,7 @@ public class LoginController {
      *
      * @param session_key
      * @param rawData
-     * @param signature1 微信发送的签名
+     * @param signature1  微信发送的签名
      * @return
      */
     private JSONObject getUserInfoFromWx(String session_key, String rawData, String signature1) {
