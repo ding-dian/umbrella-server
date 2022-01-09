@@ -5,14 +5,14 @@ server:
 spring:
   #数据源（测试环境，本地VM）
   datasource:
-    url: jdbc:mysql://192.168.220.220:3306/hg_volunteer?useUnicode=true&characterEncoding=utf-8
+    url: jdbc:mysql://192.168.56.102:3306/hg_volunteer?useUnicode=true&characterEncoding=utf-8
     username: root
-    password: 123456
+    password: MySQL5.7
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
   #Redis
   redis:
-    host: 47.101.206.1
+    host: 192.168.56.102
     port: 6379
     password: volunteer
     jedis:
@@ -95,3 +95,11 @@ task:
     keepAliveSeconds: 300 #设置线程活跃时间（秒）
     queueCapacity: 50 #设置队列容量
     threadNamePrefix: thread-pool-service-
+
+#阿里云OSS配置信息
+oss:
+  endpoint: oss-cn-beijing.aliyuncs.com
+  accessKeyId: LTAI5tAyskX9Kx5j4MnZnYEH
+  accessKeySecret: GrBNHEfu6mJeHEDTdDloVElqQ7agEE
+  bucketName: hg-volunteer
+  bucketDomain: https://hg-volunteer.oss-cn-beijing.aliyuncs.com/

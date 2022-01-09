@@ -106,6 +106,7 @@ public class VolunteerActivity implements Serializable {
     @TableField("status")
     private String status;
 
+
     /**
      * 逻辑删除【0:未删除，1:已删除】
      */
