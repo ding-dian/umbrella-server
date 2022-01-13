@@ -2,12 +2,14 @@ package com.volunteer.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.VolunteerActivity;
+import com.volunteer.entity.vo.ActivityListItemVo;
 import com.volunteer.entity.vo.ActivityListVo;
 import com.volunteer.entity.vo.AuditeActivityVo;
 import com.volunteer.mapper.VolunteerActivityMapper;
@@ -19,7 +21,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * <p>
@@ -254,28 +259,40 @@ public class VolunteerActivityServiceImpl extends ServiceImpl<VolunteerActivityM
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ActivityListVo findListByStutas(String stutas, Integer pageNo, Integer pageSize) {
-        if (ObjectUtil.isEmpty(stutas)){
+        if (ObjectUtil.isEmpty(stutas)) {
             throw new RuntimeException("请输入活动状态");
         }
-        if (!stutas.equals("00")&&!stutas.equals("01")&&!stutas.equals("02")){
+        if (!stutas.equals("00") && !stutas.equals("01") && !stutas.equals("02")) {
             throw new RuntimeException("活动状态错误");
         }
         //默认第一页
-        if (ObjectUtil.isNull(pageNo)){
-            pageNo=1;
+        if (ObjectUtil.isNull(pageNo)) {
+            pageNo = 1;
         }
         //默认十条
-        if (ObjectUtil.isNull(pageSize)){
-            pageSize=10;
+        if (ObjectUtil.isNull(pageSize)) {
+            pageSize = 10;
         }
-        LambdaQueryWrapper<VolunteerActivity> queryWrapper=new LambdaQueryWrapper();
-        queryWrapper.eq(VolunteerActivity::getStatus,stutas)
-                .eq(VolunteerActivity::getDeleted,0)
+        LambdaQueryWrapper<VolunteerActivity> queryWrapper = new LambdaQueryWrapper();
+        queryWrapper.eq(VolunteerActivity::getStatus, stutas)
+                .eq(VolunteerActivity::getDeleted, 0)
                 .orderByDesc(VolunteerActivity::getCreateAt);
-        Page page=new Page<>(pageNo,pageSize);
-        IPage iPage = baseMapper.selectPage(page, queryWrapper);
+        Page page = new Page<>(pageNo, pageSize);
+        IPage<VolunteerActivity> iPage = baseMapper.selectPage(page, queryWrapper);
         ActivityListVo vo = new ActivityListVo();
-        vo.setList(iPage.getRecords());
+        List<ActivityListItemVo> list = new LinkedList<>();
+        iPage.getRecords().forEach(item -> {
+            ActivityListItemVo itemVo = new ActivityListItemVo();
+            itemVo.setImgUrl(item.getActivityImg())
+                    .setActivityTitle(item.getActivityName())
+                    .setDescription(item.getDescription())
+                    .setPercent(item.getNumberOfAttendees() * 100 / item.getNumberOfNeed())
+                    .setRegistrationPopulation(Objects.isNull(item.getNumberOfAttendees()) ? 0 : item.getNumberOfAttendees())
+                    .setPredictDuration(item.getPredictDuration())
+                    .setRemainingPlaces(item.getNumberOfNeed() - item.getNumberOfAttendees());
+            list.add(itemVo);
+        });
+        vo.setList(list);
         vo.setTotal(iPage.getTotal());
         return vo;
     }

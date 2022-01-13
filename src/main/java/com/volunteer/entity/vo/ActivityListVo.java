@@ -22,7 +22,7 @@ public class ActivityListVo {
     /**
      * 活动列表
      */
-    private List<VolunteerActivity> list;
+    private List<ActivityListItemVo> list;
 
     /**
      * 活动的总数

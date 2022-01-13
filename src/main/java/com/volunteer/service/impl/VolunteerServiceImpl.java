@@ -3,10 +3,12 @@ package com.volunteer.service.impl;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.volunteer.component.RedisOperator;
 import com.volunteer.component.SecretOperator;
 import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.VolunteerStatisticalInformation;
@@ -41,6 +43,9 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
 
     @Autowired
     private SecretOperator secretOperator;
+
+    @Autowired
+    private RedisOperator redisOperator;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -248,6 +253,21 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
 
     }
 
+    /**
+     * 更新用户头像（异步方法）
+     * @param token
+     * @param volunteer
+     * @param avatarUrl
+     * @return
+     */
+    @Override
+    public void updateAvatar(String token, Volunteer volunteer, String avatarUrl) {
+        volunteer.setAvatarUrl(avatarUrl);
+        if (baseMapper.updateById(volunteer) > 0) {
+            // 修改成功后更新缓存
+            redisOperator.set(token, JSONUtil.toJsonStr(volunteer), 7200);
+        }
+    }
 
 }
 

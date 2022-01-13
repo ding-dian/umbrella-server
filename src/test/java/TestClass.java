@@ -391,10 +391,8 @@ public class TestClass {
     public void testOSSOperator() throws FileNotFoundException {
         File file = new File("C:\\Users\\Administrator\\Desktop\\testOosUploadFile.png");
         // 指定文件名
-        FileInputStream fis1 = new FileInputStream(file);
-        System.out.println(ossOperator.uploadObjectOSS("utilTestFile/", UUID.randomUUID().toString(), file, fis1));
+//        System.out.println(ossOperator.uploadObjectOSS("utilTestFile/", UUID.randomUUID().toString(), file));
         // 默认使用原文件名
-        FileInputStream fis2 = new FileInputStream(file);
-        System.out.println(ossOperator.uploadObjectOSS("utilTestFile/", file, fis2));
+//        System.out.println(ossOperator.uploadObjectOSS("utilTestFile/", file));
     }
 }

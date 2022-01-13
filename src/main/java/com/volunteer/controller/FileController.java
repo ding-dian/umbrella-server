@@ -19,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 /**
  * 文件和图片上传
  */
-@Api(tags = "文件系统模块")
+@Api(tags = "文件系统模块(旧-FastDFS)")
 @RestController
 @RequestMapping("/file")
 @Slf4j
