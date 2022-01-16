@@ -1,4 +1,6 @@
 import cn.hutool.core.lang.UUID;
+import cn.hutool.http.Header;
+import cn.hutool.http.HttpRequest;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.internal.OSSHeaders;
@@ -25,6 +27,7 @@ import com.volunteer.util.AES;
 import com.volunteer.util.BeanMapUtil;
 import com.volunteer.util.JwtUtil;
 import io.jsonwebtoken.Claims;
+import org.apache.http.client.HttpClient;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -394,5 +397,13 @@ public class TestClass {
 //        System.out.println(ossOperator.uploadObjectOSS("utilTestFile/", UUID.randomUUID().toString(), file));
         // 默认使用原文件名
 //        System.out.println(ossOperator.uploadObjectOSS("utilTestFile/", file));
+    }
+
+    @Test
+    public void testCall() {
+        String result2 = HttpRequest.post("http://localhost:8088/oos/test")
+                .header(Header.USER_AGENT, "xxl-job")//头信息，多个头信息多次调用此方法即可
+                .timeout(20000)//超时，毫秒
+                .execute().body();
     }
 }

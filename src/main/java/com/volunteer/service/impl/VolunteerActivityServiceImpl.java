@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.VolunteerActivity;
+import com.volunteer.entity.common.ActivityStatus;
 import com.volunteer.entity.vo.ActivityListItemVo;
 import com.volunteer.entity.vo.ActivityListVo;
 import com.volunteer.entity.vo.AuditeActivityVo;
@@ -310,5 +311,42 @@ public class VolunteerActivityServiceImpl extends ServiceImpl<VolunteerActivityM
             baseMapper.updateById(volunteerActivity);
         }
         return volunteerActivity;
+    }
+
+    /**
+     * 更新所有活动的状态
+     */
+    @Override
+    public void updateActivityStatus() {
+        log.info("更新活动状态的定时任务被执行了一次");
+        long pageSize = 100;
+        long pageNo = 1;
+        LambdaQueryWrapper<VolunteerActivity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(VolunteerActivity::getDeleted, 0);
+        Page<VolunteerActivity> page = page = new Page<>();
+        IPage<VolunteerActivity> selectPage;
+        do {
+            // 分页查询，一次查询100条
+            page.setCurrent(pageNo).setSize(pageSize);
+            selectPage = baseMapper.selectPage(page, queryWrapper);
+            // 更新状态
+            LocalDateTime now = LocalDateTime.now();
+            List<VolunteerActivity> activities = selectPage.getRecords();
+            for (VolunteerActivity item : activities) {
+                if (item.getStartTime().isAfter(now)) {
+                    // now < startTime < endTime 还没开始
+                    item.setStatus(ActivityStatus.NOT_STARTED);
+                } else if (item.getEndTime().isAfter(now)){
+                    // startTime < now < endTime 正在进行中
+                    item.setStatus(ActivityStatus.ON_GOING);
+                } else {
+                    // startTime < endTime < now 已结束
+                    item.setStatus(ActivityStatus.FINISHED);
+                }
+            }
+            // 批量更新
+            baseMapper.updateStatus(activities);
+            pageNo++;
+        } while (pageNo * pageSize < selectPage.getTotal());
     }
 }

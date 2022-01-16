@@ -31,4 +31,17 @@
         id, activity_name, activity_img, activity_address, number_of_need, number_of_attendees, description, reward_points, start_time, end_time, status, deleted, create_at, create_by, update_at, update_by
     </sql>
 
+    <!-- 批量更新 -->
+    <update id="updateStatus">
+        <foreach collection="list" item="item" separator=";">
+            update volunteer_activity
+            <if test="item.status != null">
+                <set>
+                    status = #{item.status}
+                </set>
+                where id = #{item.id}
+            </if>
+        </foreach>
+    </update>
+
 </mapper>

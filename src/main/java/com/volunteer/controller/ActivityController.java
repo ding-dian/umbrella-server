@@ -1,6 +1,7 @@
 package com.volunteer.controller;
 
 
+import cn.hutool.http.HttpStatus;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.volunteer.entity.VolunteerActivity;
@@ -192,6 +193,22 @@ public class ActivityController {
             e.printStackTrace();
             return ResultGenerator.getFailResult("系统异常，请联系管理员");
         }
+    }
+
+    /**
+     * 更新活动状态的接口
+     *
+     * @return
+     */
+    @PostMapping("/updateStatus")
+    public Result updateActivityStatus() {
+        try {
+            volunteerActivityService.updateActivityStatus();
+        }catch (Exception e) {
+            log.error(e.getMessage());
+            return ResultGenerator.getFailResult("服务器异常: " + e.getMessage(), HttpStatus.HTTP_INTERNAL_ERROR);
+        }
+        return ResultGenerator.getSuccessResult();
     }
 }
 

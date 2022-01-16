@@ -82,4 +82,9 @@ public interface VolunteerActivityService extends IService<VolunteerActivity> {
      * @return
      */
     ActivityListVo findListByStutas(String stutas , Integer pageNo, Integer pageSize);
+
+    /**
+     * 刚更新活动状态
+     */
+    void updateActivityStatus();
 }

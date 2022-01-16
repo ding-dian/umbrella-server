@@ -52,4 +52,15 @@ public class UploadController {
         }
         return ResultGenerator.getSuccessResult(imgUrl);
     }
+
+    /**
+     * 测试 xxl-job的接口
+     *
+     * @return
+     */
+    @PostMapping("/test")
+    public Result testXxlJob() {
+        System.out.println("被调用了");
+        return ResultGenerator.getSuccessResult();
+    }
 }

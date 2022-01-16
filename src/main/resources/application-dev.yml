@@ -5,7 +5,7 @@ server:
 spring:
   #数据源（测试环境，本地VM）
   datasource:
-    url: jdbc:mysql://192.168.56.102:3306/hg_volunteer?useUnicode=true&characterEncoding=utf-8
+    url: jdbc:mysql://192.168.56.102:3306/hg_volunteer?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true
     username: root
     password: MySQL5.7
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -103,3 +103,15 @@ oss:
   accessKeySecret: GrBNHEfu6mJeHEDTdDloVElqQ7agEE
   bucketName: hg-volunteer
   bucketDomain: https://hg-volunteer.oss-cn-beijing.aliyuncs.com/
+
+xxl:
+  job:
+    admin:
+      addresses: http://127.0.0.1:8888/xxl-job-admin
+    executor:
+      appname: xxl-job-volunteer-executor
+      ip:
+      port: 9999
+      logpath: /data/apploggs/xxl-job/jobhandler
+      logretentiondays: 30
+    accessToken:
