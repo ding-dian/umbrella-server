@@ -53,7 +53,7 @@ public class ActivityController {
     public Result createActivity(@RequestBody VolunteerActivity volunteerActivity){
         try {
             int result = volunteerActivityService.createActivity( volunteerActivity);
-            if (result==1){
+            if (result == 1){
                 return ResultGenerator.getSuccessResult("活动添加成功");
             }else {
                 return ResultGenerator.getFailResult("请检查活动");

@@ -6,6 +6,12 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class ActivityListItemVo {
+
+    /**
+     * 活动id
+     */
+    private Integer activityId;
+
     /**
      * 图片url
      */
