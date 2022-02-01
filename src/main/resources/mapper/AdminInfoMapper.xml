@@ -15,7 +15,7 @@
     </resultMap>
 
     <select id="selectByUserName" resultType="com.volunteer.entity.AdminInfo">
-        select *from admin_info
+        select * from admin_info
         where username=#{username}
     </select>
 

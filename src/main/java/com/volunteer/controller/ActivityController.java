@@ -4,6 +4,7 @@ package com.volunteer.controller;
 import cn.hutool.http.HttpStatus;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.VolunteerActivity;
 import com.volunteer.entity.common.Result;
 import com.volunteer.entity.common.ResultGenerator;
@@ -15,6 +16,8 @@ import com.volunteer.service.SignUpRecordService;
 import com.volunteer.service.VolunteerActivityService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -122,8 +125,16 @@ public class ActivityController {
      * @param id
      * @return
      */
-    @ApiOperation(value = "活动查询接口")
     @GetMapping("/getActivityInfo")
+    @ApiOperation(
+            value = "单个活动查询接口",
+            notes = "返回用户的信息",
+            produces = "application/json",//用户请求数据类型
+            consumes = "application/json")//用户响应数据类型
+    @ApiResponses({
+            @ApiResponse(code = 200,message = "success",response = VolunteerActivity.class),
+            @ApiResponse(code = 400,message = "系统异常")
+    })
     public Result selectOneActivity(Integer id){
         try {
             VolunteerActivity volunteerActivity=volunteerActivityService.selectOne(id);
@@ -153,10 +164,17 @@ public class ActivityController {
 
     /**
      * 分页查询活动接口
-     * @param volunteerActivity
      */
-    @ApiOperation(value = "活动分页查询接口")
     @GetMapping("/selectListActivity")
+    @ApiOperation(
+            value = "活动分页查询接口",
+            notes = "返回分页的活动集合",
+            produces = "application/json",//用户请求数据类型
+            consumes = "application/json")//用户响应数据类型
+    @ApiResponses({
+            @ApiResponse(code = 200,message = "success",response = VolunteerActivity.class),
+            @ApiResponse(code = 400,message = "系统异常")
+    })
     public Result selectListActivity(VolunteerActivity volunteerActivity){
         try {
             IPage<VolunteerActivity> data = volunteerActivityService.selectListActivity(volunteerActivity);
@@ -167,8 +185,16 @@ public class ActivityController {
         }
     }
 
-    @ApiOperation(value = "活动状态分页查询接口")
     @PostMapping("/findListByStutas")
+    @ApiOperation(
+            value = "活动状态分页查询接口",
+            notes = "分页查询活动进行的状态，状态【00:进行中，01:未开始，02:已结束】",
+            produces = "application/json",//用户请求数据类型
+            consumes = "application/json")//用户响应数据类型
+    @ApiResponses({
+            @ApiResponse(code = 200,message = "success",response = ActivityListVo.class),
+            @ApiResponse(code = 400,message = "系统异常")
+    })
     public Result findListByStutas(@RequestBody Map<String,String> map){
         JSONObject jsonObject =new JSONObject(map);
         String status=jsonObject.getStr("status");
