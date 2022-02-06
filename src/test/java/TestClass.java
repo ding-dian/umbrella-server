@@ -1,4 +1,4 @@
-import cn.hutool.core.lang.UUID;
+
 import cn.hutool.http.Header;
 import cn.hutool.http.HttpRequest;
 import com.aliyun.oss.OSS;
@@ -27,7 +27,6 @@ import com.volunteer.util.AES;
 import com.volunteer.util.BeanMapUtil;
 import com.volunteer.util.JwtUtil;
 import io.jsonwebtoken.Claims;
-import org.apache.http.client.HttpClient;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

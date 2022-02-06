@@ -287,7 +287,8 @@ public class VolunteerActivityServiceImpl extends ServiceImpl<VolunteerActivityM
                     .setPercent(item.getNumberOfAttendees() * 100 / item.getNumberOfNeed())
                     .setRegistrationPopulation(Objects.isNull(item.getNumberOfAttendees()) ? 0 : item.getNumberOfAttendees())
                     .setPredictDuration(item.getPredictDuration())
-                    .setRemainingPlaces(item.getNumberOfNeed() - item.getNumberOfAttendees());
+                    .setRemainingPlaces(item.getNumberOfNeed() - item.getNumberOfAttendees())
+                    .setActivityId(item.getId());
             list.add(itemVo);
         });
         vo.setList(list);

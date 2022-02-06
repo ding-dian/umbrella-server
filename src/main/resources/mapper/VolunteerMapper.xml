@@ -3,21 +3,9 @@
 <mapper namespace="com.volunteer.mapper.VolunteerMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.volunteer.entity.Volunteer">
-        <id column="id" property="id" />
-        <result column="name" property="name" />
-        <result column="phone_number" property="phoneNumber" />
-        <result column="email_address" property="emailAddress" />
-        <result column="student_id" property="studentId" />
-        <result column="password" property="password" />
-        <result column="institude" property="institude" />
-        <result column="grade" property="grade" />
-        <result column="major" property="major" />
-        <result column="deleted" property="deleted" />
-        <result column="create_at" property="createAt" />
-        <result column="create_by" property="createBy" />
-        <result column="update_at" property="updateAt" />
-        <result column="update_by" property="updateBy" />
+    <resultMap id="BaseResultMap" type="com.volunteer.entity.VolunteerActivity">
+        <result column="activity_number" property="activityNumber" />
+        <result column="activity_totaltime" property="activityTotaltime" />
     </resultMap>
 
     <!-- 通用查询结果列 -->

@@ -91,14 +91,16 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
                 //如果页码为null或者未赋值 设置默认值1
                 volunteer.setPageNo(1);
             } else if (volunteer.getPageNo() < 0) {
-                throw new RuntimeException("页码不能小于1");
+               log.error("页码不能小于1");
+               return null;
             }
             //如果页数据为空，默认十条
             if (ObjectUtil.isNull(volunteer.getPageSize()) || volunteer.getPageSize() == 0) {
                 //如果页数据数为null或者未赋值 设置默认值20
                 volunteer.setPageSize(20);
             } else if (volunteer.getPageSize() < 0) {
-                throw new RuntimeException("页数据不能小于1");
+                log.error("页数据不能小于1");
+                return null;
             }
         }
         LambdaQueryWrapper<Volunteer> queryWrapper = new LambdaQueryWrapper<>();
@@ -120,6 +122,7 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
         log.info("pageNo:【{}】，pageSize:【{}】", volunteer.getPageNo(), volunteer.getPageSize());
         Page<Volunteer> page = new Page<>();
         page.setCurrent(volunteer.getPageNo()).setSize(volunteer.getPageSize());
+
         return baseMapper.selectPage(page, queryWrapper);
     }
 
@@ -193,8 +196,6 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
     /**
      * 解析jsonObject并存入数据库
      *
-     * @param jsonObject
-     * @return
      */
     @Override
     public Volunteer register(JSONObject jsonObject, String openid) {
@@ -206,7 +207,9 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
                     .setNickName(jsonObject.getStr("nickName"))
                     .setGender(jsonObject.getInt("gender"))
                     .setAvatarUrl(jsonObject.getStr("avatarUrl"))
-                    .setCreateAt(LocalDateTime.now());
+                    .setCreateAt(LocalDateTime.now())
+                    .setActivityNumber(jsonObject.getInt("activity_number"))
+                    .setActivityTotaltime(jsonObject.getDouble("activity_totaltime"));
             if (baseMapper.insert(volunteer) == 0) {
                 log.info("志愿者新增异常");
                 return null;
