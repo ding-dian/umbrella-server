@@ -1,6 +1,7 @@
 package com.volunteer.component;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.lang.UUID;
 import com.aliyun.oss.ClientBuilderConfiguration;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
@@ -138,7 +139,9 @@ public class OSSOperator implements InitializingBean {
      */
     public String uploadObjectOSS(String storePath, MultipartFile file) {
         String originalFilename = file.getOriginalFilename();
-        return upload(storePath, file,FileUtil.getPrefix(originalFilename),"." + FileUtil.extName(originalFilename));
+        logger.info("上传的文件名：" + originalFilename);
+//        String fileName =
+        return upload(storePath, file,UUID.randomUUID(true).toString(true),"." + FileUtil.extName(originalFilename));
     }
 
     /**

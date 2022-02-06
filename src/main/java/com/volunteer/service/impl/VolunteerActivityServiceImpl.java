@@ -62,9 +62,6 @@ public class VolunteerActivityServiceImpl extends ServiceImpl<VolunteerActivityM
             if (ObjectUtil.isNull(volunteerActivity.getNumberOfNeed())) {
                 throw new RuntimeException("志愿者所需人数不能为空");
             }
-            if (StrUtil.isEmpty(volunteerActivity.getCreateBy())) {
-                throw new RuntimeException("志愿者创建人不能为空");
-            }
             if (volunteerActivity.getEndTime() == null) {
                 throw new RuntimeException("志愿者活动结束时间不能为空");
             }
@@ -77,15 +74,15 @@ public class VolunteerActivityServiceImpl extends ServiceImpl<VolunteerActivityM
             if (volunteerActivity.getStartTime().isBefore(LocalDateTime.now())) {
                 throw new RuntimeException("志愿者活动开始时间不能早于当前时间");
             }
-            if (volunteerActivity.getPredictDuration() < 0 || volunteerActivity.getPredictDuration() > 12) {
-                throw new RuntimeException("单次志愿活动最多可累计十二小时，且不能小于0小时");
-            }
+//            if (volunteerActivity.getPredictDuration() < 0 || volunteerActivity.getPredictDuration() > 12) {
+//                throw new RuntimeException("单次志愿活动最多可累计十二小时，且不能小于0小时");
+//            }
 
             /**
              * 设置活动状态和奖励积分
              */
-            volunteerActivity.setRewardPoints(5);
-            volunteerActivity.setStatus("01");
+//            volunteerActivity.setRewardPoints(5);
+//            volunteerActivity.setStatus("01");
             volunteerActivity.setCreateAt(LocalDateTime.now());
             baseMapper.insert(volunteerActivity);
             return 1;

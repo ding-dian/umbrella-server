@@ -11,6 +11,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,7 +19,7 @@ import java.util.Objects;
 
 @Api(tags = "文件上传模块(新-OOS)")
 @RestController
-@RequestMapping("/oos")
+@RequestMapping("/oss")
 public class UploadController {
 
     @Autowired
@@ -53,6 +54,14 @@ public class UploadController {
         return ResultGenerator.getSuccessResult(imgUrl);
     }
 
+    @PostMapping("/uploadImg")
+    public Result uploadImage(@RequestPart("file") MultipartFile file) {
+        if (Objects.isNull(file)) {
+            return ResultGenerator.getFailResult("请检查上传的文件后重试");
+        }
+        System.out.println("文件名：" + file.getOriginalFilename());
+        return ResultGenerator.getSuccessResult(uploadService.uploadImg(file));
+    }
     /**
      * 测试 xxl-job的接口
      *

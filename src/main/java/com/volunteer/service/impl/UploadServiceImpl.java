@@ -36,4 +36,15 @@ public class UploadServiceImpl implements UploadService {
         volunteerService.updateAvatar(token,volunteer,url);
         return url;
     }
+
+    /**
+     * 上传图片
+     *
+     * @param img
+     * @return
+     */
+    @Override
+    public String uploadImg(MultipartFile img) {
+        return ossOperator.uploadObjectOSS(VOLUNTEER_STORE_PATH, img);
+    }
 }

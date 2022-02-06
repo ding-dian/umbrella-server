@@ -7,10 +7,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.volunteer.entity.VolunteerActivity;
 import com.volunteer.entity.common.Result;
 import com.volunteer.entity.common.ResultGenerator;
-import com.volunteer.entity.vo.ActivityListVo;
-import com.volunteer.entity.vo.AuditeActivityVo;
-import com.volunteer.entity.vo.Ids;
-import com.volunteer.entity.vo.SignUpListVo;
+import com.volunteer.entity.vo.*;
 import com.volunteer.service.SignUpRecordService;
 import com.volunteer.service.VolunteerActivityService;
 import io.swagger.annotations.Api;
@@ -127,7 +124,8 @@ public class ActivityController {
     public Result selectOneActivity(Integer id){
         try {
             VolunteerActivity volunteerActivity=volunteerActivityService.selectOne(id);
-            return ResultGenerator.getSuccessResult(volunteerActivity);
+            ActivityVo vo = new ActivityVo(volunteerActivity);
+            return ResultGenerator.getSuccessResult(vo);
         } catch (Exception exception) {
             exception.printStackTrace();
             log.info("系统异常：{}",exception.getMessage());

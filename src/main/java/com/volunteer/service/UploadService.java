@@ -13,5 +13,13 @@ public interface UploadService {
      * @return
      */
     String uploadVolunteerAvatar(String token, Volunteer volunteer, MultipartFile avatarImg);
+
+    /**
+     * 上传图片
+     *
+     * @param img
+     * @return
+     */
+    String uploadImg(MultipartFile img);
 }
 
