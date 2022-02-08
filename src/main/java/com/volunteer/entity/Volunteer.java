@@ -62,6 +62,12 @@ public class Volunteer implements Serializable {
     private String emailAddress;
 
     /**
+     * qq号
+     */
+    @ApiModelProperty(name="emailAddress",value = "用户邮箱",required = false,example = "xxxx@foxmail.com")
+    private String qqNumber;
+
+    /**
      * 学号
      */
     @ApiModelProperty(name="studentId",value = "用户的学号",required = true ,example = "18020333222")
@@ -156,26 +162,7 @@ public class Volunteer implements Serializable {
     @TableField(exist = false)
     private int pageSize;
 
-    /**
-     * 用户参加志愿活动总时长
-     */
-    @ApiModelProperty(name="activityTotaltime",value = "用户参加志愿活动的总时长",notes="不保存小数，向上取整",required = true,example = "4")
-    @TableField("activityTotaltime")
-    private Double activityTotaltime;
 
-    /**
-     * 用户参加志愿活动总次数
-     */
-    @ApiModelProperty(name="activityNumber",value = "用户参加志愿活动的总次数",required = true,example = "4")
-    @TableField("activityNumber")
-    private Integer activityNumber;
-
-    /**
-     * 用户借取爱心雨伞的时间
-     */
-    @ApiModelProperty(name="borrowUmbrellaDate",value = "用户借取爱心雨伞的时间",required = true,example = "2022年2月1日00:27:56")
-    @TableField("borrowUmbrellaDate")
-    private LocalDateTime borrowUmbrellaDate;
 
 
 }

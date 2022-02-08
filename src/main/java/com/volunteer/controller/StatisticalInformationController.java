@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * <p>
- * 前端控制器
+ * 志愿者活动信息统计
  * </p>
  *
  * @author xiaoyao
@@ -20,17 +20,16 @@ import org.springframework.web.bind.annotation.*;
  */
 @Api(tags = "志愿者信息统计模块")
 @RestController
-@RequestMapping("/volunteerStatisticalInformation")
+@RequestMapping("/staticInfo")
 public class StatisticalInformationController {
     @Autowired
-    private VolunteerStatisticalInformationService volunteerStatisticalInformationService;
+    private VolunteerStatisticalInformationService staticInfoService;
 
     @ApiOperation("查询接口")
-    @GetMapping("getselectVolunteerStaticalInformation")
+    @GetMapping("getStaticInfo")
     public Result getVolunteerStaticalInformation(@RequestParam int volunteerId) {
         try {
-            System.out.println(volunteerId);
-            VolunteerStatisticalInformation volunteerStatisticalInformation = volunteerStatisticalInformationService.selectVoluteerStaticalInformation(volunteerId);
+            VolunteerStatisticalInformation volunteerStatisticalInformation = staticInfoService.selectVoluteerStaticalInformation(volunteerId);
             return ResultGenerator.getSuccessResult(volunteerStatisticalInformation);
         } catch (Exception e) {
             e.printStackTrace();
@@ -39,10 +38,10 @@ public class StatisticalInformationController {
     }
 
     @ApiOperation("更新接口")
-    @PostMapping("/updateVolunteerStaticalInfo")
+    @PostMapping("/updateStaticInfo")
     public Result updateVolunteerStaticalInfo(@RequestBody AuditeActivityVo auditeActivity) {
         try {
-            volunteerStatisticalInformationService.updateVoluteerStaticalInformation(auditeActivity);
+            staticInfoService.updateVoluteerStaticalInformation(auditeActivity);
             return ResultGenerator.getSuccessResult();
         } catch (Exception e) {
             e.printStackTrace();

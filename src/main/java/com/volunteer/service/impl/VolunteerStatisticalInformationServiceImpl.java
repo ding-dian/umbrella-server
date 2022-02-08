@@ -49,9 +49,6 @@ public class VolunteerStatisticalInformationServiceImpl extends ServiceImpl<Volu
 
     /**
      * 通过志愿者id查询志愿者统计活动信息
-     *
-     * @param volunteerId
-     * @return
      */
     @Override
     public VolunteerStatisticalInformation selectVoluteerStaticalInformation(Integer volunteerId) {
@@ -76,9 +73,6 @@ public class VolunteerStatisticalInformationServiceImpl extends ServiceImpl<Volu
 
     /**
      * 活动结束后更新志愿者统计信息表
-     *
-     * @param auditeActivity
-     * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -109,6 +103,4 @@ public class VolunteerStatisticalInformationServiceImpl extends ServiceImpl<Volu
 
             }
         }
-
-
 }

@@ -2,8 +2,6 @@ package com.volunteer.service;
 
 
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -18,21 +16,20 @@ import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
  *  <p>
- * 与爱心雨伞终端东西实现类
+ * 与爱心雨伞终端通讯实现类，基于TCP协议
  * </p>
  *
  * @author: 梁峰源
  * @date: 2021/10/17 17:16
  */
-@Service
-@EnableScheduling//开启定时任务
+//@Service
+//@EnableScheduling//开启定时任务
 @Slf4j
 public class ClientService {
 
@@ -42,8 +39,8 @@ public class ClientService {
     private final String address = "192.168.1.200";//"192.168.1.200";127.0.0.1
     private final String port = "6005";//6004~6008
 
-    @Autowired//将后端数据推送到前端
-    private SimpMessagingTemplate simpMessagingTemplate;
+//    @Autowired//将后端数据推送到前端
+//    private SimpMessagingTemplate simpMessagingTemplate;
 
 
     /***
@@ -93,7 +90,7 @@ public class ClientService {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                        log.error("超过十次没有收到空数据,就退出");
+                        log.error("超过十次收到空数据,就退出");
                     }
                 }
             }

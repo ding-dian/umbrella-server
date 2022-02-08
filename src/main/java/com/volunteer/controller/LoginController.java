@@ -136,6 +136,7 @@ public class LoginController {
             volunteerService.update(updateWrapper);
             return ResultGenerator.getSuccessResult();
         } else {
+            log.info("手机号已经被绑定或用户未授权");
             return ResultGenerator.getFailResult("手机号已经被绑定或用户未授权");
         }
     }
@@ -159,8 +160,6 @@ public class LoginController {
         // 根据OpenId从数据库中获取数据,数据库中没有表示没有授权
         String openid = jsonObject.getStr("openid");
         Volunteer volunteer = volunteerService.getByOpenId(openid);
-        log.info("================");
-        log.info(volunteer.toString());
         // 如果用户没有授权过
         if (Objects.isNull(volunteer)) {
             log.info("用户不存在，openid:{}", openid);

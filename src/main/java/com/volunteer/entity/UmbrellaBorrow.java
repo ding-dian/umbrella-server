@@ -19,10 +19,10 @@ import java.util.Date;
 /**
  * @author: 梁峰源
  * @date: 2022/1/26 17:12
- * Description: 雨伞借阅记录
+ * Description: 雨伞借阅历史记录
  */
 @Data
-@ApiModel(value = "雨伞借阅记录", description = "用来封装雨伞借阅情况")
+@ApiModel(value = "雨伞借阅历史记录", description = "用来封装雨伞借阅情况")
 @Accessors(chain = true)//开启链式编程
 @EqualsAndHashCode(callSuper = false)
 public class UmbrellaBorrow implements Serializable {
@@ -40,32 +40,39 @@ public class UmbrellaBorrow implements Serializable {
      * 用户的openID
      */
     @ApiModelProperty(name = "openID", value = "用户的openID", required = true, example = "+7BfWy6IijmcZFO4Ac8fjmAvS8=")
-    @TableField("openID")
+    @TableField("openid")
     private String openID;
 
     /**
      * 用户的借阅时间
      */
     @ApiModelProperty(name = "borrowDate", value = "用户的借阅时间", required = true, example = "2022-5-4 11:00:00")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")//输入的时间格式
-    @JsonFormat(pattern = DataFormats.VO_FORMAT)//输出的时间格式，会自动转换
-    @TableField("borrowDate")
+    @DateTimeFormat(pattern = DataFormats.VO_FORMAT)//输入的时间格式
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DataFormats.VO_FORMAT, timezone = "GMT+8")//输出的时间格式，会自动转换
+    @TableField("borrow_date")
     private LocalDateTime borrowDate;
 
     /**
      * 用户归还时间
      */
     @ApiModelProperty(name = "borrowDate", value = "用户的借阅时间", required = true, example = "2022-5-4 11:00:00")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")//输入的时间格式
-    @JsonFormat(pattern = DataFormats.VO_FORMAT)//输出的时间格式，会自动转换
-    @TableField("returnDate")
+    @DateTimeFormat(pattern = DataFormats.VO_FORMAT)//输入的时间格式
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DataFormats.VO_FORMAT, timezone = "GMT+8")//输出的时间格式，会自动转换
+    @TableField("return_date")
     private LocalDateTime returnDate;
 
     /**
-     * 该条记录的归还情况，0表示归还、1表示未归还
+     * 用户借伞时长
+     */
+    @ApiModelProperty(name = "borrowDuration", value = "用户借伞时长", required = true, example = "4.5")
+    @TableField("borrow_durations")
+    private Double borrowDurations;
+
+    /**
+     * 该条记录的归还情况，1表示归还、0表示未归还
      */
     @ApiModelProperty(name = "borrowStatus", value = "用户归还状态，0表示已归还，1表示未归还", required = true, example = "0")
-    @TableField("borrowStatus")
+    @TableField("borrow_status")
     private Integer borrowStatus;
 
     /**
