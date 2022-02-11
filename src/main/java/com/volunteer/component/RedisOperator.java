@@ -7,7 +7,6 @@ import java.util.concurrent.TimeUnit;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import com.volunteer.entity.Volunteer;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -75,6 +74,13 @@ public class RedisOperator {
      */
     public void del(String key) {
         redisTemplate.delete(key);
+    }
+
+    /**
+     * 判断key是否存在
+     */
+    public Boolean exists(String key){
+        return redisTemplate.hasKey(key);
     }
 
     // String（字符串）

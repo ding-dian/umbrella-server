@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- *
+ *  获取志愿者参加活动次数、志愿总时长等信息
  * </p>
  *
  * @author xiaoyao
@@ -36,31 +36,50 @@ public class VolunteerStatisticalInformation implements Serializable {
     /**
      * 志愿者id
      */
+    @ApiModelProperty(name = "openID", value = "志愿者ID", required = true, example = "1")
     private Integer volunteerId;
 
     /**
      * 志愿者总时长
      */
-    @ApiModelProperty(hidden = true)
+    @ApiModelProperty(name = "volunteerDurations", value = "志愿者活动总时长", required = true, example = "4.5")
+    @TableField("volunteer_durations")
     private BigDecimal volunteerDurations;
 
     /**
      * 志愿者总积分
      */
+    @ApiModelProperty(name = "volunteerPoints", value = "志愿者活动总积分", required = true, example = "30")
     @TableField("volunteer_points")
-    @ApiModelProperty(hidden = true)
     private Integer volunteerPoints;
 
-    @ApiModelProperty(hidden = true)
+    /**
+     * 志愿者参加活动总次数
+     */
+    @ApiModelProperty(name = "activityNumbers", value = "志愿者参加活动总次数", required = true, example = "2")
+    @TableField("activity_numbers")
     private Integer activityNumbers;
 
-    @ApiModelProperty(hidden = true)
+    /**
+     * 该条记录创建时间
+     */
+    @ApiModelProperty(name = "createAt", value = "该条记录创建时间", required = true, example = "2021-12-13 13:54:50")
+    @TableField("create_at")
     private LocalDateTime createAt;
+
+    /**
+     * 用户借取雨伞总时长
+     */
+    @ApiModelProperty(name = "umbrellaBorrowDurations", value = "用户借取雨伞总时长", required = true, example = "7.5")
+    @TableField("umbrella_borrow_durations")
+    private BigDecimal umbrellaBorrowDurations;
+
 
     /**
      * 0未删除 1已删除
      */
-    @ApiModelProperty(hidden = true)
+    @ApiModelProperty(name = "deleted", value = "0未删除 1已删除", required = true, example = "0")
+    @TableField("deleted")
     private Integer deleted;
 
     /**

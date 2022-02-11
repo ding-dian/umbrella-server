@@ -62,6 +62,12 @@ public class Volunteer implements Serializable {
     private String emailAddress;
 
     /**
+     * qq号
+     */
+    @ApiModelProperty(name="emailAddress",value = "用户邮箱",required = false,example = "xxxx@foxmail.com")
+    private String qqNumber;
+
+    /**
      * 学号
      */
     @ApiModelProperty(name="studentId",value = "用户的学号",required = true ,example = "18020333222")

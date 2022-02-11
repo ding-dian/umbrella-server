@@ -7,6 +7,8 @@ import com.volunteer.entity.UmbrellaBorrow;
 import com.volunteer.entity.Volunteer;
 import io.swagger.models.auth.In;
 
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * <p>
  * 爱心雨伞服务类
@@ -35,16 +37,16 @@ public interface UmbrellaBorrowService extends IService<UmbrellaBorrow> {
 
     /**
      * 根据用户信息借取雨伞，添加借阅记录
-     * 软件方面：借阅需要修改两张表(umbrella_borrow、volunteer)，为事务操作，修改必须同时成功，若否需要回滚字段
+     * 软件方面：借阅情况需要存入redis中
      * 硬件方面：需要硬件传回确认回复才完成一次借取操作
      * @param volunteer 用户
      * @return 1 success<br>other false
      */
-    Integer borrowByVolunteer(Volunteer volunteer);
+    Integer borrowByVolunteer(Volunteer volunteer) throws InvocationTargetException, IllegalAccessException;
 
     /**
      * 根据用户归还雨伞，添加归还记录
-     * 软件方面：归还雨伞需要修改两张表(umbrella_borrow、volunteer)，为事务操作，修改必须同时成功，若否需要回滚字段
+     * 软件方面：将redis中记录删除，并将一次记录情况存入数据库，需要修改一张表(umbrella_borrow)
      * 硬件方面：需要硬件传回确认回复才完成一次归还雨伞操作
      * @param volunteer 用户
      * @return 1 success<br>other false

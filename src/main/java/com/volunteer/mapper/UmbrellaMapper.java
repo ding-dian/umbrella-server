@@ -12,7 +12,6 @@ import org.springframework.stereotype.Repository;
  * @date: 2022/1/26 11:55
  * Description: 爱心雨伞数据库交互Mapper
  */
-@Repository
 public interface UmbrellaMapper extends BaseMapper<UmbrellaBorrow> {
 
 }

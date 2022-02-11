@@ -207,9 +207,7 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
                     .setNickName(jsonObject.getStr("nickName"))
                     .setGender(jsonObject.getInt("gender"))
                     .setAvatarUrl(jsonObject.getStr("avatarUrl"))
-                    .setCreateAt(LocalDateTime.now())
-                    .setActivityNumber(jsonObject.getInt("activity_number"))
-                    .setActivityTotaltime(jsonObject.getDouble("activity_totaltime"));
+                    .setCreateAt(LocalDateTime.now());
             if (baseMapper.insert(volunteer) == 0) {
                 log.info("志愿者新增异常");
                 return null;

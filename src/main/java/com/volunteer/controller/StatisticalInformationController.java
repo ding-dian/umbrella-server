@@ -14,7 +14,7 @@ import java.util.Objects;
 
 /**
  * <p>
- * 前端控制器
+ * 志愿者活动信息统计
  * </p>
  *
  * @author xiaoyao
@@ -22,10 +22,10 @@ import java.util.Objects;
  */
 @Api(tags = "志愿者信息统计模块")
 @RestController
-@RequestMapping("/volunteerStatisticalInformation")
+@RequestMapping("/staticInfo")
 public class StatisticalInformationController {
     @Autowired
-    private VolunteerStatisticalInformationService volunteerStatisticalInformationService;
+    private VolunteerStatisticalInformationService staticInfoService;
 
     @ApiOperation("查询接口")
     @GetMapping("/getById/{volunteerId}")
@@ -40,10 +40,10 @@ public class StatisticalInformationController {
     }
 
     @ApiOperation("更新接口")
-    @PostMapping("/updateVolunteerStaticalInfo")
+    @PostMapping("/updateStaticInfo")
     public Result updateVolunteerStaticalInfo(@RequestBody AuditeActivityVo auditeActivity) {
         try {
-            volunteerStatisticalInformationService.updateVoluteerStaticalInformation(auditeActivity);
+            staticInfoService.updateVoluteerStaticalInformation(auditeActivity);
             return ResultGenerator.getSuccessResult();
         } catch (Exception e) {
             e.printStackTrace();
