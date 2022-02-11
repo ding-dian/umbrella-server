@@ -31,13 +31,11 @@ public class VolunteerStatisticalInformation implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
-    @ApiModelProperty(hidden = true)
     private Integer id;
 
     /**
      * 志愿者id
      */
-    @ApiModelProperty(hidden = true)
     private Integer volunteerId;
 
     /**
@@ -65,5 +63,16 @@ public class VolunteerStatisticalInformation implements Serializable {
     @ApiModelProperty(hidden = true)
     private Integer deleted;
 
+    /**
+     * 页号
+     */
+    @TableField(exist = false)
+    private int pageNo;
+
+    /**
+     * 每页大小
+     */
+    @TableField(exist = false)
+    private int pageSize;
 
 }

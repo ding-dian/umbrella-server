@@ -115,3 +115,7 @@ xxl:
       logpath: /data/apploggs/xxl-job/jobhandler
       logretentiondays: 30
     accessToken:
+
+##爱心雨伞默认数据
+umbrella:
+  umbrellaBorrowRecordPageSize: 20 #爱心雨伞借阅记录默认返回条数

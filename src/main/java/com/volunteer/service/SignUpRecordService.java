@@ -1,9 +1,10 @@
 package com.volunteer.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.volunteer.entity.SignUpRecord;
-import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.vo.SignUpListVo;
+import com.volunteer.entity.vo.SignUpRecordVo;
 import com.volunteer.entity.vo.SignUpVo;
 
 import java.util.List;
@@ -42,5 +43,17 @@ public interface SignUpRecordService extends IService<SignUpRecord> {
      * @param activityId
      * @return
      */
-    List<SignUpListVo> getSignUpList(Integer activityId);
+    List<SignUpListVo> getSignUpListByActivityId(Integer activityId);
+
+    /**
+     * 分页查询报名列表
+     * @return
+     */
+    Page<SignUpRecordVo> getList(SignUpRecordVo signUpRecordVo);
+
+    /**
+     * 根据ID删除报名信息
+     * @param id
+     */
+    void deleteRecordById(Integer id);
 }

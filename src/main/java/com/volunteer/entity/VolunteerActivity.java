@@ -17,6 +17,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 /**
  * <p>
@@ -73,7 +74,7 @@ public class VolunteerActivity implements Serializable {
     /**
      * 活动参加人数
      */
-    @ApiModelProperty(name = "numberOfAttendees",value = "活动已经报名的人数",required = true,example = "5")
+    @ApiModelProperty(name = "numberOfAttendees",value = "活动已经报名的人数",required = true,example = "0")
     @TableField("number_of_attendees")
     private Integer numberOfAttendees;
 
@@ -167,6 +168,18 @@ public class VolunteerActivity implements Serializable {
     private Double actualDuration;
 
     /**
+     * 联系人
+     */
+    @TableField("contact_name")
+    private String contactName;
+
+    /**
+     * 联系电话
+     */
+    @TableField("contact_number")
+    private String contactNumber;
+
+    /**
      * 页号
      */
     @TableField(exist = false)
@@ -185,5 +198,8 @@ public class VolunteerActivity implements Serializable {
     public void setEndTime(String endTime) {
 
         this.endTime = LocalDateTimeUtil.parse(endTime, DataFormats.VO_FORMAT);
+    }
+
+    public VolunteerActivity() {
     }
 }

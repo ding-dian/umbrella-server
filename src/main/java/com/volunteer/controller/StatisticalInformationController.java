@@ -10,6 +10,8 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Objects;
+
 /**
  * <p>
  * 前端控制器
@@ -26,10 +28,9 @@ public class StatisticalInformationController {
     private VolunteerStatisticalInformationService volunteerStatisticalInformationService;
 
     @ApiOperation("查询接口")
-    @GetMapping("getselectVolunteerStaticalInformation")
-    public Result getVolunteerStaticalInformation(@RequestParam int volunteerId) {
+    @GetMapping("/getById/{volunteerId}")
+    public Result getVolunteerStaticalInformation(@PathVariable int volunteerId) {
         try {
-            System.out.println(volunteerId);
             VolunteerStatisticalInformation volunteerStatisticalInformation = volunteerStatisticalInformationService.selectVoluteerStaticalInformation(volunteerId);
             return ResultGenerator.getSuccessResult(volunteerStatisticalInformation);
         } catch (Exception e) {
@@ -49,6 +50,23 @@ public class StatisticalInformationController {
             return ResultGenerator.getFailResult(e.getMessage());
         }
 
+    }
+
+    @ApiOperation("列表查询接口")
+    @GetMapping("/getList")
+    public Result getList(VolunteerStatisticalInformation params) {
+        try {
+            if (Objects.isNull(params.getPageNo())) {
+                params.setPageNo(1);
+            }
+            if (Objects.isNull(params.getPageSize())) {
+                params.setPageSize(10);
+            }
+            return ResultGenerator.getSuccessResult(volunteerStatisticalInformationService.getList(params));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultGenerator.getFailResult(e.getMessage());
+        }
     }
 }
 

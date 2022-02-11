@@ -1,5 +1,6 @@
 package com.volunteer.entity.vo;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.volunteer.entity.VolunteerActivity;
 import lombok.Data;
 
@@ -80,6 +81,16 @@ public class ActivityVo {
      */
     private Double actualDuration;
 
+    /**
+     * 联系人
+     */
+    private String contactName;
+
+    /**
+     * 联系电话
+     */
+    private String contactNumber;
+
     public ActivityVo(VolunteerActivity activity) {
         this.id = activity.getId();
         this.activityName = activity.getActivityName();
@@ -95,5 +106,7 @@ public class ActivityVo {
         this.isAudited = activity.getIsAudited();
         this.predictDuration = activity.getPredictDuration();
         this.actualDuration = activity.getActualDuration();
+        this.contactName = activity.getContactName();
+        this.contactNumber = activity.getContactNumber();
     }
 }

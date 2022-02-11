@@ -49,7 +49,7 @@ public class VolunteerActivityServiceImpl extends ServiceImpl<VolunteerActivityM
     @Override
     public int createActivity(VolunteerActivity volunteerActivity) throws Exception {
         System.out.println(volunteerActivity);
-
+        LocalDateTime now = LocalDateTime.now();
         //如果志愿者活动不为空
         if (volunteerActivity != null) {
             //判断活动必须项是否为空
@@ -71,7 +71,7 @@ public class VolunteerActivityServiceImpl extends ServiceImpl<VolunteerActivityM
             if (volunteerActivity.getEndTime().isBefore(volunteerActivity.getStartTime())) {
                 throw new RuntimeException("志愿者活动结束时间不能早于开始时间");
             }
-            if (volunteerActivity.getStartTime().isBefore(LocalDateTime.now())) {
+            if (volunteerActivity.getStartTime().isBefore(now)) {
                 throw new RuntimeException("志愿者活动开始时间不能早于当前时间");
             }
 //            if (volunteerActivity.getPredictDuration() < 0 || volunteerActivity.getPredictDuration() > 12) {
@@ -81,9 +81,9 @@ public class VolunteerActivityServiceImpl extends ServiceImpl<VolunteerActivityM
             /**
              * 设置活动状态和奖励积分
              */
-//            volunteerActivity.setRewardPoints(5);
-//            volunteerActivity.setStatus("01");
-            volunteerActivity.setCreateAt(LocalDateTime.now());
+            initStatus(volunteerActivity,now);
+            volunteerActivity.setCreateBy("admin");
+            volunteerActivity.setCreateAt(now);
             baseMapper.insert(volunteerActivity);
             return 1;
         } else {
@@ -241,8 +241,6 @@ public class VolunteerActivityServiceImpl extends ServiceImpl<VolunteerActivityM
         /**
          * 俩个参数 pageNo 当前页 pageSize 页大小
          */
-
-        log.info("pageNo:【{}】，pageSize:【{}】", volunteerActivity.getPageNo(), volunteerActivity.getPageSize());
         Page<VolunteerActivity> page = new Page<>();
         page.setCurrent(volunteerActivity.getPageNo()).setSize(volunteerActivity.getPageSize());
         return baseMapper.selectPage(page, queryWrapper);
@@ -331,20 +329,24 @@ public class VolunteerActivityServiceImpl extends ServiceImpl<VolunteerActivityM
             LocalDateTime now = LocalDateTime.now();
             List<VolunteerActivity> activities = selectPage.getRecords();
             for (VolunteerActivity item : activities) {
-                if (item.getStartTime().isAfter(now)) {
-                    // now < startTime < endTime 还没开始
-                    item.setStatus(ActivityStatus.NOT_STARTED);
-                } else if (item.getEndTime().isAfter(now)){
-                    // startTime < now < endTime 正在进行中
-                    item.setStatus(ActivityStatus.ON_GOING);
-                } else {
-                    // startTime < endTime < now 已结束
-                    item.setStatus(ActivityStatus.FINISHED);
-                }
+                initStatus(item,now);
             }
             // 批量更新
             baseMapper.updateStatus(activities);
             pageNo++;
         } while (pageNo * pageSize < selectPage.getTotal());
+    }
+
+    private void initStatus(VolunteerActivity volunteerActivity,LocalDateTime now) {
+        if (volunteerActivity.getStartTime().isAfter(now)) {
+            // now < startTime < endTime 还没开始
+            volunteerActivity.setStatus(ActivityStatus.NOT_STARTED);
+        } else if (volunteerActivity.getEndTime().isAfter(now)){
+            // startTime < now < endTime 正在进行中
+            volunteerActivity.setStatus(ActivityStatus.ON_GOING);
+        } else {
+            // startTime < endTime < now 已结束
+            volunteerActivity.setStatus(ActivityStatus.FINISHED);
+        }
     }
 }

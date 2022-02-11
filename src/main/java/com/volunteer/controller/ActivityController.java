@@ -52,15 +52,17 @@ public class ActivityController {
     @PostMapping("/createActivity")
     public Result createActivity(@RequestBody VolunteerActivity volunteerActivity){
         try {
-            int result = volunteerActivityService.createActivity( volunteerActivity);
+//            VolunteerActivity volunteerActivity = new VolunteerActivity(volunteerActivityMap);
+            int result = volunteerActivityService.createActivity(volunteerActivity);
             if (result == 1){
                 return ResultGenerator.getSuccessResult("活动添加成功");
             }else {
                 return ResultGenerator.getFailResult("请检查活动");
             }
         } catch (Exception exception) {
+            exception.printStackTrace();
             log.error("系统异常：{}",exception.getMessage());
-            return ResultGenerator.getSuccessResult(exception.getMessage());
+            return ResultGenerator.getFailResult(exception.getMessage());
         }
 
     }
@@ -72,7 +74,7 @@ public class ActivityController {
      */
     @ApiOperation(value = "活动删除接口")
     @PostMapping("/deleteActivity")
-    public Result deleteActivity(@RequestBody Integer id){
+    public Result deleteActivity(Integer id){
         try {
             volunteerActivityService.deleteActivity(id);
             return ResultGenerator.getSuccessResult();
@@ -152,9 +154,11 @@ public class ActivityController {
     @ApiOperation(value = "活动更新接口")
     public Result updateActivity(@RequestBody VolunteerActivity volunteerActivity){
         try {
+//            VolunteerActivity volunteerActivity = new VolunteerActivity(volunteerActivityMap);
             int date= volunteerActivityService.updateActivity(volunteerActivity);
             return ResultGenerator.getSuccessResult(date);
         } catch (Exception exception) {
+            exception.printStackTrace();
             log.error("系统异常：{}",exception.getMessage());
             return ResultGenerator.getFailResult(exception.getMessage());
         }
@@ -211,7 +215,7 @@ public class ActivityController {
     @GetMapping("/getSignUpList")
     public Result getSignUpList(Integer activityId) {
         try {
-            List<SignUpListVo> signUpList = signUpRecordService.getSignUpList(activityId);
+            List<SignUpListVo> signUpList = signUpRecordService.getSignUpListByActivityId(activityId);
             return ResultGenerator.getSuccessResult(signUpList);
         } catch (Exception e) {
             e.printStackTrace();

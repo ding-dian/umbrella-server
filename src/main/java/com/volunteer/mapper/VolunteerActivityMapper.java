@@ -1,5 +1,6 @@
 package com.volunteer.mapper;
 
+import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.VolunteerActivity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
@@ -20,4 +21,11 @@ public interface VolunteerActivityMapper extends BaseMapper<VolunteerActivity> {
      * @return
      */
     int updateStatus(List<VolunteerActivity> list);
+
+    /**
+     * 根据活动名称查询
+     * @param name
+     * @return
+     */
+    VolunteerActivity selectByName(String name);
 }

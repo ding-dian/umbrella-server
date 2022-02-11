@@ -43,5 +43,8 @@
             </if>
         </foreach>
     </update>
+    <select id="selectByName" resultType="com.volunteer.entity.VolunteerActivity">
+        select * from volunteer_activity where activity_name = #{name}
+    </select>
 
 </mapper>

@@ -20,6 +20,9 @@
     <select id="selectByOpenid" resultType="com.volunteer.entity.Volunteer">
         select * from volunteer where openid = #{openid}
     </select>
+    <select id="selectByName" resultType="com.volunteer.entity.Volunteer">
+        select * from volunteer where name = #{name}
+    </select>
 
     <update id="updateUserPhoneNumber" parameterType="com.volunteer.entity.Volunteer">
         update volunteer set phone_number=#{borrowDate}   where openid=#{openid};

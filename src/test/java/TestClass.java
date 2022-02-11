@@ -342,7 +342,7 @@ public class TestClass {
 
     @Test
     public void testSignUpRecordService() {
-        System.out.println(signUpRecordService.getSignUpList(18));
+        System.out.println(signUpRecordService.getSignUpListByActivityId(18));
     }
 
     @Test

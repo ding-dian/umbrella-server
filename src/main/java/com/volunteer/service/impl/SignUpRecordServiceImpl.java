@@ -1,11 +1,12 @@
 package com.volunteer.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.volunteer.component.RedisOperator;
 import com.volunteer.entity.SignUpRecord;
@@ -13,6 +14,7 @@ import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.VolunteerActivity;
 import com.volunteer.entity.common.SignUpStatus;
 import com.volunteer.entity.vo.SignUpListVo;
+import com.volunteer.entity.vo.SignUpRecordVo;
 import com.volunteer.entity.vo.SignUpVo;
 import com.volunteer.mapper.SignUpRecordMapper;
 import com.volunteer.mapper.VolunteerActivityMapper;
@@ -25,11 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -133,7 +132,7 @@ public class SignUpRecordServiceImpl extends ServiceImpl<SignUpRecordMapper, Sig
     }
 
     @Override
-    public List<SignUpListVo> getSignUpList(Integer activityId) {
+    public List<SignUpListVo> getSignUpListByActivityId(Integer activityId) {
         if (Objects.nonNull(activityId)) {
             LambdaQueryWrapper<SignUpRecord> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.eq(SignUpRecord::getVolunteerActivityId,activityId);
@@ -159,4 +158,62 @@ public class SignUpRecordServiceImpl extends ServiceImpl<SignUpRecordMapper, Sig
         return Collections.emptyList();
     }
 
+    /**
+     * 根据ID删除报名信息
+     *
+     * @param id
+     */
+    @Override
+    public void deleteRecordById(Integer id) {
+        // 更新活动的报名人数
+        VolunteerActivity activity = volunteerActivityMapper.selectById(baseMapper.selectById(id).getVolunteerActivityId());
+        activity.setNumberOfAttendees(activity.getNumberOfAttendees() - 1);
+        baseMapper.deleteById(id);
+    }
+
+    /**
+     * 分页查询报名列表
+     */
+    @Override
+    public Page<SignUpRecordVo> getList(SignUpRecordVo signUpRecordVo) {
+        LambdaQueryWrapper<SignUpRecord> queryWrapper = new LambdaQueryWrapper<>();
+        Volunteer volunteer;
+        VolunteerActivity volunteerActivity;
+        if (StringUtils.isNotEmpty(signUpRecordVo.getVolunteerName())) {
+            // 根据姓名查询
+            List<Volunteer> volunteers = volunteerMapper.selectList(new LambdaQueryWrapper<Volunteer>().eq(Volunteer::getName, signUpRecordVo.getVolunteerName()));
+            if (CollectionUtil.isNotEmpty(volunteers)) {
+                queryWrapper.in(SignUpRecord::getVolunteerId, volunteers.stream().map(Volunteer::getId).collect(Collectors.toList()));
+            }
+        }
+        if (StringUtils.isNotEmpty(signUpRecordVo.getActivityName())) {
+            // 根据活动名查询
+            List<VolunteerActivity> activities = volunteerActivityMapper.selectList(new LambdaQueryWrapper<VolunteerActivity>().eq(VolunteerActivity::getActivityName, signUpRecordVo.getActivityName()));
+            if (CollectionUtil.isNotEmpty(activities)) {
+                queryWrapper.in(SignUpRecord::getVolunteerActivityId, activities.stream().map(VolunteerActivity::getId).collect(Collectors.toList()));
+            }
+        }
+        Page<SignUpRecord> page = new Page<>(signUpRecordVo.getPageNo(), signUpRecordVo.getPageSize());
+        IPage<SignUpRecord> selectPage = baseMapper.selectPage(page, queryWrapper);
+        List<SignUpRecordVo> resultList = new LinkedList<>();
+        for (SignUpRecord item : selectPage.getRecords()) {
+            SignUpRecordVo vo = new SignUpRecordVo();
+            volunteer = volunteerMapper.selectById(item.getVolunteerId());
+            if (Objects.nonNull(volunteer)) {
+                vo.setVolunteerName(volunteer.getName());
+            }
+            volunteerActivity = volunteerActivityMapper.selectById(item.getVolunteerActivityId());
+            if (Objects.nonNull(volunteerActivity)) {
+                vo.setActivityName(volunteerActivity.getActivityName()).setStatus(volunteerActivity.getStatus());
+            }
+            if (Objects.nonNull(item.getCreateAt())) {
+                vo.setCreateAt(item.getCreateAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            }
+            vo.setId(item.getId());
+            resultList.add(vo);
+        }
+        Page<SignUpRecordVo> result = new Page<>(selectPage.getCurrent(), selectPage.getSize(), selectPage.getTotal());
+        result.setRecords(resultList);
+        return result;
+    }
 }
