@@ -1,5 +1,6 @@
 package com.volunteer.entity.vo;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
@@ -10,6 +11,12 @@ import lombok.Data;
  */
 @Data
 public class SignUpListVo {
+
+    /**
+     * id
+     */
+    private Integer id;
+
     /**
      * 头像
      */
@@ -19,4 +26,9 @@ public class SignUpListVo {
      * 报名日期
      */
     private String Date;
+
+    /**
+     * 是否签到【0:未签到，1:已签到】
+     */
+    private Integer isSignIn;
 }

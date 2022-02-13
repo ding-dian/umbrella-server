@@ -146,6 +146,8 @@ public class SignUpRecordServiceImpl extends ServiceImpl<SignUpRecordMapper, Sig
                             vo.setDate(createAt.format(dateTimeFormatter));
                         }
                         vo.setAvatar(volunteer.getAvatarUrl());
+                        vo.setId(volunteer.getId());
+                        vo.setIsSignIn(record.getIsSignIn());
                         result.add(vo);
                     }
                 });
