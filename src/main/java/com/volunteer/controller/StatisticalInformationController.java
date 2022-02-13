@@ -31,7 +31,7 @@ public class StatisticalInformationController {
     @GetMapping("/getById/{volunteerId}")
     public Result getVolunteerStaticalInformation(@PathVariable int volunteerId) {
         try {
-            VolunteerStatisticalInformation volunteerStatisticalInformation = volunteerStatisticalInformationService.selectVoluteerStaticalInformation(volunteerId);
+            VolunteerStatisticalInformation volunteerStatisticalInformation = staticInfoService.selectVoluteerStaticalInformation(volunteerId);
             return ResultGenerator.getSuccessResult(volunteerStatisticalInformation);
         } catch (Exception e) {
             e.printStackTrace();
@@ -62,7 +62,7 @@ public class StatisticalInformationController {
             if (Objects.isNull(params.getPageSize())) {
                 params.setPageSize(10);
             }
-            return ResultGenerator.getSuccessResult(volunteerStatisticalInformationService.getList(params));
+            return ResultGenerator.getSuccessResult(staticInfoService.getList(params));
         } catch (Exception e) {
             e.printStackTrace();
             return ResultGenerator.getFailResult(e.getMessage());

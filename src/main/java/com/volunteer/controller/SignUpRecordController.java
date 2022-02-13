@@ -63,6 +63,7 @@ public class SignUpRecordController {
         }
     }
 
+    /// TODO 小程序端完成活动取消报名功能，将‘已报名’改为‘取消报名’即可
     /**
      * 志愿者取消报名志愿活动接口
      *

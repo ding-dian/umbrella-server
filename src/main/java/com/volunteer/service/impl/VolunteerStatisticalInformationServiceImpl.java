@@ -115,4 +115,16 @@ public class VolunteerStatisticalInformationServiceImpl extends ServiceImpl<Volu
         Page<VolunteerStatisticalInformation> page = new Page<>(params.getPageNo(),params.getPageSize());
         return baseMapper.selectPage(page,queryWrapper);
     }
+
+    /**
+     * 更新志愿者统计信息
+     *
+     * @param volunteerId
+     * @param activity
+     */
+    @Override
+    public int update(Integer volunteerId, VolunteerActivity activity) {
+        /// TODO 对于已结束未审核的活动（刚结束的活动），更新参加的志愿者的统计信息
+        return 0;
+    }
 }

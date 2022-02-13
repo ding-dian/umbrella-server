@@ -187,9 +187,12 @@ public class ActivityController {
         }
     }
 
+    /**
+     * 根据活动状态查询活动列表
+     */
     @PostMapping("/findListByStutas")
     @ApiOperation(
-            value = "活动状态分页查询接口",
+            value = "根据活动状态分页查询接口",
             notes = "分页查询活动进行的状态，状态【00:进行中，01:未开始，02:已结束】",
             produces = "application/json",//用户请求数据类型
             consumes = "application/json")//用户响应数据类型
@@ -211,7 +214,10 @@ public class ActivityController {
         }
     }
 
-    @ApiOperation(value = "获取最近报名的")
+    /**
+     * 获取报名列表
+     */
+    @ApiOperation(value = "报名列表查询接口")
     @GetMapping("/getSignUpList")
     public Result getSignUpList(Integer activityId) {
         try {
@@ -224,10 +230,11 @@ public class ActivityController {
     }
 
     /**
-     * 更新活动状态的接口
+     * 活动状态更新接口
      *
      * @return
      */
+    @ApiOperation(value = "活动状态更新接口")
     @PostMapping("/updateStatus")
     public Result updateActivityStatus() {
         try {
@@ -237,6 +244,25 @@ public class ActivityController {
             return ResultGenerator.getFailResult("服务器异常: " + e.getMessage(), HttpStatus.HTTP_INTERNAL_ERROR);
         }
         return ResultGenerator.getSuccessResult();
+    }
+
+    /**
+     * 活动签到接口
+     */
+    @ApiOperation(value = "活动签到接口")
+    @PostMapping("/signIn")
+    public Result signIn(@RequestParam("volunteerId") Integer volunteerId,@RequestParam("activityId") Integer activityId) {
+        try {
+            boolean success = volunteerActivityService.signIn(volunteerId, activityId);
+            if (success) {
+                return ResultGenerator.getSuccessResult("报名成功");
+            } else {
+                return ResultGenerator.getFailResult("报名失败");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultGenerator.getFailResult(e.getMessage());
+        }
     }
 }
 

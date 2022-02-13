@@ -196,7 +196,6 @@ public class VolunteerActivity implements Serializable {
     }
 
     public void setEndTime(String endTime) {
-
         this.endTime = LocalDateTimeUtil.parse(endTime, DataFormats.VO_FORMAT);
     }
 

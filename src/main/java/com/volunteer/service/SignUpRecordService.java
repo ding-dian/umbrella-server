@@ -56,4 +56,14 @@ public interface SignUpRecordService extends IService<SignUpRecord> {
      * @param id
      */
     void deleteRecordById(Integer id);
+
+    /**
+     * 检查是否报名
+     */
+    boolean checkForRegistration(Integer volunteerId,Integer activityId);
+
+    /**
+     * 根据志愿者和活动ID获取报名记录
+     */
+    SignUpRecord getRecord(Integer volunteerId,Integer activityId);
 }

@@ -60,5 +60,10 @@ public class SignUpRecord implements Serializable {
     @ApiModelProperty(hidden = true)
     private LocalDateTime createAt;
 
+    /**
+     * 是否签到【0:未签到，1:已签到】
+     */
+    @ApiModelProperty(hidden = true)
+    private Integer isSignIn;
 
 }

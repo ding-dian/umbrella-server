@@ -87,4 +87,9 @@ public interface VolunteerActivityService extends IService<VolunteerActivity> {
      * 刚更新活动状态
      */
     void updateActivityStatus();
+
+    /**
+     * 活动签到
+     */
+    boolean signIn(Integer volunteerId, Integer activityId);
 }

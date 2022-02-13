@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.volunteer.entity.SignUpRecord;
 import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.VolunteerActivity;
 import com.volunteer.entity.common.ActivityStatus;
@@ -14,10 +15,12 @@ import com.volunteer.entity.vo.ActivityListItemVo;
 import com.volunteer.entity.vo.ActivityListVo;
 import com.volunteer.entity.vo.AuditeActivityVo;
 import com.volunteer.mapper.VolunteerActivityMapper;
+import com.volunteer.service.SignUpRecordService;
 import com.volunteer.service.VolunteerActivityService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.volunteer.util.AES;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +41,12 @@ import java.util.Objects;
 @Service
 @Slf4j
 public class VolunteerActivityServiceImpl extends ServiceImpl<VolunteerActivityMapper, VolunteerActivity> implements VolunteerActivityService {
+
+    @Autowired
+    private SignUpRecordService signUpRecordService;
+
+    @Autowired
+    private VolunteerActivityService volunteerActivityService;
 
     /**
      * 创建一个志愿者活动
@@ -319,8 +328,9 @@ public class VolunteerActivityServiceImpl extends ServiceImpl<VolunteerActivityM
         long pageNo = 1;
         LambdaQueryWrapper<VolunteerActivity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(VolunteerActivity::getDeleted, 0);
-        Page<VolunteerActivity> page = page = new Page<>();
+        Page<VolunteerActivity> page = new Page<>();
         IPage<VolunteerActivity> selectPage;
+        /// TODO 对于已结束未审核的活动（刚结束的活动），更新参加的志愿者的统计信息
         do {
             // 分页查询，一次查询100条
             page.setCurrent(pageNo).setSize(pageSize);
@@ -347,6 +357,35 @@ public class VolunteerActivityServiceImpl extends ServiceImpl<VolunteerActivityM
         } else {
             // startTime < endTime < now 已结束
             volunteerActivity.setStatus(ActivityStatus.FINISHED);
+        }
+    }
+
+    /**
+     * 活动签到
+     *
+     * @param volunteerId
+     * @param activityId
+     */
+    @Override
+    public boolean signIn(Integer volunteerId, Integer activityId) {
+        SignUpRecord signUpRecord = signUpRecordService.getRecord(volunteerId, activityId);
+        // 检查是否报名
+        if (Objects.nonNull(signUpRecord)) {
+            // 检查活动是否正在进行
+            VolunteerActivity volunteerActivity = volunteerActivityService.selectOne(activityId);
+            LocalDateTime now = LocalDateTime.now();
+            if (volunteerActivity.getStartTime().isAfter(now)) {
+                throw new RuntimeException("请在活动开始后进行签到");
+            }
+            if (volunteerActivity.getEndTime().isBefore(now)) {
+                throw new RuntimeException("该活动已结束");
+            }
+            // 签到成功，更新签到状态
+            signUpRecord.setIsSignIn(1);
+            signUpRecordService.updateById(signUpRecord);
+            return true;
+        } else {
+            throw new RuntimeException("未报名该活动");
         }
     }
 }

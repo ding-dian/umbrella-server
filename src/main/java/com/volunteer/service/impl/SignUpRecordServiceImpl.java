@@ -87,7 +87,7 @@ public class SignUpRecordServiceImpl extends ServiceImpl<SignUpRecordMapper, Sig
                 }
                 // 报名
                 signUpRecord = new SignUpRecord();
-                signUpRecord.setVolunteerId(volunteer.getId()).setVolunteerActivityId(activity.getId()).setCreateAt(LocalDateTime.now()).setDeleted(0);
+                signUpRecord.setVolunteerId(volunteer.getId()).setVolunteerActivityId(activity.getId()).setCreateAt(LocalDateTime.now()).setDeleted(0).setIsSignIn(0);
                 // 更新报名人数
                 activity.setNumberOfAttendees(activity.getNumberOfAttendees() + 1);
                 volunteerActivityMapper.updateById(activity);
@@ -122,10 +122,7 @@ public class SignUpRecordServiceImpl extends ServiceImpl<SignUpRecordMapper, Sig
     public boolean checkSignUpState(SignUpVo query) {
         Volunteer volunteer = redisOperator.getObjectByToken(query.getToken(), Volunteer.class);
         if (ObjectUtil.isNotNull(volunteer)) {
-            LambdaQueryWrapper<SignUpRecord> queryWrapper = new LambdaQueryWrapper<>();
-            queryWrapper.eq(SignUpRecord::getVolunteerId,volunteer.getId())
-                    .eq(SignUpRecord::getVolunteerActivityId,query.getActivityId());
-            return baseMapper.selectCount(queryWrapper) > 0;
+            return checkForRegistration(volunteer.getId(), query.getActivityId());
         } else {
             throw new RuntimeException("请重新登陆后重试");
         }
@@ -215,5 +212,17 @@ public class SignUpRecordServiceImpl extends ServiceImpl<SignUpRecordMapper, Sig
         Page<SignUpRecordVo> result = new Page<>(selectPage.getCurrent(), selectPage.getSize(), selectPage.getTotal());
         result.setRecords(resultList);
         return result;
+    }
+
+
+    public boolean checkForRegistration(Integer volunteerId,Integer activityId) {
+        return Objects.nonNull(getRecord(volunteerId,activityId));
+    }
+
+    public SignUpRecord getRecord(Integer volunteerId,Integer activityId) {
+        LambdaQueryWrapper<SignUpRecord> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SignUpRecord::getVolunteerId,volunteerId)
+                .eq(SignUpRecord::getVolunteerActivityId,activityId);
+        return baseMapper.selectOne(queryWrapper);
     }
 }
