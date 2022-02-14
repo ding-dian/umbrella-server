@@ -6,8 +6,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.volunteer.VolunteerManagementApplication;
 import com.volunteer.component.RedisOperator;
-import com.volunteer.entity.UmbrellaBorrow;
+import com.volunteer.entity.UmbrellaHistoryBorrow;
+import com.volunteer.entity.UmbrellaOrder;
 import com.volunteer.entity.Volunteer;
+import com.volunteer.entity.common.DataFormats;
+import com.volunteer.entity.vo.UmbrellaOrderVo;
 import com.volunteer.mapper.UmbrellaMapper;
 import com.volunteer.service.UmbrellaBorrowService;
 import com.volunteer.service.VolunteerService;
@@ -16,17 +19,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author: 梁峰源
@@ -51,30 +54,27 @@ public class TestUmbrellaController {
      * 指定页码查询所有借取记录
      */
     @Test
-    public void test01(){
-        IPage<UmbrellaBorrow> iPage = umbrellaBorrowService.selectAll(1, 20);
-        iPage.getRecords().forEach(System.out::println);
+    public void test01() {
+
     }
 
     /**
      * 指定用户分页查询历史借阅雨伞记录
      */
     @Test
-    public void test02(){
-        IPage<UmbrellaBorrow> umbrellaBorrowIPage = umbrellaBorrowService.selectList(null);
-        umbrellaBorrowIPage.getRecords().forEach(System.out::println);
+    public void test02() {
     }
 
     /**
      *
      */
     @Test
-    public void test03(){
-        QueryWrapper<UmbrellaBorrow> queryWrapper = new QueryWrapper<>();
+    public void test03() {
+        QueryWrapper<UmbrellaHistoryBorrow> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("openID", "+7BfWy6IijmcZFO4Ac8fjmAvS8=");
-        Page<UmbrellaBorrow> page = new Page<>();
+        Page<UmbrellaHistoryBorrow> page = new Page<>();
         page.setCurrent(1).setSize(20);
-        IPage<UmbrellaBorrow> umbrellaBorrowIPage = umbrellaMapper.selectPage(page, queryWrapper);
+        IPage<UmbrellaHistoryBorrow> umbrellaBorrowIPage = umbrellaMapper.selectPage(page, queryWrapper);
         umbrellaBorrowIPage.getRecords().forEach(System.out::println);
     }
 
@@ -82,13 +82,14 @@ public class TestUmbrellaController {
     public void TestBorrowByVolunteer() throws InvocationTargetException, IllegalAccessException {
         Volunteer volunteer = volunteerService.getByOpenId("oR83j4kkq2CyvVmuxl6znKbrWi2A");
         Integer result = umbrellaBorrowService.borrowByVolunteer(volunteer);
-        log.info("更新完的结果{}",result);
+        log.info("更新完的结果{}", result);
     }
+
     @Test
-    public void TestReturnByVolunteer(){
+    public void TestReturnByVolunteer() {
         Volunteer volunteer = volunteerService.getByOpenId("oR83j4kkq2CyvVmuxl6znKbrWi2A");
         Integer result = umbrellaBorrowService.returnByVolunteer(volunteer);
-        log.info("更新完的结果{}",result);
+        log.info("更新完的结果{}", result);
     }
 
     /**
@@ -97,19 +98,19 @@ public class TestUmbrellaController {
     @Test
     public void TestRedis() throws InstantiationException, IllegalAccessException {
 //        Volunteer volunteer = volunteerService.getByOpenId("oR83j4kkq2CyvVmuxl6znKbrWi2A");
-        UmbrellaBorrow umbrellaBorrow = umbrellaBorrowService.getById(5);
+        UmbrellaHistoryBorrow umbrellaHistoryBorrow = umbrellaBorrowService.getById(5);
 //        Map<String,UmbrellaBorrow> map = new HashMap<>();
 //        map.put(volunteer.getOpenid(),umbrellaBorrow);
-        String key="umbrella:"+"钱七oR83j4kkq2CyvVmuxl6znKbrWi2A";
+        String key = "umbrella:" + "钱七oR83j4kkq2CyvVmuxl6znKbrWi2A";
         try {
-            parseMap(key,umbrellaBorrow);
+            parseMap(key, umbrellaHistoryBorrow);
         } catch (InvocationTargetException e) {
             e.printStackTrace();
         }
 //        Map<Object, Object> entries = redisHash.entries("111");
 //        Object borrowDate = entries.get("BorrowDate");
         Map<Object, Object> map = redisOperator.hgetall(key);
-        log.info("收到的信息{}",map);
+        log.info("收到的信息{}", map);
 
 //        ValueOperations<String, Object> redisValue = redisTemplate.opsForValue();
 //        Map<Object, Object> entries = redisTemplate.opsForHash().entries(key);
@@ -119,6 +120,11 @@ public class TestUmbrellaController {
 //        log.info("输出消息{}",o);
     }
 
+    @Test
+    public void TestUpdateBorrowDurationJob() {
+        umbrellaBorrowService.updateBorrowDurationJob();
+    }
+
     /**
      * 将bean转成map
      */
@@ -126,14 +132,14 @@ public class TestUmbrellaController {
         //2. 获得所有的get方法
         List<Method> allGetMethod = getAllGetMethod(bean);
         //3. 遍历存入值
-        for(Method m : allGetMethod){
+        for (Method m : allGetMethod) {
             //截取属性名
             String field = m.getName().substring(3);
             //激活方法得到值
-            Object value = m.invoke(bean)+"";//将LocalDataTime转换成字符串
-            log.info("激活方法得到值:{}",value);
+            Object value = m.invoke(bean) + "";//将LocalDataTime转换成字符串
+            log.info("激活方法得到值:{}", value);
             //往redis里存这些字段
-            redisOperator.hset(key,field,value);
+            redisOperator.hset(key, field, value);
         }
 
     }
@@ -153,6 +159,12 @@ public class TestUmbrellaController {
             }
         }
         return getMethods;
+    }
+
+    @Test
+    public void TestSelectBorrow() throws InvocationTargetException, IllegalAccessException {
+        Map<String, Object> map = umbrellaBorrowService.selectBorrow(1, 20);
+        map.forEach((k,v)->log.info("key:{},value:{}",k,v));
     }
 }
 

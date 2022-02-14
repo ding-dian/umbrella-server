@@ -1,14 +1,17 @@
 package com.volunteer.controller;
 
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.json.JSON;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.volunteer.component.RedisOperator;
 import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.common.Result;
 import com.volunteer.entity.common.ResultGenerator;
+import com.volunteer.entity.vo.UmbrellaOrderVo;
 import com.volunteer.service.UmbrellaBorrowService;
 import com.volunteer.service.VolunteerService;
+import com.volunteer.util.SendMailUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -22,9 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.ByteBuffer;
-import java.nio.channels.AsynchronousSocketChannel;
-import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 /**
  * @author: 梁峰源
@@ -45,7 +46,8 @@ public class UmbrellaController {
     private VolunteerService volunteerService;
     @Resource
     private UmbrellaBorrowService umbrellaBorrowService;
-
+    @Resource
+    private SendMailUtil sendMailUtil;
     /**
      * 借取爱心雨伞
      * @param token 用户的token
@@ -121,6 +123,85 @@ public class UmbrellaController {
             //请求成功
             return ResultGenerator.getSuccessResult();
         }
+    }
+
+    /**
+     * 从redis中查询所有实时借阅雨伞的信息
+     * @param pageNo 页号，大于1
+     * @param pageSize 每页多少数据，默认20条
+     * @return 返回Result
+     */
+    @GetMapping("/selectBorrowList")
+    @ApiOperation(value = "查询借伞用户信息列表",response = UmbrellaOrderVo.class)
+    public Result selectBorrowList(Integer pageNo, Integer pageSize){
+        Map<String, Object> data;
+        try {
+            data = umbrellaBorrowService.selectBorrow(pageNo, pageSize);
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            log.error("查询借伞用户信息列表失败：{}",e.getMessage());
+            return ResultGenerator.getFailResult(e.getMessage());
+        }
+        JSON jsonStr = JSONUtil.parse(data);
+        return ResultGenerator.getSuccessResult(jsonStr);
+    }
+    /**
+     * 查询超时借伞用户信息列表
+     * @param pageNo 页号，大于1
+     * @param pageSize 每页多少数据，默认20条
+     * @return 返回Result
+     */
+    @GetMapping("/selectOverTimeList")
+    @ApiOperation(value = "查询超时借伞用户信息列表",response = UmbrellaOrderVo.class)
+    public Result selectOverTimeList(Integer pageNo, Integer pageSize){
+        Map<String, Object> data = null;
+        try {
+            data = umbrellaBorrowService.selectOvertime(pageNo, pageSize);
+        } catch (Exception e) {
+            return ResultGenerator.getFailResult(e.getMessage());
+        }
+        JSON jsonStr = JSONUtil.parse(data);
+        return ResultGenerator.getSuccessResult(jsonStr);
+    }
+
+    /**
+     * 从数据库中查询历史用户借伞信息
+     * @param pageNo 页号，大于1
+     * @param pageSize 每页多少数据，默认20条
+     * @return 返回Result
+     */
+    @GetMapping("/selectHistoryBorrow")
+    @ApiOperation(value = "从数据库中查询历史用户借伞信息",response = UmbrellaOrderVo.class)
+    public Result selectHistoryBorrow(Integer pageNo, Integer pageSize){
+        Map<String, Object> map = null;
+        try {
+            log.info("pageNO:{},pageSize:{}",pageNo,pageSize);
+            map = umbrellaBorrowService.selectHistoryAll(pageNo, pageSize);
+        } catch (Exception e) {
+        	return ResultGenerator.getFailResult(e.getMessage());
+        }
+        JSON jsonStr = JSONUtil.parse(map);
+        return ResultGenerator.getSuccessResult(jsonStr);
+    }
+
+    /**
+     * 由网页端发送邮件给用户
+     * @param mailTo 接收人邮箱
+     * @param subject 邮件主题
+     * @param content 邮件内容
+     * @return 返回Result
+     */
+    @GetMapping("/sendAlarmEmail")
+    @ApiOperation(value = "由网页端发送邮件给用户")
+    public Result sendAlarmEmail(String mailTo,String subject ,String content){
+        if(ObjectUtil.isNull(mailTo) || StringUtils.isEmpty(mailTo)){
+            return ResultGenerator.getFailResult("收件人邮箱为空");
+        }
+        try {
+            sendMailUtil.sendOverTimeAlarm(new String[]{mailTo},subject,content);
+        } catch (Exception e) {
+            return ResultGenerator.getFailResult(e.getMessage());
+        }
+        return ResultGenerator.getSuccessResult();
     }
 
 

@@ -1,5 +1,6 @@
 package com.volunteer.component;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -129,6 +130,16 @@ public class RedisOperator {
         return (String)redisTemplate.opsForValue().get(key);
     }
 
+
+    /**
+     * 修改key的名字
+     * @param oldKey
+     * @param newKey
+     */
+    public void rename(String oldKey,String newKey){
+        redisTemplate.rename(oldKey,newKey);
+    }
+
     // Hash（哈希表）
 
     /**
@@ -171,6 +182,16 @@ public class RedisOperator {
      */
     public Map<Object, Object> hgetall(String key) {
         return redisTemplate.opsForHash().entries(key);
+    }
+
+
+    /**
+     * 返回指定key中hash的所有value（没有field）
+     * @param key hash中的key
+     * @return 返回指定key的所有value集合
+     */
+    public List<Object> hvals(String key){
+        return redisTemplate.opsForHash().values(key);
     }
 
     // List（列表）

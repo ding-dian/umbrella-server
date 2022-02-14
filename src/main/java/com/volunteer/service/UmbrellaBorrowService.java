@@ -1,13 +1,16 @@
 package com.volunteer.service;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.volunteer.entity.Umbrella;
-import com.volunteer.entity.UmbrellaBorrow;
+import com.volunteer.entity.UmbrellaHistoryBorrow;
+import com.volunteer.entity.UmbrellaOrder;
 import com.volunteer.entity.Volunteer;
-import io.swagger.models.auth.In;
+import com.volunteer.entity.vo.UmbrellaHistoryVo;
+import com.volunteer.entity.vo.UmbrellaOrderVo;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -18,22 +21,38 @@ import java.lang.reflect.InvocationTargetException;
  * @date: 2022/1/26 18:20
  * Description: 爱心雨伞服务类
  */
-public interface UmbrellaBorrowService extends IService<UmbrellaBorrow> {
+public interface UmbrellaBorrowService extends IService<UmbrellaHistoryBorrow> {
 
     /**
      * 查询指定志愿者爱心雨伞历史使用记录
      * @param volunteer 查询的志愿者
      * @return 返回该志愿者的所有使用记录
      */
-    IPage<UmbrellaBorrow> selectList(Volunteer volunteer);
+    List<UmbrellaHistoryVo> selectHistoryById(Volunteer volunteer);
 
     /**
-     * 查询所有的借阅情况，需判断是否具有管理员访问权限
+     * 查询所有用户的所有借阅情况，需判断是否具有管理员访问权限
      * @param pageNo 查询的页号
      * @param pageSize 每页显示数据
      * @return 返回所有借阅信息
      */
-    IPage<UmbrellaBorrow> selectAll(Integer pageNo, Integer pageSize);
+    Map<String,Object> selectHistoryAll(Integer pageNo, Integer pageSize);
+
+    /**
+     * 从redis中查询所有实时借阅雨伞的信息
+     * @param pageNo 查询的页号
+     * @param pageSize 每页显示数据
+     * @return 返回所有借阅信息
+     */
+     Map<String,Object> selectBorrow(Integer pageNo, Integer pageSize) throws InvocationTargetException, IllegalAccessException;
+
+    /**
+     * 从redis中查询所有超时的用户信息
+     * @param pageNo 查询的页号
+     * @param pageSize 每页显示数据
+     * @return 返回所有借阅信息
+     */
+    Map<String,Object> selectOvertime(Integer pageNo, Integer pageSize);
 
     /**
      * 根据用户信息借取雨伞，添加借阅记录
@@ -57,17 +76,17 @@ public interface UmbrellaBorrowService extends IService<UmbrellaBorrow> {
     /**
      * 删除一条用户借阅记录，此种情况为管理员删除数据库里的记录
      * 需要修改两张表(umbrella_borrow、volunteer)
-     * @param umbrellaBorrow 借阅记录
+     * @param umbrellaHistoryBorrow 借阅记录
      * @return 1 success<br>other false
      */
-    Integer deleteOneRecordByVolunteer(UmbrellaBorrow umbrellaBorrow);
+    Integer deleteOneRecordByVolunteer(UmbrellaHistoryBorrow umbrellaHistoryBorrow);
 
     /**
      * 修改一条用户的借阅记录，此种情况为管理员修改数据库里的记录
-     * @param umbrellaBorrow 雨伞借阅记录
+     * @param umbrellaHistoryBorrow 雨伞借阅记录
      * @return 1 success<br>other false
      */
-    Integer updateUmbrellaBorrowRecordByID(UmbrellaBorrow umbrellaBorrow);
+    Integer updateUmbrellaBorrowRecordByID(UmbrellaHistoryBorrow umbrellaHistoryBorrow);
 
     /**
      * 修改雨伞的借取/归还状态，修改表为Umbrella表
@@ -76,4 +95,14 @@ public interface UmbrellaBorrowService extends IService<UmbrellaBorrow> {
      */
     Integer updateUmbrellaStatus(Umbrella umbrella);
 
+    /**
+     * 更新redis中爱心雨伞的借取时间
+     */
+    void updateBorrowDurationJob();
+
+    /**
+     * 借取雨伞用户违规超时策略
+     * @param map key为用户存在redis中的key，value为用户借取雨伞的时间
+     */
+    void borrowOvertimeHandle(Map<String,Double> map);
 }

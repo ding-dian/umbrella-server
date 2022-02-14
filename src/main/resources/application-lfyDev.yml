@@ -32,14 +32,15 @@ spring:
     port: 25
     username: 2062728920@qq.com #发送方邮箱
     password: aijaryfrfvdseegd #smtp口令
+    mailFromNick: 计算机青协 #发件人昵称
     default-encoding: UTF-8
     properties:
       mail:
         smtp:
           auth: true
-          starttls.enable: true
-          starttls.required: true
-          socketFactory.class: javax.net.ssl.SSLSocketFactor
+          starttls:
+            enable: true
+            required: true
 mail:
   fromMail:
     addr: fengyuan-liang
@@ -56,9 +57,9 @@ mybatis-plus:
       logic-delete-field: deleted
       logic-delete-value: 1 # 逻辑删除，已删除
       logic-not-delete-value: 0 # 逻辑删除，未删除
-  configuration:
+#  configuration:
     #下划线转驼峰配置
-    map-underscore-to-camel-case: true
+#    map-underscore-to-camel-case: true
 
 
 # ===================================================================
@@ -167,3 +168,4 @@ xxl:
 ##爱心雨伞默认数据
 umbrella:
   umbrellaBorrowRecordPageSize: 20 #爱心雨伞借阅记录默认返回条数
+  defaultBorrowDuration: 24 #默认用户能够借取雨伞的时间为24小时
