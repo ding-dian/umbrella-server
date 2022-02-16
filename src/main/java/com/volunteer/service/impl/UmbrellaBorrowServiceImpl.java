@@ -54,9 +54,8 @@ public class UmbrellaBorrowServiceImpl extends ServiceImpl<UmbrellaMapper, Umbre
     @Autowired
     private RedisOperator redisOperator;
     @Autowired
-    private VolunteerService volunteerService;
-    @Autowired
     private SendMailUtil sendMailUtil;
+
 
     @Override
     public List<UmbrellaHistoryVo> selectHistoryById(Volunteer volunteer) {
@@ -120,6 +119,11 @@ public class UmbrellaBorrowServiceImpl extends ServiceImpl<UmbrellaMapper, Umbre
     @Override
     public Map<String,Object> selectOvertime(Integer pageNo, Integer pageSize) {
         return getBeanForRedis("umbrellaOvertime*",pageNo,pageSize);
+    }
+
+    @Override
+    public void deleteOvertime(String key) {
+        redisOperator.del(key);
     }
 
     private Map<String,Object> getBeanForRedis(String key,Integer pageNo, Integer pageSize){

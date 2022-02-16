@@ -54,6 +54,13 @@ public interface UmbrellaBorrowService extends IService<UmbrellaHistoryBorrow> {
      */
     Map<String,Object> selectOvertime(Integer pageNo, Integer pageSize);
 
+
+    /**
+     * 删除一条超时记录
+     * @param key 用户存在redis中的key
+     */
+    void deleteOvertime(String key);
+
     /**
      * 根据用户信息借取雨伞，添加借阅记录
      * 软件方面：借阅情况需要存入redis中
@@ -62,6 +69,7 @@ public interface UmbrellaBorrowService extends IService<UmbrellaHistoryBorrow> {
      * @return 1 success<br>other false
      */
     Integer borrowByVolunteer(Volunteer volunteer) throws InvocationTargetException, IllegalAccessException;
+
 
     /**
      * 根据用户归还雨伞，添加归还记录

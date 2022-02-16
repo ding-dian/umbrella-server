@@ -8,7 +8,9 @@ import com.volunteer.component.RedisOperator;
 import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.common.Result;
 import com.volunteer.entity.common.ResultGenerator;
+import com.volunteer.entity.common.UmbrellaDic;
 import com.volunteer.entity.vo.UmbrellaOrderVo;
+import com.volunteer.service.KcpService;
 import com.volunteer.service.UmbrellaBorrowService;
 import com.volunteer.service.VolunteerService;
 import com.volunteer.util.SendMailUtil;
@@ -48,6 +50,8 @@ public class UmbrellaController {
     private UmbrellaBorrowService umbrellaBorrowService;
     @Resource
     private SendMailUtil sendMailUtil;
+//    @Resource
+//    private KcpService kcpService;
     /**
      * 借取爱心雨伞
      * @param token 用户的token
@@ -61,8 +65,9 @@ public class UmbrellaController {
             @ApiResponse(code = 400,message = "用户未登录，没有获得token"),
             @ApiResponse(code = 601,message = "锁机开启失败"),
             @ApiResponse(code = 602,message = "用户已经借取过雨伞了，不能再借伞"),
+            @ApiResponse(code = 604,message = "用户未在规定时间内取走伞"),
     })
-    public Result borrowUmbrellaByToken(@RequestParam String token){
+    public synchronized Result borrowUmbrellaByToken(@RequestParam String token){
         if (StringUtils.isEmpty(token)) {
             return ResultGenerator.getFailResult("token有误!");
         }
@@ -74,13 +79,20 @@ public class UmbrellaController {
         Object openID = jsonObject.get("openid");
         //根据openID拿到用户的数据
         Volunteer volunteer = volunteerService.getByOpenId((String) openID);
+        //TODO 向爱心雨伞终端发送借伞请求，请求成功后修改数据库
+//        String flag = KcpService.sendUnlockMsg2Lock();
+//        if(UmbrellaDic.UNLOCK_FAIL_MSG.equals(flag)){
+//            return new Result().setCode(602).setMessage("锁机开启失败，系统异常");
+//        }
+//        if(UmbrellaDic.UNLOCK_OVERTIME_MSG.equals(flag)){
+//            return new Result().setCode(604).setMessage("用户未在规定时间内取走伞");
+//        }
         int result = 0;
         try {
             result = umbrellaBorrowService.borrowByVolunteer(volunteer);
         } catch (InvocationTargetException | IllegalAccessException e) {
             e.printStackTrace();
         }
-        //TODO 向爱心雨伞终端发送借伞请求，请求成功后修改数据库
         if(result == -1){
             //用户已经借取过爱心雨伞了，不能借取
             return new Result().setCode(602).setMessage("用户已经借取过爱心雨伞了，不能借取");
@@ -153,7 +165,7 @@ public class UmbrellaController {
     @GetMapping("/selectOverTimeList")
     @ApiOperation(value = "查询超时借伞用户信息列表",response = UmbrellaOrderVo.class)
     public Result selectOverTimeList(Integer pageNo, Integer pageSize){
-        Map<String, Object> data = null;
+        Map<String, Object> data;
         try {
             data = umbrellaBorrowService.selectOvertime(pageNo, pageSize);
         } catch (Exception e) {
@@ -172,7 +184,7 @@ public class UmbrellaController {
     @GetMapping("/selectHistoryBorrow")
     @ApiOperation(value = "从数据库中查询历史用户借伞信息",response = UmbrellaOrderVo.class)
     public Result selectHistoryBorrow(Integer pageNo, Integer pageSize){
-        Map<String, Object> map = null;
+        Map<String, Object> map;
         try {
             log.info("pageNO:{},pageSize:{}",pageNo,pageSize);
             map = umbrellaBorrowService.selectHistoryAll(pageNo, pageSize);
@@ -182,6 +194,26 @@ public class UmbrellaController {
         JSON jsonStr = JSONUtil.parse(map);
         return ResultGenerator.getSuccessResult(jsonStr);
     }
+
+    /**
+     * 从redis中删除一条超时用户的数据
+     * @param key 用户信息对应在redis中的key
+     * @return 返回Result
+     */
+    @GetMapping("/deleteOvertime")
+    @ApiOperation(value = "从redis中删除一条超时用户的数据")
+    public Result deleteOvertime(String key){
+        if(ObjectUtil.isNull(key) || StringUtils.isEmpty(key)){
+            return ResultGenerator.getFailResult("用户key为空，删除失败");
+        }
+        try {
+            umbrellaBorrowService.deleteOvertime(key);
+        } catch (Exception e) {
+            return ResultGenerator.getFailResult(e.getMessage());
+        }
+        return ResultGenerator.getSuccessResult();
+    }
+
 
     /**
      * 由网页端发送邮件给用户

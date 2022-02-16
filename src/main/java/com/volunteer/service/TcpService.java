@@ -31,13 +31,13 @@ import java.util.concurrent.TimeUnit;
 //@Service
 //@EnableScheduling//开启定时任务
 @Slf4j
-public class ClientService {
+public class TcpService {
 
     //与服务器通信的异步Channel
     private AsynchronousSocketChannel channel;
     private final ExecutorService executor = Executors.newFixedThreadPool(20);
-    private final String address = "192.168.1.200";//"192.168.1.200";127.0.0.1
-    private final String port = "6005";//6004~6008
+    private static final String address = "192.168.1.200";//"192.168.1.200";127.0.0.1
+    private static final String port = "6005";//6004~6008
 
 //    @Autowired//将后端数据推送到前端
 //    private SimpMessagingTemplate simpMessagingTemplate;

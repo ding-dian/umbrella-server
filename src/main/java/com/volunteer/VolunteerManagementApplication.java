@@ -1,6 +1,7 @@
 package com.volunteer;
 
 import com.github.tobato.fastdfs.FdfsClientConfig;
+import com.volunteer.service.KcpService;
 import com.volunteer.util.SendMailUtil;
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
@@ -10,6 +11,8 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableMBeanExport;
 import org.springframework.context.annotation.Import;
@@ -25,6 +28,8 @@ import org.springframework.jmx.support.RegistrationPolicy;
 public class VolunteerManagementApplication {
     public static void main(String[] args) {
         SpringApplication.run(VolunteerManagementApplication.class, args);
+        //初始化容器后启动与锁机的连接
+//        KcpService.connect();
     }
     //https访问，项目上线时启用
     //添加转向类，用户将客户访问的非https协议转向到https协议

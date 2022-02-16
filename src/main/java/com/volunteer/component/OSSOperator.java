@@ -2,6 +2,7 @@ package com.volunteer.component;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.UUID;
+import cn.hutool.core.util.ObjectUtil;
 import com.aliyun.oss.ClientBuilderConfiguration;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
@@ -9,6 +10,7 @@ import com.aliyun.oss.model.Bucket;
 import com.aliyun.oss.model.OSSObject;
 import com.aliyun.oss.model.ObjectMetadata;
 import com.aliyun.oss.model.PutObjectResult;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -25,21 +27,23 @@ import java.io.*;
  */
 @Configuration
 @ConfigurationProperties(prefix = "oss")
+@Slf4j
 public class OSSOperator implements InitializingBean {
 
-    protected Log logger = LogFactory.getLog(OSSOperator.class);
     // Endpoint，创建Bucket的时候所选择的
+    @Value("${oss.endpoint}")
     private String endpoint;
-
     // 阿里云主账号AccessKey拥有所有API的访问权限，风险很高。强烈建议您创建并使用RAM账号进行API访问或日常运维，请登录 https://ram.console.aliyun.com 创建RAM账号。
+    @Value("${oss.accessKeyId}")
     private String accessKeyId;
-
+    @Value("${oss.accessKeySecret}")
     private String accessKeySecret;
-
+    @Value("${oss.bucketName}")
     private String bucketName;
-
+    @Value("${oss.bucketDomain}")
     private String bucketDomain;
-
+    @Value("${oss.myOssUrl}")
+    private String myOssUrl;
     private OSS ossClient = null;
 
     @Override
@@ -67,7 +71,7 @@ public class OSSOperator implements InitializingBean {
         if (!ossClient.doesBucketExist(bucketName)) {
             // 创建存储空间
             Bucket bucket = ossClient.createBucket(bucketName);
-            logger.info("创建存储空间成功");
+            log.info("创建存储空间成功");
             return bucket.getName();
         }
         return bucketNames;
@@ -80,7 +84,7 @@ public class OSSOperator implements InitializingBean {
      */
     public void deleteBucket(String bucketName) {
         ossClient.deleteBucket(bucketName);
-        logger.info("删除" + bucketName + "Bucket成功");
+        log.info("删除" + bucketName + "Bucket成功");
     }
 
     /**
@@ -115,7 +119,7 @@ public class OSSOperator implements InitializingBean {
      */
     public void deleteFile(String bucketName, String folder, String key) {
         ossClient.deleteObject(bucketName, folder + key);
-        logger.info("删除" + bucketName + "下的文件" + folder + key + "成功");
+        log.info("删除" + bucketName + "下的文件" + folder + key + "成功");
     }
 
 
@@ -127,7 +131,7 @@ public class OSSOperator implements InitializingBean {
      * @return  可以访问此文件的url
      */
     public String uploadObjectOSS(String storePath, File file) {
-        return upload(storePath, file,file.getName(),FileUtil.extName(file));
+        return upload(storePath, file,UUID.fastUUID().toString().replace("-",""),"."+FileUtil.extName(file));
     }
 
     /**
@@ -139,7 +143,7 @@ public class OSSOperator implements InitializingBean {
      */
     public String uploadObjectOSS(String storePath, MultipartFile file) {
         String originalFilename = file.getOriginalFilename();
-        logger.info("上传的文件名：" + originalFilename);
+        log.info("上传的文件名：" + originalFilename);
 //        String fileName =
         return upload(storePath, file,UUID.randomUUID(true).toString(true),"." + FileUtil.extName(originalFilename));
     }
@@ -167,6 +171,7 @@ public class OSSOperator implements InitializingBean {
      */
     public String uploadObjectOSS(String storePath, MultipartFile file, String fileName) {
         String extName = "." +FileUtil.extName(file.getOriginalFilename());
+        //图片
         return upload(storePath, file, fileName, extName);
     }
 
@@ -182,9 +187,10 @@ public class OSSOperator implements InitializingBean {
     private String upload(String storePath, Object file, String fileName, String extName) {
         String url = null;
         createFolder(bucketName, storePath);
+        InputStream is=null;
         try {
             // 文件输入流
-            InputStream is = getInputStream(file);
+            is = getInputStream(file);
             // 文件大小
             Long fileSize = getFileSize(file);
             // 创建上传Object的Metadata
@@ -203,15 +209,24 @@ public class OSSOperator implements InitializingBean {
             // 指定该Object被下载时的名称（指示MINME用户代理如何显示附加的文件，打开或下载，及文件名称）
             metadata.setContentDisposition("filename/filesize=" + fileName + extName + "/" + fileSize + "Byte.");
             // 相对路径
-            String relativePath = storePath + fileName + extName;
+            String relativePath = storePath + fileName +extName;
             // 上传文件 (上传文件流的形式)
             PutObjectResult putResult = ossClient.putObject(bucketName, relativePath, is, metadata);
             // 解析结果
-            url = bucketDomain + relativePath;
-            logger.info("putResult.getETag():"+putResult.getETag());
+            url = myOssUrl + relativePath;
+            log.info("putResult.getETag():"+putResult.getETag());
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error("上传阿里云OSS服务器异常." + e.getMessage(), e);
+            log.error("上传阿里云OSS服务器异常." + e.getMessage(), e);
+        } finally {
+            if(ObjectUtil.isNotNull(is)){
+                try {
+                    assert is != null;
+                    is.close();
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
+            }
         }
         return url;
     }
@@ -264,7 +279,7 @@ public class OSSOperator implements InitializingBean {
         if ("gif".equalsIgnoreCase(fileExtension)) {
             return "image/gif";
         }
-        if ("jpeg".equalsIgnoreCase(fileExtension) || ".jpg".equalsIgnoreCase(fileExtension)
+        if ("jpeg".equalsIgnoreCase(fileExtension) || "jpg".equalsIgnoreCase(fileExtension)
                 || ".png".equalsIgnoreCase(fileExtension)) {
             return "image/jpeg";
         }

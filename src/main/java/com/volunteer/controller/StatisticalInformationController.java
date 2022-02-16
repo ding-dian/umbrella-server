@@ -28,8 +28,8 @@ public class StatisticalInformationController {
     private VolunteerStatisticalInformationService staticInfoService;
 
     @ApiOperation("查询接口")
-    @GetMapping("/getById/{volunteerId}")
-    public Result getVolunteerStaticalInformation(@PathVariable int volunteerId) {
+    @GetMapping("getStaticInfo")
+    public Result getVolunteerStaticalInformation(Integer volunteerId) {
         try {
             VolunteerStatisticalInformation volunteerStatisticalInformation = staticInfoService.selectVoluteerStaticalInformation(volunteerId);
             return ResultGenerator.getSuccessResult(volunteerStatisticalInformation);
