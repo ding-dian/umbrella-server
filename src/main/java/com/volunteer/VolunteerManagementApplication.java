@@ -1,6 +1,7 @@
 package com.volunteer;
 
 import com.github.tobato.fastdfs.FdfsClientConfig;
+import com.volunteer.util.SendMailUtil;
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.tomcat.util.descriptor.web.SecurityCollection;
@@ -19,7 +20,7 @@ import org.springframework.jmx.support.RegistrationPolicy;
  */
 @SpringBootApplication
 @MapperScan("com.volunteer.mapper")
-@Import(FdfsClientConfig.class)
+@Import({FdfsClientConfig.class})
 @EnableMBeanExport(registration = RegistrationPolicy.IGNORE_EXISTING) // 解决jmx重复注册bean的问题
 public class VolunteerManagementApplication {
     public static void main(String[] args) {

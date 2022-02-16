@@ -3,6 +3,7 @@ package com.volunteer.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.volunteer.entity.common.DataFormats;
 import io.swagger.annotations.ApiModel;
@@ -25,7 +26,7 @@ import java.util.Date;
 @ApiModel(value = "雨伞借阅历史记录", description = "用来封装雨伞借阅情况")
 @Accessors(chain = true)//开启链式编程
 @EqualsAndHashCode(callSuper = false)
-public class UmbrellaBorrow implements Serializable {
+public class UmbrellaHistoryBorrow implements Serializable {
     @ApiModelProperty(hidden = true)
     private static final long serialVersionUID = 1L;
     /**
@@ -40,8 +41,22 @@ public class UmbrellaBorrow implements Serializable {
      * 用户的openID
      */
     @ApiModelProperty(name = "openID", value = "用户的openID", required = true, example = "+7BfWy6IijmcZFO4Ac8fjmAvS8=")
-    @TableField("openid")
+    @TableField(value = "openid")
     private String openID;
+
+    /**
+     * 用户的姓名
+     */
+    @ApiModelProperty(name = "userName", value = "用户的姓名", required = true, example = "xxx")
+    @TableField("name")
+    private String userName;
+
+    /**
+     * 用户的学号
+     */
+    @ApiModelProperty(name = "studentId", value = "用户的学号", required = true, example = "xxx")
+    @TableField("student_id")
+    private String studentId;
 
     /**
      * 用户的借阅时间
@@ -72,7 +87,7 @@ public class UmbrellaBorrow implements Serializable {
      * 该条记录的归还情况，1表示归还、0表示未归还
      */
     @ApiModelProperty(name = "borrowStatus", value = "用户归还状态，0表示已归还，1表示未归还", required = true, example = "0")
-    @TableField("borrow_status")
+    @TableField(value = "borrow_status")
     private Integer borrowStatus;
 
     /**
