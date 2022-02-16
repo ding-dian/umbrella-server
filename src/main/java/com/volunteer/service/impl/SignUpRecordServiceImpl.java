@@ -116,6 +116,14 @@ public class SignUpRecordServiceImpl extends ServiceImpl<SignUpRecordMapper, Sig
             signUpRecord.setDeleted(1);
             baseMapper.updateById(signUpRecord);
         }
+
+        // 更新活动报名人数
+        VolunteerActivity activity = volunteerActivityMapper.selectById(query.getActivityId());
+        Integer numberOfAttendees = activity.getNumberOfAttendees();
+        if (numberOfAttendees > 0) {
+            activity.setNumberOfAttendees(numberOfAttendees - 1);
+        }
+        volunteerActivityMapper.updateById(activity);
     }
 
     @Override
@@ -132,7 +140,7 @@ public class SignUpRecordServiceImpl extends ServiceImpl<SignUpRecordMapper, Sig
     public List<SignUpListVo> getSignUpListByActivityId(Integer activityId) {
         if (Objects.nonNull(activityId)) {
             LambdaQueryWrapper<SignUpRecord> queryWrapper = new LambdaQueryWrapper<>();
-            queryWrapper.eq(SignUpRecord::getVolunteerActivityId,activityId);
+            queryWrapper.eq(SignUpRecord::getVolunteerActivityId,activityId).eq(SignUpRecord::getDeleted,0);
             List<SignUpRecord> signUpRecords = baseMapper.selectList(queryWrapper);
             if (CollectionUtil.isNotEmpty(signUpRecords)) {
                 DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -224,7 +232,8 @@ public class SignUpRecordServiceImpl extends ServiceImpl<SignUpRecordMapper, Sig
     public SignUpRecord getRecord(Integer volunteerId,Integer activityId) {
         LambdaQueryWrapper<SignUpRecord> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(SignUpRecord::getVolunteerId,volunteerId)
-                .eq(SignUpRecord::getVolunteerActivityId,activityId);
+                .eq(SignUpRecord::getVolunteerActivityId,activityId)
+                .eq(SignUpRecord::getDeleted,0);
         return baseMapper.selectOne(queryWrapper);
     }
 }
