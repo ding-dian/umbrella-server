@@ -40,61 +40,67 @@ public class Volunteer implements Serializable {
     /**
      * 用户在小程序端唯一的ID
      */
-    @ApiModelProperty(required = true,example = "openid")
+    @ApiModelProperty(name="openid",value = "用户在小程序端唯一的ID", required = true,example = "oVBfcx4efaRhA4iQo+7BfWy6IijmcZFO4Ac8fjmAvS8=")
     private String openid;
 
     /**
      * 姓名
      */
-    @ApiModelProperty(required = false,example = "佩奇")
+    @ApiModelProperty(name="name",value = "用户真实姓名",required = true,example = "佩奇")
     private String name;
 
     /**
      * 手机号
      */
-    @ApiModelProperty(required = false,example = "123456")
+    @ApiModelProperty(name="phoneNumber",value = "用户手机号码",required = true,example = "123456")
     private String phoneNumber;
 
     /**
      * 邮箱
      */
-    @ApiModelProperty(required = false,example = "xxxx@foxmail.com")
+    @ApiModelProperty(name="emailAddress",value = "用户邮箱",required = false,example = "xxxx@foxmail.com")
     private String emailAddress;
+
+    /**
+     * qq号
+     */
+    @ApiModelProperty(name="emailAddress",value = "用户邮箱",required = false,example = "xxxx@foxmail.com")
+    private String qqNumber;
 
     /**
      * 学号
      */
-    @ApiModelProperty(required = false ,example = "18020333222")
+    @ApiModelProperty(name="studentId",value = "用户的学号",required = true ,example = "18020333222")
     private Long studentId;
 
     /**
      * 密码
      */
-    @ApiModelProperty(required = false,example = "123456")
+    @ApiModelProperty(name="password",value = "用户密码",required = false,example = "123456")
     private String password;
 
     /**
      * 学院
      */
-    @ApiModelProperty(required = false,example = "计信")
+    @ApiModelProperty(name="institude",value = "用户所在学院",required = false,example = "计信")
     private String institude;
 
     /**
      * 年级
      */
-    @ApiModelProperty(required = false,example = "2")
+    @ApiModelProperty(name="grade",value = "用户所在年纪",required = false,example = "2")
     private Integer grade;
 
     /**
      * 专业
      */
-    @ApiModelProperty(required = false,example = "网络")
+    @ApiModelProperty(name="major",value = "用户的专业",required = false,example = "网络")
     private String major;
 
     /**
      * 昵称
      */
-    @ApiModelProperty(required = false,example = "昵称")
+    @ApiModelProperty(name="nickName",value = "用户微信昵称",required = true,example = "昵称")
     @TableField(value = "nick_name")
     private String nickName;
 
@@ -107,7 +113,7 @@ public class Volunteer implements Serializable {
     /**
      * 头像
      */
-    @ApiModelProperty(required = false,example = "https://thirdwx.qlogo.cn/mmopen/vi_32/DYAIOgq83eplWzPJuvFyWeY5KjG5mOv6a7YNHNDvyxCibSCv58iaxicjyjPD08FoicQDBibMoCF64urOjYFEicM5KTeQ/132")
+    @ApiModelProperty(name="avatarUrl",value = "用户头像地址",required = true,example = "https://thirdwx.qlogo.cn/mmopen/vi_32/DYAIOgq83eplWzPJuvFyWeY5KjG5mOv6a7YNHNDvyxCibSCv58iaxicjyjPD08FoicQDBibMoCF64urOjYFEicM5KTeQ/132")
     private String avatarUrl;
 
 
@@ -155,4 +161,30 @@ public class Volunteer implements Serializable {
     @ApiModelProperty(hidden = true)
     @TableField(exist = false)
     private int pageSize;
+
+    /**
+     * 用户参加志愿活动总时长
+     */
+    @ApiModelProperty(name="activityTotaltime",value = "用户参加志愿活动的总时长",notes="不保存小数，向上取整",required = true,example = "4")
+//    @TableField("activityTotaltime")
+    @TableField(exist = false)
+    private Double activityTotaltime;
+
+    /**
+     * 用户参加志愿活动总次数
+     */
+    @ApiModelProperty(name="activityNumber",value = "用户参加志愿活动的总次数",required = true,example = "4")
+//    @TableField("activityNumber")
+    @TableField(exist = false)
+    private Integer activityNumber;
+
+    /**
+     * 用户借取爱心雨伞的时间
+     */
+    @ApiModelProperty(name="borrowUmbrellaDate",value = "用户借取爱心雨伞的时间",required = true,example = "2022年2月1日00:27:56")
+//    @TableField("borrowUmbrellaDate")
+    @TableField(exist = false)
+    private LocalDateTime borrowUmbrellaDate;
+
+
 }

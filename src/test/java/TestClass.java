@@ -1,40 +1,32 @@
 
 
-
+import cn.hutool.http.Header;
 import cn.hutool.http.HttpRequest;
-import cn.hutool.http.HttpResponse;
+import com.aliyun.oss.OSS;
+import com.aliyun.oss.OSSClientBuilder;
+import com.aliyun.oss.internal.OSSHeaders;
+import com.aliyun.oss.model.ObjectMetadata;
+import com.aliyun.oss.model.PutObjectRequest;
+import com.aliyun.oss.model.StorageClass;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-
 import com.tencentcloudapi.common.Credential;
 import com.tencentcloudapi.common.exception.TencentCloudSDKException;
-
-//导入可选配置类
 import com.tencentcloudapi.common.profile.ClientProfile;
 import com.tencentcloudapi.common.profile.HttpProfile;
-
-// 导入对应SMS模块的client
 import com.tencentcloudapi.sms.v20210111.SmsClient;
-
-// 导入要请求接口对应的request response类
 import com.tencentcloudapi.sms.v20210111.models.SendSmsRequest;
 import com.tencentcloudapi.sms.v20210111.models.SendSmsResponse;
 import com.volunteer.VolunteerManagementApplication;
 import com.volunteer.component.*;
-import com.volunteer.entity.AdminInfo;
 import com.volunteer.entity.Volunteer;
-import com.volunteer.entity.VolunteerStatisticalInformation;
 import com.volunteer.mapper.AdminInfoMapper;
-import com.volunteer.mapper.VolunteerStatisticalInformationMapper;
-import com.volunteer.service.VolunteerStatisticalInformationService;
+import com.volunteer.mapper.VolunteerMapper;
+import com.volunteer.service.SignUpRecordService;
+import com.volunteer.service.VolunteerService;
 import com.volunteer.service.impl.RabbiMQService;
 import com.volunteer.util.AES;
 import com.volunteer.util.BeanMapUtil;
 import com.volunteer.util.JwtUtil;
-
-import com.volunteer.entity.vo.SignUpVo;
-import com.volunteer.mapper.VolunteerMapper;
-import com.volunteer.service.SignUpRecordService;
-import com.volunteer.service.VolunteerService;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -46,6 +38,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -96,6 +90,9 @@ public class TestClass {
     @Autowired
     @Qualifier("taskExecutor")
     private ThreadPoolTaskExecutor taskExecutor;
+
+    @Autowired
+    private OSSOperator ossOperator;
 
     @Test
     public void test() {
@@ -346,7 +343,7 @@ public class TestClass {
 
     @Test
     public void testSignUpRecordService() {
-        System.out.println(signUpRecordService.getSignUpList(18));
+        System.out.println(signUpRecordService.getSignUpListByActivityId(18));
     }
 
     @Test
@@ -360,4 +357,53 @@ public class TestClass {
         System.out.println(taskExecutor.getMaxPoolSize());
     }
 
+    /**
+     * 官方示例代码-简单上传
+     */
+    @Test
+    public void testOOS() {
+        // yourEndpoint填写Bucket所在地域对应的Endpoint。以华东1（杭州）为例，Endpoint填写为https://oss-cn-hangzhou.aliyuncs.com。
+        String endpoint = "oss-cn-beijing.aliyuncs.com";
+        // 阿里云账号AccessKey拥有所有API的访问权限，风险很高。强烈建议您创建并使用RAM用户进行API访问或日常运维，请登录RAM控制台创建RAM用户。
+        String accessKeyId = "LTAI5tAyskX9Kx5j4MnZnYEH";
+        String accessKeySecret = "GrBNHEfu6mJeHEDTdDloVElqQ7agEE";
+
+        // 创建OSSClient实例。
+        OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+
+        // 创建PutObjectRequest对象。
+        // 依次填写Bucket名称（例如examplebucket）、Object完整路径（例如exampledir/exampleobject.txt）和本地文件的完整路径。Object完整路径中不能包含Bucket名称。
+        // 如果未指定本地路径，则默认从示例程序所属项目对应本地路径中上传文件。
+        PutObjectRequest putObjectRequest = new PutObjectRequest("hg-volunteer", "testUpload/testFile.png", new File("C:\\Users\\Administrator\\Desktop\\testOosUploadFile.png"));
+
+        // 如果需要上传时设置存储类型和访问权限，请参考以下示例代码。
+         ObjectMetadata metadata = new ObjectMetadata();
+         metadata.setHeader(OSSHeaders.OSS_STORAGE_CLASS, StorageClass.Standard.toString());
+
+        // metadata.setObjectAcl(CannedAccessControlList.Private);
+         putObjectRequest.setMetadata(metadata);
+
+        // 上传文件。
+        ossClient.putObject(putObjectRequest);
+
+        // 关闭OSSClient。
+        ossClient.shutdown();
+    }
+
+    @Test
+    public void testOSSOperator() throws FileNotFoundException {
+        File file = new File("C:\\Users\\Administrator\\Desktop\\testOosUploadFile.png");
+        // 指定文件名
+//        System.out.println(ossOperator.uploadObjectOSS("utilTestFile/", UUID.randomUUID().toString(), file));
+        // 默认使用原文件名
+//        System.out.println(ossOperator.uploadObjectOSS("utilTestFile/", file));
+    }
+
+    @Test
+    public void testCall() {
+        String result2 = HttpRequest.post("http://localhost:8088/oos/test")
+                .header(Header.USER_AGENT, "xxl-job")//头信息，多个头信息多次调用此方法即可
+                .timeout(20000)//超时，毫秒
+                .execute().body();
+    }
 }

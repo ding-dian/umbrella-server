@@ -28,4 +28,11 @@ public interface VolunteerMapper extends BaseMapper<Volunteer> {
      * @return
      */
     boolean update(Wrapper<Volunteer> updateWrapper);
+
+    /**
+     * 根据姓名查询志愿者
+     * @param name
+     * @return
+     */
+    Volunteer selectByName(String name);
 }

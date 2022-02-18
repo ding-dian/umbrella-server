@@ -53,7 +53,7 @@ public class VolunteerController {
 
         @ApiOperation("分页查询接口")
         @GetMapping("/selectList")
-        public Result selectList(@RequestBody Volunteer volunteer){
+        public Result selectList(Volunteer volunteer){
             try {
                 IPage<Volunteer> data = volunteerService.selectList(volunteer);
                 return ResultGenerator.getSuccessResult(data);
@@ -64,7 +64,7 @@ public class VolunteerController {
         }
         @ApiOperation("删除接口")
         @PostMapping("/deleteOne")
-        public Result deleteOne(@RequestParam Integer id){
+        public Result deleteOne(Integer id){
             try {
                  volunteerService.deleteVolunteer(id);
                 return ResultGenerator.getSuccessResult();
@@ -85,13 +85,10 @@ public class VolunteerController {
             }
         }
     @ApiOperation("查询接口")
-    @PostMapping("/selectOne")
-    public Result selectOne(@RequestBody String id){
-        JSONObject jsonObject =new JSONObject(id);
-        Integer ids = jsonObject.getInt("id");
-        System.out.println(ids);
+    @GetMapping("/selectOne")
+    public Result selectOne(Integer id){
         try {
-         Volunteer volunteer=volunteerService.selectOne(ids);
+         Volunteer volunteer=volunteerService.selectOne(id);
             return ResultGenerator.getSuccessResult(volunteer);
         } catch (Exception exception) {
             log.error("系统异常：{}",exception.getMessage());

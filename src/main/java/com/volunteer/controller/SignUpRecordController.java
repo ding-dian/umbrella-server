@@ -3,9 +3,12 @@ package com.volunteer.controller;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.http.HttpStatus;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.volunteer.entity.SignUpRecord;
 import com.volunteer.entity.common.Result;
 import com.volunteer.entity.common.ResultGenerator;
 import com.volunteer.entity.common.SignUpStatus;
+import com.volunteer.entity.vo.SignUpRecordVo;
 import com.volunteer.entity.vo.SignUpVo;
 import com.volunteer.service.SignUpRecordService;
 import io.swagger.annotations.Api;
@@ -13,6 +16,8 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * <p>
@@ -93,5 +98,39 @@ public class SignUpRecordController {
             return ResultGenerator.getFailResult(e.getMessage());
         }
     }
+
+    /**
+     * 获取报名列表
+     * @return  true：已报名，false：未报名
+     */
+    @ApiOperation("报名记录查询接口")
+    @GetMapping("/getList")
+    public Result getList(SignUpRecordVo signUpRecordVo) {
+        try {
+            Page<SignUpRecordVo> data = signUpRecordService.getList(signUpRecordVo);
+            return ResultGenerator.getSuccessResult(data);
+        }catch (Exception e) {
+            e.printStackTrace();
+            return ResultGenerator.getFailResult(e.getMessage());
+        }
+    }
+
+    /**
+     * 根据ID删除报名记录
+     * @return  删除结果
+     */
+    @ApiOperation("根据ID查询报名的详细信息")
+    @DeleteMapping("/deleteById/{id}")
+    public Result getById(@PathVariable Integer id) {
+        try {
+            signUpRecordService.deleteRecordById(id);
+            return ResultGenerator.getSuccessResult();
+        }catch (Exception e) {
+            e.printStackTrace();
+            return ResultGenerator.getFailResult(e.getMessage());
+        }
+    }
+
+
 }
 

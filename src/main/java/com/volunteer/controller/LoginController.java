@@ -15,7 +15,7 @@ import com.volunteer.service.LoginService;
 import com.volunteer.service.VolunteerService;
 import com.volunteer.util.AES;
 import com.volunteer.util.RegularUtil;
-import io.swagger.annotations.Api;
+import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +67,7 @@ public class LoginController {
      * @return
      */
     @PostMapping("/checkLoginState")
+    @ApiOperation("检查用户登录状态接口")
     public Result checkLoginState(@RequestBody Map<String, String> map) {
         String token = map.get("token");
         if (StringUtils.isEmpty(token)) {
@@ -84,13 +85,20 @@ public class LoginController {
 
 
     /**
-     * 保存用户的电话
+     * 用户注册时更新用户的信息
      *
      * @param map 传入的信息有用户的token和手机号
-     * @return
+     * @return 200 OK或异常信息
      */
     @PostMapping("/updateUserInfoByToken")
-    public Result updateUserInfoByToken(@RequestBody Map<String, String> map) {
+    @ApiOperation(
+            value = "用户注册时更新用户的信息接口",
+            notes = "用户在进入微信小程序时就已经完成注册但没有填入信息，用户报名活动时完成注册并填入用户信息",
+            produces = "application/json",//用户请求数据类型
+            consumes = "application/json")//用户响应数据类型
+    public Result updateUserInfoByToken(
+            @ApiParam(name = "用户更新的数据",value = "用户token、电话、用户姓名、qq号码、学号",required = true)
+            @RequestBody Map<String, String> map) {
         String token = map.get("token");
         String phoneNumber = map.get("phoneNumber");
         String name = map.get("userName");
@@ -128,6 +136,7 @@ public class LoginController {
             volunteerService.update(updateWrapper);
             return ResultGenerator.getSuccessResult();
         } else {
+            log.info("手机号已经被绑定或用户未授权");
             return ResultGenerator.getFailResult("手机号已经被绑定或用户未授权");
         }
     }
@@ -139,6 +148,9 @@ public class LoginController {
      * @return token
      */
     @PostMapping("/login")
+    @ApiParam(name = "code",value = "微信为用户提供的唯一的code，有时间限制")
+    @ApiOperation(value = "获取用户token接口")
+    @ApiResponses({@ApiResponse(code=600,message = "用户没有授权")})
     public Result login(@RequestBody Map<String, String> map) {
         String code = map.get("code");
         if (StringUtils.isEmpty(code)) {
@@ -165,11 +177,17 @@ public class LoginController {
 
     /**
      * 根据Token去获取用户信息
-     *
-     * @param token
-     * @return
      */
     @GetMapping("/getInfo")
+    @ApiOperation(
+            value = "根据Token去获取用户信息接口",
+            notes = "返回用户的信息",
+            produces = "application/json",//用户请求数据类型
+            consumes = "application/json")//用户响应数据类型
+    @ApiResponses({
+            @ApiResponse(code = 200,message = "success",response = Volunteer.class),
+            @ApiResponse(code = 400,message = "用户未登录，没有获得token")
+    })
     public Result getUserInfoByToken(@RequestParam String token) {
         if (StringUtils.isEmpty(token)) {
             return ResultGenerator.getFailResult("token有误!");
@@ -184,11 +202,13 @@ public class LoginController {
 
     /**
      * 如果未授权，则需要授权后再注册
-     *
-     * @return
-     * @Param code, rawData, signature
      */
     @PostMapping("/registry")
+    @ApiOperation(value="用户注册接口",notes = "用户注册后返回用户的token和userInfo")
+    @ApiResponses({
+            @ApiResponse(code = 200,message = "success",response = Volunteer.class),
+            @ApiResponse(code = 400,message = "发送数据参数异常或数据签名校验失败或注册失败")
+    })
     public Result registry(@RequestBody Map<String, String> map) {
         // 参数校验
         String code = map.get("code");
@@ -225,11 +245,9 @@ public class LoginController {
 
     /**
      * 验证码发送接口
-     *
-     * @param map
-     * @return code 验证码
      */
     @PostMapping("/sendCode")
+    @ApiOperation(value = "验证码请求接口",notes = "默认有效时间三分钟")
     public Result senSms(@RequestBody Map<String, String> map) {
         // 获取并校验参数
         String phoneNumber = map.get("phone");

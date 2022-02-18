@@ -3,10 +3,12 @@ package com.volunteer.service.impl;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.volunteer.component.RedisOperator;
 import com.volunteer.component.SecretOperator;
 import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.VolunteerStatisticalInformation;
@@ -41,6 +43,9 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
 
     @Autowired
     private SecretOperator secretOperator;
+
+    @Autowired
+    private RedisOperator redisOperator;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -86,14 +91,16 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
                 //如果页码为null或者未赋值 设置默认值1
                 volunteer.setPageNo(1);
             } else if (volunteer.getPageNo() < 0) {
-                throw new RuntimeException("页码不能小于1");
+               log.error("页码不能小于1");
+               return null;
             }
             //如果页数据为空，默认十条
             if (ObjectUtil.isNull(volunteer.getPageSize()) || volunteer.getPageSize() == 0) {
                 //如果页数据数为null或者未赋值 设置默认值20
                 volunteer.setPageSize(20);
             } else if (volunteer.getPageSize() < 0) {
-                throw new RuntimeException("页数据不能小于1");
+                log.error("页数据不能小于1");
+                return null;
             }
         }
         LambdaQueryWrapper<Volunteer> queryWrapper = new LambdaQueryWrapper<>();
@@ -115,6 +122,7 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
         log.info("pageNo:【{}】，pageSize:【{}】", volunteer.getPageNo(), volunteer.getPageSize());
         Page<Volunteer> page = new Page<>();
         page.setCurrent(volunteer.getPageNo()).setSize(volunteer.getPageSize());
+
         return baseMapper.selectPage(page, queryWrapper);
     }
 
@@ -188,8 +196,6 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
     /**
      * 解析jsonObject并存入数据库
      *
-     * @param jsonObject
-     * @return
      */
     @Override
     public Volunteer register(JSONObject jsonObject, String openid) {
@@ -248,6 +254,21 @@ public class VolunteerServiceImpl extends ServiceImpl<VolunteerMapper, Volunteer
 
     }
 
+    /**
+     * 更新用户头像（异步方法）
+     * @param token
+     * @param volunteer
+     * @param avatarUrl
+     * @return
+     */
+    @Override
+    public void updateAvatar(String token, Volunteer volunteer, String avatarUrl) {
+        volunteer.setAvatarUrl(avatarUrl);
+        if (baseMapper.updateById(volunteer) > 0) {
+            // 修改成功后更新缓存
+            redisOperator.set(token, JSONUtil.toJsonStr(volunteer), 7200);
+        }
+    }
 
 }
 

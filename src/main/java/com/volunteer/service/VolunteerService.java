@@ -3,8 +3,9 @@ package com.volunteer.service;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.volunteer.entity.Volunteer;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.volunteer.entity.Volunteer;
+import org.springframework.scheduling.annotation.Async;
 
 /**
  * <p>
@@ -32,6 +33,7 @@ public interface VolunteerService extends IService<Volunteer> {
 
     /**
      * 删除一个志愿者
+     *
      * @param id
      * @return
      */
@@ -55,6 +57,7 @@ public interface VolunteerService extends IService<Volunteer> {
 
     /**
      * 更新志愿者信息
+     *
      * @param volunteer
      * @return
      */
@@ -62,12 +65,15 @@ public interface VolunteerService extends IService<Volunteer> {
 
     /**
      * 根据 UpdateWrapper 条件，更新记录 需要设置sqlset
+     *
      * @param updateWrapper
      * @return
      */
     boolean update(Wrapper<Volunteer> updateWrapper);
+
     /**
      * 根据OpenId获取志愿者信息
+     *
      * @param openId
      * @return
      */
@@ -75,6 +81,7 @@ public interface VolunteerService extends IService<Volunteer> {
 
     /**
      * 解析jsonObject并存入数据库
+     *
      * @param jsonObject
      * @return
      */
@@ -82,6 +89,7 @@ public interface VolunteerService extends IService<Volunteer> {
 
     /**
      * 检查手机号是否已经被绑定
+     *
      * @param phoneNumber
      * @return
      */
@@ -89,9 +97,18 @@ public interface VolunteerService extends IService<Volunteer> {
 
     /**
      * 根据用户的openID更新用户的电话
+     *
      * @param openID 用户的唯一标识
      * @return
      */
     Integer updateByOpenID(String openID);
+
+    /**
+     * 用户更新用户头像
+     *
+     * @return
+     */
+    @Async
+    void updateAvatar(String token, Volunteer volunteer, String avatarUrl);
 
 }
