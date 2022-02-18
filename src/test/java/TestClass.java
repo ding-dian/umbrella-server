@@ -1,6 +1,8 @@
 
 
 
+import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpResponse;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
 import com.tencentcloudapi.common.Credential;
@@ -34,6 +36,7 @@ import com.volunteer.mapper.VolunteerMapper;
 import com.volunteer.service.SignUpRecordService;
 import com.volunteer.service.VolunteerService;
 import io.jsonwebtoken.Claims;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,10 +49,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 /**
  * @author VernHe
@@ -57,7 +57,9 @@ import java.util.Random;
  */
 @SpringBootTest(classes = VolunteerManagementApplication.class)
 @RunWith(SpringRunner.class)
+@Slf4j
 public class TestClass {
+    volatile int count = 0;
 
     @Autowired
     private RedisOperator operator;
@@ -357,4 +359,5 @@ public class TestClass {
         System.out.println(taskExecutor.getCorePoolSize());
         System.out.println(taskExecutor.getMaxPoolSize());
     }
+
 }
