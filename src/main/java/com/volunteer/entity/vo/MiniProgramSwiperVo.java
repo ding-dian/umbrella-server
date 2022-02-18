@@ -27,6 +27,6 @@ public class MiniProgramSwiperVo {
     @ApiModelProperty(name="storePath",value = "图片在oss中的路径",required = true,example = "qxImages/categoryImages0")
     private String storePath;
 
-    @ApiModelProperty(name="id",value = "爱心雨伞的编号",required = true,example = "1")
+    @ApiModelProperty(name="url",value = "爱心雨伞图片的url",required = true,example = "http://xxxx.png")
     private String url;//图片url地址
 }

@@ -10,6 +10,7 @@ import com.volunteer.entity.UmbrellaHistoryBorrow;
 import com.volunteer.entity.UmbrellaOrder;
 import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.common.DataFormats;
+import com.volunteer.entity.vo.UmbrellaOrderListVo;
 import com.volunteer.entity.vo.UmbrellaOrderVo;
 import com.volunteer.mapper.UmbrellaMapper;
 import com.volunteer.service.UmbrellaBorrowService;
@@ -163,8 +164,8 @@ public class TestUmbrellaController {
 
     @Test
     public void TestSelectBorrow() throws InvocationTargetException, IllegalAccessException {
-        Map<String, Object> map = umbrellaBorrowService.selectBorrow(1, 20);
-        map.forEach((k,v)->log.info("key:{},value:{}",k,v));
+        UmbrellaOrderListVo listVo = umbrellaBorrowService.selectBorrow(1, 20);
+        listVo.getRecords().forEach(System.out::println);
     }
 }
 

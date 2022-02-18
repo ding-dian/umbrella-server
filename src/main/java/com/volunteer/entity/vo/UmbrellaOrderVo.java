@@ -21,7 +21,7 @@ public class UmbrellaOrderVo {
     private String qqNumber;
     private String emailAddress;
     private Long studentId;
-    private long borrowDate;
+    private Long borrowDate;
     private Double borrowDurations;
 
     public UmbrellaOrderVo(UmbrellaOrder umbrellaOrder) {

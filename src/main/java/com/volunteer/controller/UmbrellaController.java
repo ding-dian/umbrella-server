@@ -9,6 +9,8 @@ import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.common.Result;
 import com.volunteer.entity.common.ResultGenerator;
 import com.volunteer.entity.common.UmbrellaDic;
+import com.volunteer.entity.vo.UmbrellaHistoryListVo;
+import com.volunteer.entity.vo.UmbrellaOrderListVo;
 import com.volunteer.entity.vo.UmbrellaOrderVo;
 import com.volunteer.service.KcpService;
 import com.volunteer.service.UmbrellaBorrowService;
@@ -146,14 +148,14 @@ public class UmbrellaController {
     @GetMapping("/selectBorrowList")
     @ApiOperation(value = "查询借伞用户信息列表",response = UmbrellaOrderVo.class)
     public Result selectBorrowList(Integer pageNo, Integer pageSize){
-        Map<String, Object> data;
+        UmbrellaOrderListVo listVo;
         try {
-            data = umbrellaBorrowService.selectBorrow(pageNo, pageSize);
+            listVo = umbrellaBorrowService.selectBorrow(pageNo, pageSize);
         } catch (InvocationTargetException | IllegalAccessException e) {
             log.error("查询借伞用户信息列表失败：{}",e.getMessage());
             return ResultGenerator.getFailResult(e.getMessage());
         }
-        JSON jsonStr = JSONUtil.parse(data);
+        JSON jsonStr = JSONUtil.parse(listVo);
         return ResultGenerator.getSuccessResult(jsonStr);
     }
     /**
@@ -165,13 +167,13 @@ public class UmbrellaController {
     @GetMapping("/selectOverTimeList")
     @ApiOperation(value = "查询超时借伞用户信息列表",response = UmbrellaOrderVo.class)
     public Result selectOverTimeList(Integer pageNo, Integer pageSize){
-        Map<String, Object> data;
+        UmbrellaOrderListVo listVo;
         try {
-            data = umbrellaBorrowService.selectOvertime(pageNo, pageSize);
+            listVo = umbrellaBorrowService.selectOvertime(pageNo, pageSize);
         } catch (Exception e) {
             return ResultGenerator.getFailResult(e.getMessage());
         }
-        JSON jsonStr = JSONUtil.parse(data);
+        JSON jsonStr = JSONUtil.parse(listVo);
         return ResultGenerator.getSuccessResult(jsonStr);
     }
 
@@ -184,14 +186,13 @@ public class UmbrellaController {
     @GetMapping("/selectHistoryBorrow")
     @ApiOperation(value = "从数据库中查询历史用户借伞信息",response = UmbrellaOrderVo.class)
     public Result selectHistoryBorrow(Integer pageNo, Integer pageSize){
-        Map<String, Object> map;
+        UmbrellaHistoryListVo listVo;
         try {
-            log.info("pageNO:{},pageSize:{}",pageNo,pageSize);
-            map = umbrellaBorrowService.selectHistoryAll(pageNo, pageSize);
+            listVo = umbrellaBorrowService.selectHistoryAll(pageNo, pageSize);
         } catch (Exception e) {
         	return ResultGenerator.getFailResult(e.getMessage());
         }
-        JSON jsonStr = JSONUtil.parse(map);
+        JSON jsonStr = JSONUtil.parse(listVo);
         return ResultGenerator.getSuccessResult(jsonStr);
     }
 

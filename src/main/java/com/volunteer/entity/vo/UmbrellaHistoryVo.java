@@ -20,8 +20,8 @@ public class UmbrellaHistoryVo {
     private String openID;
     private String userName;
     private String studentId;
-    private long borrowDate;
-    private long returnDate;
+    private Long borrowDate;
+    private Long returnDate;
     private Double borrowDurations;
     private Integer borrowStatus;
 

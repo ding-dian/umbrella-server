@@ -11,7 +11,9 @@ import com.volunteer.entity.UmbrellaHistoryBorrow;
 import com.volunteer.entity.UmbrellaOrder;
 import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.common.DataFormats;
+import com.volunteer.entity.vo.UmbrellaHistoryListVo;
 import com.volunteer.entity.vo.UmbrellaHistoryVo;
+import com.volunteer.entity.vo.UmbrellaOrderListVo;
 import com.volunteer.entity.vo.UmbrellaOrderVo;
 import com.volunteer.mapper.UmbrellaMapper;
 import com.volunteer.service.MailService;
@@ -85,7 +87,7 @@ public class UmbrellaBorrowServiceImpl extends ServiceImpl<UmbrellaMapper, Umbre
     }
 
     @Override
-    public Map<String,Object> selectHistoryAll(Integer pageNo, Integer pageSize) {
+    public UmbrellaHistoryListVo selectHistoryAll(Integer pageNo, Integer pageSize) {
         if (ObjectUtil.isNull(pageNo)){
             pageNo = 1;//没有输入页号默认返回第一页
         }
@@ -103,21 +105,21 @@ public class UmbrellaBorrowServiceImpl extends ServiceImpl<UmbrellaMapper, Umbre
         //数据库中数据总数
         int total = baseMapper.selectCount();
         //将数据包装一下
-        Map<String,Object> map = new HashMap<>();
-        map.put("pageNo",pageNo);
-        map.put("pageSize",pageSize);
-        map.put("records",collect);
-        map.put("Total",total);
-        return map;
+        UmbrellaHistoryListVo listVo = new UmbrellaHistoryListVo();
+        listVo.setPageNo(pageNo)
+                .setPageSize(pageSize)
+                .setTotal(total)
+                .setRecords(collect);
+        return listVo;
     }
 
     @Override
-    public Map<String,Object> selectBorrow(Integer pageNo, Integer pageSize) {
+    public UmbrellaOrderListVo selectBorrow(Integer pageNo, Integer pageSize) {
         return getBeanForRedis("umbrellaBorrow*",pageNo,pageSize);
     }
 
     @Override
-    public Map<String,Object> selectOvertime(Integer pageNo, Integer pageSize) {
+    public UmbrellaOrderListVo selectOvertime(Integer pageNo, Integer pageSize) {
         return getBeanForRedis("umbrellaOvertime*",pageNo,pageSize);
     }
 
@@ -126,13 +128,13 @@ public class UmbrellaBorrowServiceImpl extends ServiceImpl<UmbrellaMapper, Umbre
         redisOperator.del(key);
     }
 
-    private Map<String,Object> getBeanForRedis(String key,Integer pageNo, Integer pageSize){
-        //封装一个Map用来回传数据
-        Map<String,Object> data = new HashMap<>();
+    private UmbrellaOrderListVo getBeanForRedis(String key,Integer pageNo, Integer pageSize){
+        //封装一个UmbrellaOrderListVo用来回传数据
+        UmbrellaOrderListVo listVo = new UmbrellaOrderListVo();
         //从redis里拿到所有的keys
         Set<String> keys = redisOperator.keys(key);
         //存储一个redis中用户的总数量
-        data.put("Total",  keys.size());
+        listVo.setTotal(keys.size());
         //拿到所有map集合，一个map对应一个用户的信息
         List<Map<Object, Object>> collect = keys.stream()
                 .map(redisOperator::hgetall)
@@ -165,10 +167,10 @@ public class UmbrellaBorrowServiceImpl extends ServiceImpl<UmbrellaMapper, Umbre
                 .map(UmbrellaOrderVo::new)//转换为vo
                 .collect(Collectors.toList());
         //存放返回的数据
-        data.put("pageNo",pageNo);
-        data.put("pageSize",pageSize);
-        data.put("records",records);
-        return data;
+        listVo.setPageNo(pageNo)
+                .setPageSize(pageSize)
+                .setRecords(records);
+        return listVo;
     }
 
     @Override

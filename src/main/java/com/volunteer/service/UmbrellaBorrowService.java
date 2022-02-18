@@ -5,7 +5,9 @@ import com.volunteer.entity.Umbrella;
 import com.volunteer.entity.UmbrellaHistoryBorrow;
 import com.volunteer.entity.UmbrellaOrder;
 import com.volunteer.entity.Volunteer;
+import com.volunteer.entity.vo.UmbrellaHistoryListVo;
 import com.volunteer.entity.vo.UmbrellaHistoryVo;
+import com.volunteer.entity.vo.UmbrellaOrderListVo;
 import com.volunteer.entity.vo.UmbrellaOrderVo;
 
 import java.lang.reflect.InvocationTargetException;
@@ -36,7 +38,7 @@ public interface UmbrellaBorrowService extends IService<UmbrellaHistoryBorrow> {
      * @param pageSize 每页显示数据
      * @return 返回所有借阅信息
      */
-    Map<String,Object> selectHistoryAll(Integer pageNo, Integer pageSize);
+    UmbrellaHistoryListVo selectHistoryAll(Integer pageNo, Integer pageSize);
 
     /**
      * 从redis中查询所有实时借阅雨伞的信息
@@ -44,7 +46,7 @@ public interface UmbrellaBorrowService extends IService<UmbrellaHistoryBorrow> {
      * @param pageSize 每页显示数据
      * @return 返回所有借阅信息
      */
-     Map<String,Object> selectBorrow(Integer pageNo, Integer pageSize) throws InvocationTargetException, IllegalAccessException;
+    UmbrellaOrderListVo selectBorrow(Integer pageNo, Integer pageSize) throws InvocationTargetException, IllegalAccessException;
 
     /**
      * 从redis中查询所有超时的用户信息
@@ -52,7 +54,7 @@ public interface UmbrellaBorrowService extends IService<UmbrellaHistoryBorrow> {
      * @param pageSize 每页显示数据
      * @return 返回所有借阅信息
      */
-    Map<String,Object> selectOvertime(Integer pageNo, Integer pageSize);
+    UmbrellaOrderListVo selectOvertime(Integer pageNo, Integer pageSize);
 
 
     /**

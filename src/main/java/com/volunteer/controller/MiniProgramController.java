@@ -11,6 +11,7 @@ import com.volunteer.entity.vo.MiniProgramSwiperListVo;
 import com.volunteer.entity.vo.MiniProgramSwiperVo;
 import com.volunteer.util.BeanMapUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,7 @@ public class MiniProgramController {
      * @return 返回可以公网访问到的url
      */
     @PostMapping("upLoadImage")
+    @ApiOperation("上传图片接口")
     public Result upLoadImage(MiniProgramSwiperVo swiperVo,@RequestPart("file") MultipartFile file){
         if(ObjectUtil.isNull(swiperVo) || StringUtils.isEmpty(swiperVo.getStorePath()) || ObjectUtil.isNull(file)){
             return ResultGenerator.getFailResult("未选择图片模块");
@@ -69,6 +71,7 @@ public class MiniProgramController {
      * @return MiniProgramSwiperListVo
      */
     @GetMapping("getImageList")
+    @ApiOperation("获取图片接口")
     public Result getImageList(String storePath){
         if(ObjectUtil.isNull(storePath) || StringUtils.isEmpty(storePath)){
             return ResultGenerator.getFailResult("没有选择小程序轮播图模块");
@@ -78,7 +81,7 @@ public class MiniProgramController {
         List<MiniProgramSwiperVo> collect = keys.stream()
                 .map(e -> JSONUtil.toBean(redisOperator.get(e), MiniProgramSwiperVo.class))
                 .collect(Collectors.toList());
-        //返回改对象
+        //返回该对象
         MiniProgramSwiperListVo listVo = new MiniProgramSwiperListVo();
         listVo.setSwiperNum(keys.size()).setSwiperList(collect);
         String jsonStr = JSONUtil.toJsonStr(listVo);
@@ -91,11 +94,32 @@ public class MiniProgramController {
      * @return result
      */
     @GetMapping("deleteImage")
+    @ApiOperation("删除图片接口")
     public Result deleteImage(String key){
         if(ObjectUtil.isNull(key) || StringUtils.isEmpty(key)){
             return ResultGenerator.getFailResult("服务器没有收到图片保存在redis的key，删除失败");
         }
         redisOperator.del(key);
         return ResultGenerator.getSuccessResult();
+    }
+
+    /**
+     * 这个接口主要是用户对和图片url一起包装的其他参数的修改，例如summary
+     * @param swiperVo 包装好的图片对象
+     * @return result
+     */
+    @GetMapping("updateImage")
+    @ApiOperation("更新图片信息接口")
+    public Result updateImage(MiniProgramSwiperVo swiperVo){
+        if(ObjectUtil.isNull(swiperVo)){
+            return ResultGenerator.getFailResult("服务器没有收到需要修改的图片信息，删除失败");
+        }
+        String key = swiperVo.getStorePath()+":"+swiperVo.getUrl();
+        try {
+            redisOperator.set(key,JSONUtil.toJsonStr(swiperVo));
+        }catch (Exception e){
+            return ResultGenerator.getFailResult("服务器异常，删除失败"+e.getMessage());
+        }
+        return ResultGenerator.getSuccessResult("更新成功");
     }
 }
