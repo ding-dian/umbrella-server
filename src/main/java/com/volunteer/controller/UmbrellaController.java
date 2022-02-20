@@ -21,6 +21,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -178,7 +179,7 @@ public class UmbrellaController {
     }
 
     /**
-     * 从数据库中查询历史用户借伞信息
+     * 从数据库中查询历史用户借伞信息，网页端查询
      * @param pageNo 页号，大于1
      * @param pageSize 每页多少数据，默认20条
      * @return 返回Result
@@ -189,6 +190,33 @@ public class UmbrellaController {
         UmbrellaHistoryListVo listVo;
         try {
             listVo = umbrellaBorrowService.selectHistoryAll(pageNo, pageSize);
+        } catch (Exception e) {
+        	return ResultGenerator.getFailResult(e.getMessage());
+        }
+        JSON jsonStr = JSONUtil.parse(listVo);
+        return ResultGenerator.getSuccessResult(jsonStr);
+    }
+
+    /**
+     * 从数据库中查询历史用户借伞信息，微信小程序查询
+     * @param token 系统发给用户微信小程序的凭证
+     * @return 分页返回数据，默认返回第一页、20条数据，微信端用户触底会触发下一次查询
+     */
+    @GetMapping("/selectVolunteerHistoryBorrow")
+    @ApiOperation(value = "从数据库中查询历史用户借伞信息",response = UmbrellaOrderVo.class)
+    public Result selectVolunteerHistoryBorrow(String token,Integer pageNo, Integer pageSize){
+        if(ObjectUtil.isNull(token) || StringUtils.isEmpty(token)){
+            return ResultGenerator.getFailResult("用户token为空！");
+        }
+        UmbrellaHistoryListVo listVo;
+        try {
+            //先拿到用户的数据
+            String jsonStr = redisOperator.get(token);
+            //转成对象
+            Volunteer volunteer = JSONUtil.toBean(jsonStr, Volunteer.class);
+            volunteer.setPageNo(pageNo)
+                    .setPageSize(pageSize);
+            listVo = umbrellaBorrowService.selectHistoryByOpenId(volunteer);
         } catch (Exception e) {
         	return ResultGenerator.getFailResult(e.getMessage());
         }

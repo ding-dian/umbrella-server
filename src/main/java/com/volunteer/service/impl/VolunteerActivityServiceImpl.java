@@ -7,18 +7,21 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.tencentcloudapi.as.v20180419.models.Activity;
 import com.volunteer.entity.SignUpRecord;
 import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.VolunteerActivity;
 import com.volunteer.entity.common.ActivityStatus;
 import com.volunteer.entity.vo.ActivityListItemVo;
 import com.volunteer.entity.vo.ActivityListVo;
+import com.volunteer.entity.vo.ActivityVo;
 import com.volunteer.entity.vo.AuditeActivityVo;
 import com.volunteer.mapper.VolunteerActivityMapper;
 import com.volunteer.service.SignUpRecordService;
 import com.volunteer.service.VolunteerActivityService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.volunteer.util.AES;
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +32,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -387,5 +391,21 @@ public class VolunteerActivityServiceImpl extends ServiceImpl<VolunteerActivityM
         } else {
             throw new RuntimeException("未报名该活动");
         }
+    }
+
+    @Override
+    public ActivityListVo selectUserActivityList(Integer volunteerID, Integer pageNo, Integer pageSize) {
+        //跳过前多少条数据
+        int skip = (pageNo-1) * pageSize;
+        List<VolunteerActivity> activities = baseMapper.selectUserActivityList(volunteerID, skip, pageSize);
+        List<ActivityListItemVo> collect = activities.stream()
+                .map(ActivityVo::new)
+                .map(ActivityListItemVo::new)
+                .collect(Collectors.toList());
+        //包装一下数据
+        ActivityListVo listVo = new ActivityListVo();
+        listVo.setTotal(Long.parseLong(String.valueOf(activities.size())));
+        listVo.setList(collect);
+        return listVo;
     }
 }

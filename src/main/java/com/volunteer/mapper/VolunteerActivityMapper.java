@@ -28,4 +28,11 @@ public interface VolunteerActivityMapper extends BaseMapper<VolunteerActivity> {
      * @return
      */
     VolunteerActivity selectByName(String name);
+
+    /**
+     * 查询一个用户参加的所有活动
+     * @param volunteerID 志愿者的id
+     * @return 返回查询到的集合
+     */
+    List<VolunteerActivity> selectUserActivityList(Integer volunteerID,Integer skip, Integer pageSize);
 }

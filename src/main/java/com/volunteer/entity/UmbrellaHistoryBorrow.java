@@ -41,21 +41,21 @@ public class UmbrellaHistoryBorrow implements Serializable {
      * 用户的openID
      */
     @ApiModelProperty(name = "openID", value = "用户的openID", required = true, example = "+7BfWy6IijmcZFO4Ac8fjmAvS8=")
-    @TableField(value = "openid")
+    @TableField(value = "openid",exist = false)
     private String openID;
 
     /**
      * 用户的姓名
      */
     @ApiModelProperty(name = "userName", value = "用户的姓名", required = true, example = "xxx")
-    @TableField("name")
+    @TableField(value = "name",exist = false)
     private String userName;
 
     /**
      * 用户的学号
      */
     @ApiModelProperty(name = "studentId", value = "用户的学号", required = true, example = "xxx")
-    @TableField("student_id")
+    @TableField(value = "student_id",exist = false)
     private String studentId;
 
     /**

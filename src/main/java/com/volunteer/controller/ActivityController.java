@@ -1,8 +1,10 @@
 package com.volunteer.controller;
 
 
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.http.HttpStatus;
 import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.VolunteerActivity;
@@ -16,6 +18,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -263,6 +266,25 @@ public class ActivityController {
             e.printStackTrace();
             return ResultGenerator.getFailResult(e.getMessage());
         }
+    }
+    
+    /**
+     * 查询一个用户参加的所有活动
+     */
+    @ApiOperation(value = "活动签到接口")
+    @GetMapping("/selectUserActivityList")
+    public Result selectUserActivityList(@RequestParam("volunteerId") Integer volunteerId,Integer pageNo,Integer pageSize) {
+        if(ObjectUtil.isNull(volunteerId)){
+            return ResultGenerator.getFailResult("未输入志愿者编号");
+        }
+        ActivityListVo listVo;
+        try {
+            listVo = volunteerActivityService.selectUserActivityList(volunteerId, pageNo, pageSize);
+        } catch (Exception e) {
+            return ResultGenerator.getFailResult("服务器异常");
+        }
+        String jsonStr = JSONUtil.toJsonStr(listVo);
+        return ResultGenerator.getSuccessResult(jsonStr);
     }
 }
 

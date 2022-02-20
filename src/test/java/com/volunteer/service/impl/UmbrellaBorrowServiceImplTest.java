@@ -58,7 +58,6 @@ public class UmbrellaBorrowServiceImplTest {
      */
     @Test
     public void testSelectBorrow() throws Exception {
-    //TODO: Test goes here...
     }
 
     /**
@@ -74,7 +73,7 @@ public class UmbrellaBorrowServiceImplTest {
      */
     @Test
     public void testBorrowByVolunteer() throws Exception {
-    //TODO: Test goes here...
+
     }
 
     /**

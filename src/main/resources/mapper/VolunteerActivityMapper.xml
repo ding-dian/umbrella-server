@@ -47,4 +47,11 @@
         select * from volunteer_activity where activity_name = #{name}
     </select>
 
+    <!-- 嵌套查询，查询一个用户的多个活动记录 -->
+    <select id="selectUserActivityList" parameterType="int" resultType="com.volunteer.entity.VolunteerActivity">
+        SELECT * FROM volunteer_activity
+        WHERE id
+        IN (SELECT volunteer_activity_id as id FROM sign_up_record WHERE volunteer_id = #{volunteerID} )
+        LIMIT #{skip},#{pageSize}
+    </select>
 </mapper>

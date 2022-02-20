@@ -30,7 +30,7 @@ public interface UmbrellaBorrowService extends IService<UmbrellaHistoryBorrow> {
      * @param volunteer 查询的志愿者
      * @return 返回该志愿者的所有使用记录
      */
-    List<UmbrellaHistoryVo> selectHistoryById(Volunteer volunteer);
+    UmbrellaHistoryListVo selectHistoryByOpenId(Volunteer volunteer);
 
     /**
      * 查询所有用户的所有借阅情况，需判断是否具有管理员访问权限

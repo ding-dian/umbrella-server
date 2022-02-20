@@ -16,6 +16,7 @@ import com.volunteer.mapper.VolunteerStatisticalInformationMapper;
 import com.volunteer.service.VolunteerActivityService;
 import com.volunteer.service.VolunteerStatisticalInformationService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,7 @@ import java.util.Objects;
  * @author xiaoyao
  * @since 2021-11-25
  */
+@Slf4j
 @Service
 public class VolunteerStatisticalInformationServiceImpl extends ServiceImpl<VolunteerStatisticalInformationMapper, VolunteerStatisticalInformation> implements VolunteerStatisticalInformationService {
     @Autowired
@@ -68,7 +70,7 @@ public class VolunteerStatisticalInformationServiceImpl extends ServiceImpl<Volu
         //判断志愿者统计信息是否存在
         System.out.println(volunteerStatisticalInformation);
         if (ObjectUtil.isNull(volunteerStatisticalInformation)) {
-            throw new RuntimeException("志愿者统计信息为空");
+            log.info("志愿者活动信息为空");
         }
         return volunteerStatisticalInformation;
     }

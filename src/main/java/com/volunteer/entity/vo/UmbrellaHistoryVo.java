@@ -1,5 +1,6 @@
 package com.volunteer.entity.vo;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.volunteer.entity.UmbrellaHistoryBorrow;
 import lombok.Data;
 import lombok.NoArgsConstructor;

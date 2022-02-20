@@ -1,6 +1,7 @@
 package com.volunteer.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -60,7 +61,7 @@ public class UmbrellaBorrowServiceImpl extends ServiceImpl<UmbrellaMapper, Umbre
 
 
     @Override
-    public List<UmbrellaHistoryVo> selectHistoryById(Volunteer volunteer) {
+    public UmbrellaHistoryListVo selectHistoryByOpenId(Volunteer volunteer) {
         if (ObjectUtil.isNull(volunteer) || ObjectUtil.isNull(volunteer.getOpenid())) {
             //没有传入查询人或者查询人没有openID，直接返回
             log.error("未传入用户信息或用户信息不正确");
@@ -79,11 +80,18 @@ public class UmbrellaBorrowServiceImpl extends ServiceImpl<UmbrellaMapper, Umbre
         log.info("pageNo:【{}】，pageSize:【{}】", volunteer.getPageNo(), volunteer.getPageSize());
         Page<UmbrellaHistoryBorrow> page = new Page<>();
         page.setCurrent(volunteer.getPageNo()).setSize(volunteer.getPageSize());
-        return baseMapper.selectPage(page, queryWrapper)
+        List<UmbrellaHistoryVo> collect = baseMapper.selectPage(page, queryWrapper)
                 .getRecords()
                 .stream()
                 .map(UmbrellaHistoryVo::new)
                 .collect(Collectors.toList());
+        //将用户数据包装一下
+        UmbrellaHistoryListVo listVo = new UmbrellaHistoryListVo();
+        listVo.setPageNo(volunteer.getPageNo())
+                .setPageSize(volunteer.getPageSize())
+                .setTotal(collect.size())
+                .setRecords(collect);
+        return listVo;
     }
 
     @Override
@@ -175,7 +183,7 @@ public class UmbrellaBorrowServiceImpl extends ServiceImpl<UmbrellaMapper, Umbre
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Integer borrowByVolunteer(Volunteer volunteer) throws InvocationTargetException, IllegalAccessException {
+    public Integer borrowByVolunteer(Volunteer volunteer) {
         //拼接openID为了防止姓名重复
         String key = "umbrellaBorrow:"+volunteer.getName()+volunteer.getOpenid();
         if(ObjectUtil.isNull(volunteer) || redisOperator.exists(key)){

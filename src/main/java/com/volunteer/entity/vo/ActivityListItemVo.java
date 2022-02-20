@@ -46,4 +46,17 @@ public class ActivityListItemVo {
      * 剩余名额
      */
     private Integer remainingPlaces;
+
+    public ActivityListItemVo() {}
+
+    public ActivityListItemVo(ActivityVo vo) {
+        this.activityId = vo.getId();
+        this.imgUrl = vo.getActivityImg();
+        this.activityTitle = vo.getActivityName();
+        this.description = vo.getDescription();
+        this.percent = vo.getNumberOfNeed();
+        this.registrationPopulation = vo.getNumberOfAttendees();
+        this.predictDuration = vo.getPredictDuration();
+        this.remainingPlaces = vo.getNumberOfNeed() -  vo.getNumberOfAttendees();
+    }
 }

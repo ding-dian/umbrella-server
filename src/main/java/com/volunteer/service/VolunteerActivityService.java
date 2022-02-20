@@ -1,13 +1,11 @@
 package com.volunteer.service;
 
+
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.volunteer.entity.SignUpRecord;
 import com.volunteer.entity.VolunteerActivity;
 import com.volunteer.entity.vo.ActivityListVo;
 import com.volunteer.entity.vo.AuditeActivityVo;
-
-import java.util.List;
 
 /**
  * <p>
@@ -92,4 +90,12 @@ public interface VolunteerActivityService extends IService<VolunteerActivity> {
      * 活动签到
      */
     boolean signIn(Integer volunteerId, Integer activityId);
+
+
+    /**
+     * 查询一个用户参加的所有活动
+     * @param volunteerID 志愿者的id
+     * @return 返回查询到的集合
+     */
+    ActivityListVo selectUserActivityList(Integer volunteerID,Integer pageNo, Integer pageSize);
 }

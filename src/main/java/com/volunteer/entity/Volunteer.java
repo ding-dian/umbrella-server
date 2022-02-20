@@ -161,30 +161,4 @@ public class Volunteer implements Serializable {
     @ApiModelProperty(hidden = true)
     @TableField(exist = false)
     private int pageSize;
-
-    /**
-     * 用户参加志愿活动总时长
-     */
-    @ApiModelProperty(name="activityTotaltime",value = "用户参加志愿活动的总时长",notes="不保存小数，向上取整",required = true,example = "4")
-//    @TableField("activityTotaltime")
-    @TableField(exist = false)
-    private Double activityTotaltime;
-
-    /**
-     * 用户参加志愿活动总次数
-     */
-    @ApiModelProperty(name="activityNumber",value = "用户参加志愿活动的总次数",required = true,example = "4")
-//    @TableField("activityNumber")
-    @TableField(exist = false)
-    private Integer activityNumber;
-
-    /**
-     * 用户借取爱心雨伞的时间
-     */
-    @ApiModelProperty(name="borrowUmbrellaDate",value = "用户借取爱心雨伞的时间",required = true,example = "2022年2月1日00:27:56")
-//    @TableField("borrowUmbrellaDate")
-    @TableField(exist = false)
-    private LocalDateTime borrowUmbrellaDate;
-
-
 }
