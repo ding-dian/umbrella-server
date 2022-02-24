@@ -271,7 +271,7 @@ public class ActivityController {
     /**
      * 查询一个用户参加的所有活动
      */
-    @ApiOperation(value = "活动签到接口")
+    @ApiOperation(value = "查询用户历史活动接口")
     @GetMapping("/selectUserActivityList")
     public Result selectUserActivityList(@RequestParam("volunteerId") Integer volunteerId,Integer pageNo,Integer pageSize) {
         if(ObjectUtil.isNull(volunteerId)){

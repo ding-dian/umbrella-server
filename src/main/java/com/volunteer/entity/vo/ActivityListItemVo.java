@@ -47,6 +47,16 @@ public class ActivityListItemVo {
      */
     private Integer remainingPlaces;
 
+    /**
+     * 活动开始时间
+     */
+    private long startTime;
+
+    /**
+     * 活动结束时间
+     */
+    private long endTime;
+
     public ActivityListItemVo() {}
 
     public ActivityListItemVo(ActivityVo vo) {
@@ -58,5 +68,7 @@ public class ActivityListItemVo {
         this.registrationPopulation = vo.getNumberOfAttendees();
         this.predictDuration = vo.getPredictDuration();
         this.remainingPlaces = vo.getNumberOfNeed() -  vo.getNumberOfAttendees();
+        this.startTime = vo.getStartTime();
+        this.endTime = vo.getEndTime();
     }
 }

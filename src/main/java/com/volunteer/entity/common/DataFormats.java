@@ -9,6 +9,6 @@ public class DataFormats {
     /**
      * 时间转换格式，用于将一个"2022-02-09T00:25:57.724"类型的字符串转成LocalDatetime对象
      */
-    public static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
+    public static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSS]");
 
 }
