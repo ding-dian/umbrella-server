@@ -58,4 +58,14 @@ public class SendMailUtil {
         //邮件内容
         mailService.sendSimpleMail(mailForm,mailFromNick,new String[]{mailForm},null,subject,content);
     }
+
+    /**
+     * 锁机运行状态消息发送给管理员
+     * @param content 锁机消息
+     */
+    public void sendLockMsg2Admin(String content){
+        String subject = "爱心雨伞锁机提醒";//主题
+        //邮件内容
+        mailService.sendSimpleMail(mailForm,mailFromNick,new String[]{mailForm},null,subject,content);
+    }
 }

@@ -3,6 +3,7 @@ package com.volunteer.service;
 import cn.hutool.core.util.ObjectUtil;
 import com.volunteer.entity.common.UmbrellaDic;
 import com.volunteer.util.SendMailUtil;
+import com.volunteer.util.SpringContextUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import kcp.*;
@@ -17,8 +18,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.Instant;
 
 /**
  * @author: 梁峰源
@@ -26,33 +31,35 @@ import java.nio.charset.StandardCharsets;
  * 由于学校里校园网登录需要账号，爱心雨伞锁机如果断线重连比较麻烦，维护成本高，用UDP发包校园网有几个端口不会认证，直接外发
  * 所以爱心雨伞锁机需要基于UDP协议的kcp协议进行联网，kcp协议具有TCP协议的可靠性和UDP协议的低延迟的特点
  * <a href="https://github.com/l42111996/java-Kcp.git">KCP协议实现地址</a>
- * 整体的思路如下：
- *      1、用户在微信端借伞，UmbrellaController调用KcpService的sendUnlock2Lock方法发送借伞信号
- *      2、
+ *    整体的思路如下：
+ *    1、用户在微信端借伞，UmbrellaController调用KcpService的sendUnlock2Lock方法发送借伞信号
+ *    2、用户需要在规定时间里面将雨伞借走
+ *    3、
  */
 @Slf4j
 @Component
-//@EnableScheduling//开启定时任务
 public class KcpService implements KcpListener {
 
-    @Resource
+    @Autowired
     private SendMailUtil sendMailUtil;
     @Value("${umbrella.defaultUnlockWaitTime}")
-    private static int defaultUnlockWaitTime;//默认锁机开锁等待时间
-    private static Ukcp ukcp;
-    private static volatile boolean flag;//用来判断锁机是否开启并且用户借走了雨伞
-    private static boolean isConnect;//判断服务器是否掉线
+    private int defaultUnlockWaitTime;//默认锁机开锁等待时间
+    private Ukcp ukcp;
+    private volatile boolean flag;//用来判断锁机是否开启并且用户借走了雨伞
+    private boolean isConnect;//判断客户端是否掉线
+    private Instant firstLowPowerInstant;
     public Ukcp getUkcp() {
         return ukcp;
     }
-    public boolean getFlag(){return this.flag;}
+
+    public boolean getFlag() {
+        return this.flag;
+    }
 
 
 //    @Scheduled(fixedRate=10000)     //每间隔10秒执行一次, 检查是否掉线, 是就让它重新连接
 //    @PostConstruct
-//    @Async
-    void configureTasks() {
-        connect();
+//    void configureTasks() {
 //        if (!isConnect){
 //            try {
 //                connect();
@@ -60,12 +67,14 @@ public class KcpService implements KcpListener {
 //                log.error(e.getMessage());
 //            }
 //        }
-    }
+//    }
 
-    public static void connect(){
-        KcpService myServer = new KcpService();
+    /**
+     * 初始化服务器端
+     */
+    public void initKcpService() {
         ChannelConfig channelConfig = new ChannelConfig();
-        channelConfig.nodelay(true,40,2,true);
+        channelConfig.nodelay(true, 40, 2, true);
         channelConfig.setSndwnd(512);
         channelConfig.setRcvwnd(512);
         channelConfig.setMtu(512);
@@ -75,7 +84,7 @@ public class KcpService implements KcpListener {
         channelConfig.setCrc32Check(false);
         //启动Kcp程序
         KcpServer kcpServer = new KcpServer();
-        kcpServer.init(myServer,channelConfig,10086);
+        kcpServer.init(this, channelConfig, 10086);
         log.info("服务器启动");
         isConnect = true;
     }
@@ -83,23 +92,23 @@ public class KcpService implements KcpListener {
     /**
      * 发送开锁信号给锁机
      */
-    public static String sendUnlockMsg2Lock(){
+    public String sendUnlockMsg2Lock() {
         long start = System.currentTimeMillis();
-        long waitTime = 1000*defaultUnlockWaitTime;
-        if(ObjectUtil.isNull(ukcp)){
+        long waitTime = 1000 * defaultUnlockWaitTime;
+        if (ObjectUtil.isNull(ukcp)) {
             throw new RuntimeException("锁机掉线了，发送消息失败");
         }
         //发送开锁信号
         boolean isSend = ukcp.write(UmbrellaDic.UNLOCK_FRAME);
-        if(!isSend){
+        if (!isSend) {
             return UmbrellaDic.UNLOCK_FAIL_MSG;
         }
         //线程阻塞十秒判断开锁状态
-        while (true){
+        while (true) {
             //在handleReceive方法中改变flag的值
-            if(flag){
+            if (flag) {
                 return UmbrellaDic.UNLOCK_SUCCESS_MSG;
-            }else if(System.currentTimeMillis() - start > waitTime){
+            } else if (System.currentTimeMillis() - start > waitTime) {
                 return UmbrellaDic.UNLOCK_OVERTIME_MSG;
             }
         }
@@ -111,21 +120,23 @@ public class KcpService implements KcpListener {
     @Override
     public void onConnected(Ukcp ukcp) {
         //锁机上线，发送邮件给管理员
-//        sendMailUtil.send2Admin("锁机连接成功连接成功");
+        sendMailUtil.send2Admin("锁机连接成功连接成功");
         log.info("new Connection: " + Thread.currentThread().getName() + ukcp.user().getRemoteAddress());
-        KcpService.ukcp = ukcp;
+        this.ukcp = ukcp;
     }
 
     /**
      * 处理接受到的KCP请求
-     * @param buf Netty提供的缓冲区实现：ByteBuf
+     *
+     * @param buf  Netty提供的缓冲区实现：ByteBuf
      * @param ukcp kcp连接对象
      */
     @Override
     public void handleReceive(ByteBuf buf, Ukcp ukcp) {
-        if(ObjectUtil.isNull(KcpService.ukcp)){
-            KcpService.ukcp = ukcp;
+        if (ObjectUtil.isNull(this.ukcp)) {
+            this.ukcp = ukcp;
         }
+        //作为堵塞线程的标识
         flag = false;
         short curCount = buf.getShort(buf.readerIndex());
         String str;
@@ -138,12 +149,31 @@ public class KcpService implements KcpListener {
             str = new String(array);
         }
         log.info(Thread.currentThread().getName() + "服务器收到锁机信息recv: " + str);
-        if(UmbrellaDic.UNLOCK_SUCCESS_FRAME.equalsIgnoreCase(str)){
+        //处理帧，
+        if (UmbrellaDic.UNLOCK_SUCCESS_FRAME.equalsIgnoreCase(str)) {
             flag = true;//开锁
+        }else if(UmbrellaDic.UNLOCK_FAIL_FRAME.equals(str)){
+            log.error("开锁失败锁机异常！");
+            sendMailUtil.sendLockMsg2Admin("开锁失败锁机异常！请赶快处理");
+        }else if(UmbrellaDic.LOCK_LOW_POWER_FRAME.equals(str)){
+            //电量不足，给管理员发邮件，注意此帧会不断发，因为锁机马上将失连，情况危急
+            log.error("锁机没电了");
+            //这里需要服务器每隔一定的时间提醒管理员
+            if(ObjectUtil.isNull(firstLowPowerInstant)){
+                firstLowPowerInstant = Instant.now();
+                //先发送一次
+                sendMailUtil.sendLockMsg2Admin("锁机没电了！请赶快处理");
+            }else if(Duration.between(firstLowPowerInstant,Instant.now()).toMinutes() > 5){
+                //归零
+                firstLowPowerInstant = null;
+                sendMailUtil.sendLockMsg2Admin("锁机没电了！已经过了五分钟了请赶快处理");
+            }
         }
-        if(UmbrellaDic.PING_FRAME.equalsIgnoreCase(str)){
-            //连通性测试，直接返回
-            KcpService.ukcp.write(buf);
+
+        //连接线测试的帧
+        if (UmbrellaDic.PING_CLIENT_FRAME.equalsIgnoreCase(str)) {
+            //连通性测试，返回服务器的测试帧
+            this.ukcp.write(UmbrellaDic.PING_SERVICE_FRAME);
         }
         if (curCount == -1) {
             ukcp.close();
@@ -156,8 +186,9 @@ public class KcpService implements KcpListener {
     @Override
     public void handleException(Throwable throwable, Ukcp ukcp) {
         //异常，通知管理员"
-//        sendMailUtil.send2Admin("爱心雨伞锁机连接异常，请赶快处理\n"+throwable.getMessage());
-        log.error("爱心雨伞锁机连接异常，请赶快处理，{}",throwable.getMessage());
+        log.error("爱心雨伞锁机连接异常，请赶快处理，{}", throwable.getMessage());
+        sendMailUtil.sendLockMsg2Admin("爱心雨伞锁机连接异常，请赶快处理\n" + throwable.getMessage());
+        log.error("==============================");
     }
 
     /**
@@ -166,7 +197,23 @@ public class KcpService implements KcpListener {
     @Override
     public void handleClose(Ukcp ukcp) {
         //异常，通知管理员"
-//        sendMailUtil.send2Admin("锁机掉线了");
         log.error("锁机掉线了");
+        sendMailUtil.sendLockMsg2Admin("锁机掉线了");
+        log.error("==============================");
+        isConnect = false;
+    }
+
+    /**
+     * 该对象销毁时，销毁连接
+     */
+    @PreDestroy
+    public void destroyComponent() {
+        disConnect();
+    }
+
+    private void disConnect() {
+        if (ObjectUtil.isNotNull(ukcp) && isConnect) {
+            ukcp.close();
+        }
     }
 }

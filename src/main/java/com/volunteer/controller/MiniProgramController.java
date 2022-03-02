@@ -7,6 +7,7 @@ import com.volunteer.component.OSSOperator;
 import com.volunteer.component.RedisOperator;
 import com.volunteer.entity.common.Result;
 import com.volunteer.entity.common.ResultGenerator;
+import com.volunteer.entity.vo.MiniProgramStaticInfoVo;
 import com.volunteer.entity.vo.MiniProgramSwiperListVo;
 import com.volunteer.entity.vo.MiniProgramSwiperVo;
 import com.volunteer.util.BeanMapUtil;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.Min;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -121,5 +123,36 @@ public class MiniProgramController {
             return ResultGenerator.getFailResult("服务器异常，删除失败"+e.getMessage());
         }
         return ResultGenerator.getSuccessResult("更新成功");
+    }
+
+    @GetMapping("setMiniProgramStaticInfo")
+    @ApiOperation("设置微信小程序初始化数据接口")
+    public Result setMiniProgramStaticInfo(String adminPhone,@ModelAttribute MiniProgramSwiperVo swiperVo){
+        if(ObjectUtil.isNull(swiperVo) || StringUtils.isEmpty(adminPhone)){
+            return ResultGenerator.getFailResult("传入信息为空，设置失败");
+        }
+        MiniProgramStaticInfoVo vo = new MiniProgramStaticInfoVo();
+        vo.setAdminPhone(adminPhone)
+                .setSwiperVo(swiperVo);
+        try {
+            String jsonStr = JSONUtil.toJsonStr(vo);
+            redisOperator.set("MiniProgramStaticInfo",jsonStr);
+        } catch (Exception e) {
+            return ResultGenerator.getFailResult("服务器异常，设置失败");
+        }
+        return ResultGenerator.getSuccessResult("设置成功");
+    }
+
+    @GetMapping("getMiniProgramStaticInfo")
+    @ApiOperation("获取微信小程序初始化数据接口")
+    public Result getMiniProgramStaticInfo(){
+        MiniProgramStaticInfoVo vo;
+        try {
+            String str = redisOperator.get("MiniProgramStaticInfo");
+            vo = JSONUtil.toBean(str, MiniProgramStaticInfoVo.class);
+        } catch (Exception e) {
+            return ResultGenerator.getFailResult("服务器异常，获取失败");
+        }
+        return ResultGenerator.getSuccessResult(vo);
     }
 }

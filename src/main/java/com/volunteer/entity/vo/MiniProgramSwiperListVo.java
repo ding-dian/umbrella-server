@@ -15,7 +15,6 @@ import java.util.List;
 @Data
 @Accessors(chain = true)//开启链式编程
 @ApiModel(value = "微信小程序轮播图VoList",description = "微信小程序轮播图url集合")
-
 public class MiniProgramSwiperListVo {
 
     @ApiModelProperty(name="swiperNum",value = "轮播数量图",required = true,example = "10")

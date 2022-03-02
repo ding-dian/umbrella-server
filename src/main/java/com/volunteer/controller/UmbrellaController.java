@@ -37,13 +37,13 @@ import java.util.Map;
  * @date: 2022/1/26 11:55
  * Description: 爱心雨伞控制模块
  */
-@Api(tags = "爱心雨伞控制模块" )
+@Api(tags = "爱心雨伞控制模块")
 @Slf4j
 @RestController
 @RequestMapping("/umbrella")
 public class UmbrellaController {
 
-//    @Resource
+    //    @Resource
 //    private ClientService clientService;
     @Resource
     private RedisOperator redisOperator;
@@ -53,10 +53,12 @@ public class UmbrellaController {
     private UmbrellaBorrowService umbrellaBorrowService;
     @Resource
     private SendMailUtil sendMailUtil;
-//    @Resource
-//    private KcpService kcpService;
+    @Resource
+    private KcpService kcpService;
+
     /**
      * 借取爱心雨伞
+     *
      * @param token 用户的token
      */
     @GetMapping("/borrowUmbrellaByToken")
@@ -64,13 +66,13 @@ public class UmbrellaController {
             value = "根据Token借取爱心雨伞",
             notes = "首先需要请求爱心雨伞锁机，请求成功后再修改数据库数据")
     @ApiResponses({
-            @ApiResponse(code = 200,message = "success"),
-            @ApiResponse(code = 400,message = "用户未登录，没有获得token"),
-            @ApiResponse(code = 601,message = "锁机开启失败"),
-            @ApiResponse(code = 602,message = "用户已经借取过雨伞了，不能再借伞"),
-            @ApiResponse(code = 604,message = "用户未在规定时间内取走伞"),
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 400, message = "用户未登录，没有获得token"),
+            @ApiResponse(code = 601, message = "锁机开启失败"),
+            @ApiResponse(code = 602, message = "用户已经借取过雨伞了，不能再借伞"),
+            @ApiResponse(code = 604, message = "用户未在规定时间内取走伞"),
     })
-    public synchronized Result borrowUmbrellaByToken(@RequestParam String token){
+    public synchronized Result borrowUmbrellaByToken(@RequestParam String token) {
         if (StringUtils.isEmpty(token)) {
             return ResultGenerator.getFailResult("token有误!");
         }
@@ -82,26 +84,35 @@ public class UmbrellaController {
         Object openID = jsonObject.get("openid");
         //根据openID拿到用户的数据
         Volunteer volunteer = volunteerService.getByOpenId((String) openID);
-        //TODO 向爱心雨伞终端发送借伞请求，请求成功后修改数据库
-//        String flag = KcpService.sendUnlockMsg2Lock();
-//        if(UmbrellaDic.UNLOCK_FAIL_MSG.equals(flag)){
-//            return new Result().setCode(602).setMessage("锁机开启失败，系统异常");
-//        }
-//        if(UmbrellaDic.UNLOCK_OVERTIME_MSG.equals(flag)){
-//            return new Result().setCode(604).setMessage("用户未在规定时间内取走伞");
-//        }
-        int result = 0;
+
+        //判断该用户是否有借取过雨伞
+        String key = "umbrellaBorrow:"+volunteer.getName()+volunteer.getOpenid();
+        if(redisOperator.exists(key)){
+            return new Result().setCode(602).setMessage("用户已经借取过爱心雨伞了，不能借取");
+        }
+
+        // 向爱心雨伞终端发送借伞请求，请求成功后修改数据库，注意这里会阻塞线程，最长时间十秒，在配置文件中可以设置
+        String result1 = kcpService.sendUnlockMsg2Lock();
+        if (UmbrellaDic.UNLOCK_FAIL_MSG.equals(result1)) {
+            return new Result().setCode(601).setMessage("锁机开启失败，系统异常");
+        }
+        if (UmbrellaDic.UNLOCK_OVERTIME_MSG.equals(result1)) {
+            return new Result().setCode(604).setMessage("用户未在规定时间内取走伞");
+        }
+
+        //修改数据库
+        String result2 = null;
         try {
-            result = umbrellaBorrowService.borrowByVolunteer(volunteer);
+            result2 = umbrellaBorrowService.borrowByVolunteer(volunteer);
         } catch (InvocationTargetException | IllegalAccessException e) {
             e.printStackTrace();
         }
-        if(result == -1){
+        if (UmbrellaDic.UMBRELLA_BORROWED_MSG.equals(result2)) {
             //用户已经借取过爱心雨伞了，不能借取
             return new Result().setCode(602).setMessage("用户已经借取过爱心雨伞了，不能借取");
-        }else {
-            return ResultGenerator.getSuccessResult();
         }
+
+        return ResultGenerator.getSuccessResult();
     }
 
     /**
@@ -112,12 +123,13 @@ public class UmbrellaController {
             value = "根据Token归还爱心雨伞",
             notes = "首先需要请求爱心雨伞锁机，请求成功后再修改数据库数据")
     @ApiResponses({
-            @ApiResponse(code = 200,message = "success"),
-            @ApiResponse(code = 400,message = "用户未登录，没有获得token"),
-            @ApiResponse(code = 601,message = "锁机开启失败"),
-            @ApiResponse(code = 603,message = "用户没有借取过爱心雨伞，不能归还")
+            @ApiResponse(code = 200, message = "success"),
+            @ApiResponse(code = 400, message = "用户未登录，没有获得token"),
+            @ApiResponse(code = 601, message = "锁机开启失败"),
+            @ApiResponse(code = 603, message = "用户没有借取过爱心雨伞，不能归还"),
+            @ApiResponse(code = 604, message = "用户未在规定时间内取走伞")
     })
-    public Result returnUmbrellaByToken(@RequestParam String token){
+    public synchronized Result returnUmbrellaByToken(@RequestParam String token) {
         if (StringUtils.isEmpty(token)) {
             return ResultGenerator.getFailResult("token有误!!");
         }
@@ -129,45 +141,63 @@ public class UmbrellaController {
         Object openID = jsonObject.get("openid");
         //根据openID拿到用户的数据
         Volunteer volunteer = volunteerService.getByOpenId((String) openID);
-        int result=umbrellaBorrowService.returnByVolunteer(volunteer);
-        //TODO 向爱心雨伞终端发送还伞请求，请求成功后修改数据库
-        if(result == -1){
+
+        //判断该用户是否有借取过雨伞
+        String key = "umbrellaBorrow:"+volunteer.getName()+volunteer.getOpenid();
+        if(!redisOperator.exists(key)){
+            return new Result().setCode(603).setMessage("用户未借取过爱心雨伞");
+        }
+
+        // 向爱心雨伞终端发送还伞请求，请求成功后修改数据库
+        String result1 = kcpService.sendUnlockMsg2Lock();
+        if (UmbrellaDic.UNLOCK_FAIL_MSG.equals(result1)) {
+            return new Result().setCode(601).setMessage("锁机开启失败，系统异常");
+        }
+        if (UmbrellaDic.UNLOCK_OVERTIME_MSG.equals(result1)) {
+            return new Result().setCode(604).setMessage("用户未在规定时间内取走伞");
+        }
+
+        //修改数据库
+        String result2 = umbrellaBorrowService.returnByVolunteer(volunteer);
+        if (UmbrellaDic.UMBRELLA_RETURN_FAIL_MSG.equals(result2)) {
             //终端响应失败，可能是终端掉线或者设备异常
             return new Result().setCode(601).setMessage("终端响应失败，可能是终端掉线或者设备异常");
-        }else {
-            //请求成功
-            return ResultGenerator.getSuccessResult();
         }
+
+        return ResultGenerator.getSuccessResult();
     }
 
     /**
      * 从redis中查询所有实时借阅雨伞的信息
-     * @param pageNo 页号，大于1
+     *
+     * @param pageNo   页号，大于1
      * @param pageSize 每页多少数据，默认20条
      * @return 返回Result
      */
     @GetMapping("/selectBorrowList")
-    @ApiOperation(value = "查询借伞用户信息列表",response = UmbrellaOrderVo.class)
-    public Result selectBorrowList(Integer pageNo, Integer pageSize){
+    @ApiOperation(value = "查询借伞用户信息列表", response = UmbrellaOrderVo.class)
+    public Result selectBorrowList(Integer pageNo, Integer pageSize) {
         UmbrellaOrderListVo listVo;
         try {
             listVo = umbrellaBorrowService.selectBorrow(pageNo, pageSize);
         } catch (InvocationTargetException | IllegalAccessException e) {
-            log.error("查询借伞用户信息列表失败：{}",e.getMessage());
+            log.error("查询借伞用户信息列表失败：{}", e.getMessage());
             return ResultGenerator.getFailResult(e.getMessage());
         }
         JSON jsonStr = JSONUtil.parse(listVo);
         return ResultGenerator.getSuccessResult(jsonStr);
     }
+
     /**
      * 查询超时借伞用户信息列表
-     * @param pageNo 页号，大于1
+     *
+     * @param pageNo   页号，大于1
      * @param pageSize 每页多少数据，默认20条
      * @return 返回Result
      */
     @GetMapping("/selectOverTimeList")
-    @ApiOperation(value = "查询超时借伞用户信息列表",response = UmbrellaOrderVo.class)
-    public Result selectOverTimeList(Integer pageNo, Integer pageSize){
+    @ApiOperation(value = "查询超时借伞用户信息列表", response = UmbrellaOrderVo.class)
+    public Result selectOverTimeList(Integer pageNo, Integer pageSize) {
         UmbrellaOrderListVo listVo;
         try {
             listVo = umbrellaBorrowService.selectOvertime(pageNo, pageSize);
@@ -180,18 +210,19 @@ public class UmbrellaController {
 
     /**
      * 从数据库中查询历史用户借伞信息，网页端查询
-     * @param pageNo 页号，大于1
+     *
+     * @param pageNo   页号，大于1
      * @param pageSize 每页多少数据，默认20条
      * @return 返回Result
      */
     @GetMapping("/selectHistoryBorrow")
-    @ApiOperation(value = "从数据库中查询历史用户借伞信息",response = UmbrellaOrderVo.class)
-    public Result selectHistoryBorrow(Integer pageNo, Integer pageSize){
+    @ApiOperation(value = "从数据库中查询历史用户借伞信息", response = UmbrellaOrderVo.class)
+    public Result selectHistoryBorrow(Integer pageNo, Integer pageSize) {
         UmbrellaHistoryListVo listVo;
         try {
             listVo = umbrellaBorrowService.selectHistoryAll(pageNo, pageSize);
         } catch (Exception e) {
-        	return ResultGenerator.getFailResult(e.getMessage());
+            return ResultGenerator.getFailResult(e.getMessage());
         }
         JSON jsonStr = JSONUtil.parse(listVo);
         return ResultGenerator.getSuccessResult(jsonStr);
@@ -199,13 +230,14 @@ public class UmbrellaController {
 
     /**
      * 从数据库中查询历史用户借伞信息，微信小程序查询
+     *
      * @param token 系统发给用户微信小程序的凭证
      * @return 分页返回数据，默认返回第一页、20条数据，微信端用户触底会触发下一次查询
      */
     @GetMapping("/selectVolunteerHistoryBorrow")
-    @ApiOperation(value = "从数据库中查询历史用户借伞信息",response = UmbrellaOrderVo.class)
-    public Result selectVolunteerHistoryBorrow(String token,Integer pageNo, Integer pageSize){
-        if(ObjectUtil.isNull(token) || StringUtils.isEmpty(token)){
+    @ApiOperation(value = "从数据库中查询历史用户借伞信息", response = UmbrellaOrderVo.class)
+    public Result selectVolunteerHistoryBorrow(String token, Integer pageNo, Integer pageSize) {
+        if (ObjectUtil.isNull(token) || StringUtils.isEmpty(token)) {
             return ResultGenerator.getFailResult("用户token为空！");
         }
         UmbrellaHistoryListVo listVo;
@@ -218,7 +250,7 @@ public class UmbrellaController {
                     .setPageSize(pageSize);
             listVo = umbrellaBorrowService.selectHistoryByOpenId(volunteer);
         } catch (Exception e) {
-        	return ResultGenerator.getFailResult(e.getMessage());
+            return ResultGenerator.getFailResult(e.getMessage());
         }
         JSON jsonStr = JSONUtil.parse(listVo);
         return ResultGenerator.getSuccessResult(jsonStr);
@@ -226,13 +258,14 @@ public class UmbrellaController {
 
     /**
      * 从redis中删除一条超时用户的数据
+     *
      * @param key 用户信息对应在redis中的key
      * @return 返回Result
      */
     @GetMapping("/deleteOvertime")
     @ApiOperation(value = "从redis中删除一条超时用户的数据")
-    public Result deleteOvertime(String key){
-        if(ObjectUtil.isNull(key) || StringUtils.isEmpty(key)){
+    public Result deleteOvertime(String key) {
+        if (ObjectUtil.isNull(key) || StringUtils.isEmpty(key)) {
             return ResultGenerator.getFailResult("用户key为空，删除失败");
         }
         try {
@@ -246,19 +279,20 @@ public class UmbrellaController {
 
     /**
      * 由网页端发送邮件给用户
-     * @param mailTo 接收人邮箱
+     *
+     * @param mailTo  接收人邮箱
      * @param subject 邮件主题
      * @param content 邮件内容
      * @return 返回Result
      */
     @GetMapping("/sendAlarmEmail")
     @ApiOperation(value = "由网页端发送邮件给用户")
-    public Result sendAlarmEmail(String mailTo,String subject ,String content){
-        if(ObjectUtil.isNull(mailTo) || StringUtils.isEmpty(mailTo)){
+    public Result sendAlarmEmail(String mailTo, String subject, String content) {
+        if (ObjectUtil.isNull(mailTo) || StringUtils.isEmpty(mailTo)) {
             return ResultGenerator.getFailResult("收件人邮箱为空");
         }
         try {
-            sendMailUtil.sendOverTimeAlarm(new String[]{mailTo},subject,content);
+            sendMailUtil.sendOverTimeAlarm(new String[]{mailTo}, subject, content);
         } catch (Exception e) {
             return ResultGenerator.getFailResult(e.getMessage());
         }

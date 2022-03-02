@@ -68,9 +68,9 @@ public interface UmbrellaBorrowService extends IService<UmbrellaHistoryBorrow> {
      * 软件方面：借阅情况需要存入redis中
      * 硬件方面：需要硬件传回确认回复才完成一次借取操作
      * @param volunteer 用户
-     * @return 1 success<br>other false
+     * @return UMBRELLA_BORROWED success<br>other false
      */
-    Integer borrowByVolunteer(Volunteer volunteer) throws InvocationTargetException, IllegalAccessException;
+    String borrowByVolunteer(Volunteer volunteer) throws InvocationTargetException, IllegalAccessException;
 
 
     /**
@@ -80,7 +80,7 @@ public interface UmbrellaBorrowService extends IService<UmbrellaHistoryBorrow> {
      * @param volunteer 用户
      * @return 1 success<br>other false
      */
-    Integer returnByVolunteer(Volunteer volunteer);
+    String returnByVolunteer(Volunteer volunteer);
 
 
     /**

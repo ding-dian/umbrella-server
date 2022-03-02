@@ -3,11 +3,13 @@ package com.volunteer;
 import com.github.tobato.fastdfs.FdfsClientConfig;
 import com.volunteer.service.KcpService;
 import com.volunteer.util.SendMailUtil;
+import com.volunteer.util.SpringContextUtil;
 import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.tomcat.util.descriptor.web.SecurityCollection;
 import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -17,6 +19,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableMBeanExport;
 import org.springframework.context.annotation.Import;
 import org.springframework.jmx.support.RegistrationPolicy;
+
+import javax.annotation.PostConstruct;
 
 /**
  * @author HeFuRen
@@ -28,9 +32,13 @@ import org.springframework.jmx.support.RegistrationPolicy;
 public class VolunteerManagementApplication {
     public static void main(String[] args) {
         SpringApplication.run(VolunteerManagementApplication.class, args);
-        //初始化容器后启动与锁机的连接
-//        KcpService.connect();
+        //启动kcp服务与锁机进行连接
+        KcpService bean = SpringContextUtil.getBean(KcpService.class);
+        bean.initKcpService();
+
     }
+
+
     //https访问，项目上线时启用
     //添加转向类，用户将客户访问的非https协议转向到https协议
 //    @Bean

@@ -12,6 +12,7 @@ import com.volunteer.entity.UmbrellaHistoryBorrow;
 import com.volunteer.entity.UmbrellaOrder;
 import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.common.DataFormats;
+import com.volunteer.entity.common.UmbrellaDic;
 import com.volunteer.entity.vo.UmbrellaHistoryListVo;
 import com.volunteer.entity.vo.UmbrellaHistoryVo;
 import com.volunteer.entity.vo.UmbrellaOrderListVo;
@@ -183,12 +184,10 @@ public class UmbrellaBorrowServiceImpl extends ServiceImpl<UmbrellaMapper, Umbre
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Integer borrowByVolunteer(Volunteer volunteer) {
+    public String borrowByVolunteer(Volunteer volunteer) {
         //拼接openID为了防止姓名重复
         String key = "umbrellaBorrow:"+volunteer.getName()+volunteer.getOpenid();
-        if(ObjectUtil.isNull(volunteer) || redisOperator.exists(key)){
-            return -1;//返回-1表示未传入用户或该用户已经借取过雨伞了，不能借取
-        }
+
         String phoneNumber = null;
         try {
             //将手机号解密
@@ -207,17 +206,15 @@ public class UmbrellaBorrowServiceImpl extends ServiceImpl<UmbrellaMapper, Umbre
                 .setEmailAddress(volunteer.getQqNumber()+"@qq.com");
         //将bean存入redis中
         parseRedisMap(key,umbrellaOrder);
-        return 0;
+        return UmbrellaDic.UMBRELLA_BORROW_SUCCESS_MSG;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Integer returnByVolunteer(Volunteer volunteer) {
+    public String returnByVolunteer(Volunteer volunteer) {
         //拼接openID为了防止姓名重复
         String key = "umbrellaBorrow:"+volunteer.getName()+volunteer.getOpenid();
-        if(ObjectUtil.isNull(volunteer) || ! redisOperator.exists(key)){
-            return -1;//返回-1表示未传入用户或该用户并没有借伞记录，不能还伞
-        }
+
         Map<Object, Object> map = redisOperator.hgetall(key);
         //获得借伞时间时间段
         Double durations = getDuration(map.get("borrowDate"));
@@ -230,7 +227,7 @@ public class UmbrellaBorrowServiceImpl extends ServiceImpl<UmbrellaMapper, Umbre
                 .setBorrowDurations(durations)
                 .setReturnDate(LocalDateTime.now())
                 .setBorrowStatus(1);//1表示已归还
-        return baseMapper.insert(umbrellaHistoryBorrow);
+        return baseMapper.insert(umbrellaHistoryBorrow) == 1 ? UmbrellaDic.UMBRELLA_RETURN_SUCCESS_MSG : UmbrellaDic.UMBRELLA_RETURN_FAIL_MSG;
     }
 
 

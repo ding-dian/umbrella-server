@@ -82,14 +82,14 @@ public class TestUmbrellaController {
     @Test
     public void TestBorrowByVolunteer() throws InvocationTargetException, IllegalAccessException {
         Volunteer volunteer = volunteerService.getByOpenId("oR83j4kkq2CyvVmuxl6znKbrWi2A");
-        Integer result = umbrellaBorrowService.borrowByVolunteer(volunteer);
+        String result = umbrellaBorrowService.borrowByVolunteer(volunteer);
         log.info("更新完的结果{}", result);
     }
 
     @Test
     public void TestReturnByVolunteer() {
         Volunteer volunteer = volunteerService.getByOpenId("oR83j4kkq2CyvVmuxl6znKbrWi2A");
-        Integer result = umbrellaBorrowService.returnByVolunteer(volunteer);
+        String result = umbrellaBorrowService.returnByVolunteer(volunteer);
         log.info("更新完的结果{}", result);
     }
 
