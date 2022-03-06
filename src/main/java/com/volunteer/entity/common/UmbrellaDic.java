@@ -35,12 +35,22 @@ public class UmbrellaDic {
     /**
      * 锁机返回开锁成功帧
      */
-    public static final String UNLOCK_SUCCESS_FRAME = "HwcLock07successT";
+    public static final String UNLOCK_SUCCESS_FRAME = "HwcUnLock07successT";
 
     /**
      * 锁机返回开锁失败帧
      */
-    public static final String UNLOCK_FAIL_FRAME = "HwcLock04failT";
+    public static final String UNLOCK_FAIL_FRAME = "HwcUnLock04failT";
+
+    /**
+     * 锁机返回关锁成功帧
+     */
+    public static final String LOCK_SUCCESS_FRAME = "HwcLock07successT";
+
+    /**
+     * 锁机返回关锁失败帧
+     */
+    public static final String LOCK_FAIL_FRAME = "HwcLock04failT";
 
     /**
      * 和锁机ping连通性测试帧，客户端发给服务器

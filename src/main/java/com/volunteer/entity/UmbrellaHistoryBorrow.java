@@ -41,7 +41,7 @@ public class UmbrellaHistoryBorrow implements Serializable {
      * 用户的openID
      */
     @ApiModelProperty(name = "openID", value = "用户的openID", required = true, example = "+7BfWy6IijmcZFO4Ac8fjmAvS8=")
-    @TableField(value = "openid",exist = false)
+    @TableField(value = "openid")
     private String openID;
 
     /**
@@ -84,7 +84,7 @@ public class UmbrellaHistoryBorrow implements Serializable {
     private Double borrowDurations;
 
     /**
-     * 该条记录的归还情况，1表示归还、0表示未归还
+     * 该条记录的归还情况，0表示归还、1表示未归还
      */
     @ApiModelProperty(name = "borrowStatus", value = "用户归还状态，0表示已归还，1表示未归还", required = true, example = "0")
     @TableField(value = "borrow_status")

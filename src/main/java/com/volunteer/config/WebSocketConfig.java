@@ -9,10 +9,10 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 /**
  * @author: 梁峰源
  * @date: 2022年2月1日18:37:21
- * Description: WebSocket配置，用来和爱心雨伞终端通信
+ * Description: WebSocket配置，用来和爱心雨伞终端通信，基于TCP
  */
-@Configuration
-@EnableWebSocketMessageBroker
+//@Configuration
+//@EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override

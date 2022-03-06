@@ -19,7 +19,7 @@ import java.nio.charset.Charset;
  * @author VernHe
  * @date 2021年11月29日 15:23
  */
-@Component
+//@Component
 public class FastDFSClient {
 
     private final Logger logger = LoggerFactory.getLogger(FastDFSClient.class);

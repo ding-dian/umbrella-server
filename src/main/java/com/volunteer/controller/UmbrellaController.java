@@ -71,6 +71,8 @@ public class UmbrellaController {
             @ApiResponse(code = 601, message = "锁机开启失败"),
             @ApiResponse(code = 602, message = "用户已经借取过雨伞了，不能再借伞"),
             @ApiResponse(code = 604, message = "用户未在规定时间内取走伞"),
+            @ApiResponse(code = 605, message = "该用户有超时借伞记录"),
+            @ApiResponse(code = 606, message = "该用户有超时借伞记录"),
     })
     public synchronized Result borrowUmbrellaByToken(@RequestParam String token) {
         if (StringUtils.isEmpty(token)) {
@@ -81,14 +83,26 @@ public class UmbrellaController {
             return ResultGenerator.getFailResult("请登录后重试");
         }
         JSONObject jsonObject = JSONUtil.parseObj(jsonStr);
+        //这里注意volunteer对象中的字段为openid，借伞记录中为openID
         Object openID = jsonObject.get("openid");
         //根据openID拿到用户的数据
         Volunteer volunteer = volunteerService.getByOpenId((String) openID);
 
         //判断该用户是否有借取过雨伞
         String key = "umbrellaBorrow:"+volunteer.getName()+volunteer.getOpenid();
+
         if(redisOperator.exists(key)){
             return new Result().setCode(602).setMessage("用户已经借取过爱心雨伞了，不能借取");
+        }
+        //判断该用户是否有超时记录
+        String key1 = "umbrellaOvertime:"+volunteer.getName()+volunteer.getOpenid();
+
+        if(redisOperator.exists(key1)){
+            return new Result().setCode(602).setMessage("该用户有超时借伞记录");
+        }
+        //判断该用户是否有手机号存储在数据库中，没有让其绑定手机号
+        if(ObjectUtil.isNull(volunteer.getPhoneNumber())||StringUtils.isEmpty(volunteer.getPhoneNumber())){
+            return new Result().setCode(606).setMessage("该用户没有绑定手机号");
         }
 
         // 向爱心雨伞终端发送借伞请求，请求成功后修改数据库，注意这里会阻塞线程，最长时间十秒，在配置文件中可以设置
@@ -100,16 +114,16 @@ public class UmbrellaController {
             return new Result().setCode(604).setMessage("用户未在规定时间内取走伞");
         }
 
-        //修改数据库
+        //将数据加入redis中
         String result2 = null;
         try {
             result2 = umbrellaBorrowService.borrowByVolunteer(volunteer);
         } catch (InvocationTargetException | IllegalAccessException e) {
             e.printStackTrace();
         }
-        if (UmbrellaDic.UMBRELLA_BORROWED_MSG.equals(result2)) {
-            //用户已经借取过爱心雨伞了，不能借取
-            return new Result().setCode(602).setMessage("用户已经借取过爱心雨伞了，不能借取");
+        if (!UmbrellaDic.UMBRELLA_BORROW_SUCCESS_MSG.equals(result2)) {
+            //redis缓存失败
+            return new Result().setCode(500).setMessage("服务器异常，缓存失败");
         }
 
         return ResultGenerator.getSuccessResult();
@@ -147,6 +161,9 @@ public class UmbrellaController {
         if(!redisOperator.exists(key)){
             return new Result().setCode(603).setMessage("用户未借取过爱心雨伞");
         }
+
+        //判断该用户是否有电话号码存在数据库，如果没有让其联系管理员
+
 
         // 向爱心雨伞终端发送还伞请求，请求成功后修改数据库
         String result1 = kcpService.sendUnlockMsg2Lock();

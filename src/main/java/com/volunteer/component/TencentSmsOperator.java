@@ -45,7 +45,7 @@ public class TencentSmsOperator {
     @Value("${tencent-cloud.expires}")
     private String expires;
 
-    public boolean sendSms(String phoneNumber, String code) throws Exception{
+    public boolean sendSms(String phoneNumber, String code) throws Exception {
         /* 必要步骤：
          * 实例化一个认证对象，入参需要传入腾讯云账户密钥对secretId，secretKey。
          * 这里采用的是从环境变量读取的方式，需要在环境变量中先设置这两个值。
@@ -95,6 +95,7 @@ public class TencentSmsOperator {
         req.setSmsSdkAppId(sdkAppId);
 
         /* 短信签名内容: 使用 UTF-8 编码，必须填写已审核通过的签名，签名信息可登录 [短信控制台] 查看 */
+        log.error("signName==={}", signName);
         req.setSignName(signName);
 
         /* 国际/港澳台短信 SenderId: 国内短信填空，默认未开通，如需开通请联系 [sms helper] */

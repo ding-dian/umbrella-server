@@ -157,7 +157,7 @@ public class MailServiceImpl implements MailService {
             mailSender.send(mimeMessage);
 
         } catch (MessagingException e) {
-            System.out.println(e);
+            log.error("邮件发送失败：{}",e.getMessage());
         }
     }
 
@@ -190,7 +190,7 @@ public class MailServiceImpl implements MailService {
 
             mailSender.send(mimeMessage);
         } catch (MessagingException e) {
-            System.out.println(e);
+            log.error("邮件发送失败：{}",e.getMessage());
         }
     }
 }

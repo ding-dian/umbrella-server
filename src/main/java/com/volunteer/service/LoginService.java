@@ -8,5 +8,5 @@ import org.springframework.scheduling.annotation.Async;
  */
 public interface LoginService {
     @Async
-    void sendSms(String phoneNumber, String code, long expires);
+    void sendSms(String phoneNumber, String code, long expires) throws Exception;
 }

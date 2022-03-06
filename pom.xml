@@ -193,5 +193,4 @@
             <url>https://maven.aliyun.com/repository/spring-plugin</url>
         </pluginRepository>
     </pluginRepositories>
-
 </project>

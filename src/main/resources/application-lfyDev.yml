@@ -3,8 +3,8 @@ server:
   port: 8080
   #配置https访问 项目上线时启用
 #  ssl:
-#    key-store: classpath:6661544_fengxian.yandage.top.pfx
-#    key-store-password: zNWqegoh
+#    key-store: classpath:7202264_volunteer.fengxianhub.top.pfx
+#    key-store-password: JS9jg38H
 #    key-store-type: PKCS12
 spring:
   #数据源
@@ -173,3 +173,5 @@ umbrella:
   umbrellaBorrowRecordPageSize: 20 #爱心雨伞借阅记录默认返回条数
   defaultBorrowDuration: 24 #默认用户能够借取雨伞的时间为24小时
   defaultUnlockWaitTime: 10 #爱心雨伞锁机默认开锁时间 单位秒
+Kcp:
+  port: 67 #锁机与服务器通信端口

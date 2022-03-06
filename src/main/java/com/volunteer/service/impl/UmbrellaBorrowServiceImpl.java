@@ -226,7 +226,7 @@ public class UmbrellaBorrowServiceImpl extends ServiceImpl<UmbrellaMapper, Umbre
                 .setBorrowDate(LocalDateTime.parse((String)map.get("borrowDate"),DataFormats.dateTimeFormatter))
                 .setBorrowDurations(durations)
                 .setReturnDate(LocalDateTime.now())
-                .setBorrowStatus(1);//1表示已归还
+                .setBorrowStatus(0);//0表示已归还 1表示未归还
         return baseMapper.insert(umbrellaHistoryBorrow) == 1 ? UmbrellaDic.UMBRELLA_RETURN_SUCCESS_MSG : UmbrellaDic.UMBRELLA_RETURN_FAIL_MSG;
     }
 
@@ -290,7 +290,7 @@ public class UmbrellaBorrowServiceImpl extends ServiceImpl<UmbrellaMapper, Umbre
             sb.append("用户名：").append(userName)
                     .append("，电话:").append(phoneNumber)
                     .append("，qq：").append(qqNumber)
-                    .append("，借取时间：").append(duration).append("\n");
+                    .append("，借取时间：").append(duration).append("小时\n");
             //修改redis中用户的key，将其保存到超时key集合中
             redisOperator.rename(key,"umbrellaOvertime:"+userName+opID);
         });

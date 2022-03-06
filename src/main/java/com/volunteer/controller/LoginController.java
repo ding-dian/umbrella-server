@@ -267,7 +267,11 @@ public class LoginController {
 //            code = "111111";
         }
 //        redisOperator.set(DigestUtil.md5Hex(phoneNumber), code, 60 * expires
-        loginService.sendSms(phoneNumber, code, expires);
+        try {
+            loginService.sendSms(phoneNumber, code, expires);
+        } catch (Exception e) {
+            return ResultGenerator.getFailResult(e.getMessage());
+        }
         return ResultGenerator.getSuccessResult(code);
     }
 

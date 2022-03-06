@@ -29,7 +29,7 @@ public class SendMailUtil {
     public void sendOverTimeAlarm(String[] mailTo){
         String subject = "爱心雨伞借取超时提醒";//主题
         //邮件内容
-        String content = "您好，您借取爱心雨伞的时间已经超过24小时了，请您尽快将爱心雨伞归还哦，借取时间超过32小时将会有管理员联系您，并且以后将不能再借取爱心雨伞了哦！";
+        String content = "您好，您借取爱心雨伞的时间已经超过48小时了，请您尽快将爱心雨伞归还哦，借取时间超过60小时将会有管理员联系您，并且以后将不能再借取爱心雨伞了哦！";
         mailService.sendSimpleMail(mailForm,mailFromNick,mailTo,null,subject,content);
     }
 
@@ -43,7 +43,7 @@ public class SendMailUtil {
         }
         //邮件内容
         if(ObjectUtil.isNull(content) || StringUtils.isEmpty(content)) {
-            content ="您好，您借取爱心雨伞的时间已经超过24小时了，请您尽快将爱心雨伞归还哦，借取时间超过32小时将会有管理员联系您，并且以后将不能再借取爱心雨伞了哦！";
+            content = "您好，您借取爱心雨伞的时间已经超过48小时了，请您尽快将爱心雨伞归还哦，借取时间超过60小时将会有管理员联系您，并且以后将不能再借取爱心雨伞了哦！";
         }
         mailService.sendSimpleMail(mailForm,mailFromNick,mailTo,null,subject,content);
     }
