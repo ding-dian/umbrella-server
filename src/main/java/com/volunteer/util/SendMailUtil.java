@@ -54,7 +54,7 @@ public class SendMailUtil {
      * @param content 逾期用户的信息
      */
     public void send2Admin(String content){
-        String subject = "爱心雨伞借取超时提醒";//主题
+        String subject = "管理员您好，爱心雨伞借取超时提醒";//主题
         //邮件内容
         mailService.sendSimpleMail(mailForm,mailFromNick,new String[]{mailForm},null,subject,content);
     }
@@ -64,7 +64,7 @@ public class SendMailUtil {
      * @param content 锁机消息
      */
     public void sendLockMsg2Admin(String content){
-        String subject = "爱心雨伞锁机提醒";//主题
+        String subject = "管理员您好，爱心雨伞锁机提醒";//主题
         //邮件内容
         mailService.sendSimpleMail(mailForm,mailFromNick,new String[]{mailForm},null,subject,content);
     }

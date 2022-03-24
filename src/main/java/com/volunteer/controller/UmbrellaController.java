@@ -98,7 +98,7 @@ public class UmbrellaController {
         String key1 = "umbrellaOvertime:"+volunteer.getName()+volunteer.getOpenid();
 
         if(redisOperator.exists(key1)){
-            return new Result().setCode(602).setMessage("该用户有超时借伞记录");
+            return new Result().setCode(605).setMessage("该用户有超时借伞记录，请联系管理员删除");
         }
         //判断该用户是否有手机号存储在数据库中，没有让其绑定手机号
         if(ObjectUtil.isNull(volunteer.getPhoneNumber())||StringUtils.isEmpty(volunteer.getPhoneNumber())){

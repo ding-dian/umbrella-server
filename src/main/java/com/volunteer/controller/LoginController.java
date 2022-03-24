@@ -119,7 +119,7 @@ public class LoginController {
         //手机号为敏感信息需要先加密再存入数据库
         String encrypt;
         try {
-            encrypt = AES.aesEncrypt(AES.base64Encode(AES.encrypt(phoneNumber, AESSecret)));
+            encrypt = AES.aesEncrypt(phoneNumber);
         } catch (Exception e) {
             log.info("异常信息：{}", e.getMessage());
             return ResultGenerator.getFailResult("加密失败");

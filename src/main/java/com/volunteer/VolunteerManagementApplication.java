@@ -45,7 +45,7 @@ public class VolunteerManagementApplication {
                 context.addConstraint(constraint);
             }
         };
-        tomcat.addAdditionalTomcatConnectors(httpConnector());
+//        tomcat.addAdditionalTomcatConnectors(httpConnector());
         return tomcat;
     }
 

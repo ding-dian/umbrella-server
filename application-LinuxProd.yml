@@ -9,11 +9,36 @@ server:
 spring:
   #数据源
   datasource:
-    url: jdbc:mysql://47.101.223.63:13457/hg_volunteer?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true
+    url: jdbc:mysql://47.101.223.63:13457/hg_volunteer?useUnicode=true&useSSL=false&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useAffectedRows=true&allowMultiQueries=true
     username: root
     password: lfy123456
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
+    #初始化大小
+    initialSize: 5
+    #最小值
+    minIdle: 5
+    #最大值
+    maxActive: 20
+    #最大等待时间，配置获取连接等待超时，时间单位都是毫秒ms
+    maxWait: 60000
+    #配置间隔多久才进行一次检测，检测需要关闭的空闲连接
+    timeBetweenEvictionRunsMillis: 60000
+    #配置一个连接在池中最小生存的时间
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1 FROM DUAL
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，
+    #'wall'用于防火墙，SpringBoot中没有log4j，我改成了log4j2
+    filters: stat,wall,log4j2
+    #最大PSCache连接
+    maxPoolPreparedStatementPerConnectionSize: 20
+    useGlobalDataSourceStat: true
+    # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
   #Redis
   redis:
     host: 47.101.223.63
@@ -71,7 +96,6 @@ logging:
     com.volunteer.mapper: debug
   #  在当前项目下生成日志文件
   file:
-    name: volunteer.log
     path: /var/log/volunteer
 mybatis-plus:
   mapper-locations: classpath:mapper/*.xml

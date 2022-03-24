@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 /**
  * @author: 梁峰源
@@ -50,6 +51,7 @@ public class KcpService implements KcpListener {
     //volatile保证线程可见性
     private volatile boolean unlockFlag;//用来判断锁机是否开启
     private volatile boolean lockFlag;//用来判断锁机是否关闭
+    private static final Object lock = new Object();//锁
     private boolean isConnect;//判断客户端是否掉线
     private Instant firstLowPowerInstant;
 
@@ -223,6 +225,44 @@ public class KcpService implements KcpListener {
     private void disConnect() {
         if (ObjectUtil.isNotNull(ukcp) && isConnect) {
             ukcp.close();
+        }
+    }
+
+    /**
+     * 等待线程
+     */
+    static class Wait implements Runnable{
+        @Override
+        public void run() {
+            //加锁，拥有lock的Monitor
+            synchronized(lock){
+                //当条件不满足时，继续wait，同时释放lock锁
+                try {
+                    System.out.println(Thread.currentThread()+"flag is true,@"+ LocalDateTime.now());
+                    lock.wait(1000);
+                }catch (InterruptedException e){
+                    e.printStackTrace();
+                }
+                //当条件满足时，继续工作
+                System.out.println(Thread.currentThread()+"flag is false,@"+ LocalDateTime.now());
+            }
+        }
+    }
+
+    /**
+     * 通知线程
+     */
+    static class Notify implements Runnable{
+        @Override
+        public void run() {
+            //加锁，拥有lock的Monitor
+            synchronized(lock){
+                //获取lock的锁，然后进行通知，通知时不会释放lock的锁
+                //直到当前线程释放了lock后，WaitThread才能从wait方法中返回
+                System.out.println(Thread.currentThread()+"hold lock,notify,@"+ LocalDateTime.now());
+                //唤醒wait线程
+                lock.notifyAll();
+            }
         }
     }
 }

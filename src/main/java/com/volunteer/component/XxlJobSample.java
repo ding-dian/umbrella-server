@@ -3,8 +3,8 @@ package com.volunteer.component;
 import com.volunteer.service.UmbrellaBorrowService;
 import com.volunteer.service.VolunteerActivityService;
 import com.xxl.job.core.biz.model.ReturnT;
+import com.xxl.job.core.context.XxlJobHelper;
 import com.xxl.job.core.handler.annotation.XxlJob;
-import com.xxl.job.core.log.XxlJobLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -32,14 +32,14 @@ public class XxlJobSample {
      */
     @XxlJob("updateActivityStatusJob")
     public ReturnT<String> updateActivityStatusJob(String value) {
-        XxlJobLogger.log("更新活动状态的定时任务开始执行");
+        XxlJobHelper.log("更新活动状态的定时任务开始执行");
         try {
             activityService.updateActivityStatus();
         } catch (Exception e) {
-            XxlJobLogger.log("定时任务执行失败");
+            XxlJobHelper.log("定时任务执行失败");
             return ReturnT.FAIL;
         }
-        XxlJobLogger.log("定时任务执行成功");
+        XxlJobHelper.log("定时任务执行成功");
         return ReturnT.SUCCESS;
     }
 
@@ -48,14 +48,14 @@ public class XxlJobSample {
      */
     @XxlJob("updateBorrowDurationJob")
     public ReturnT<String> updateBorrowDurationJob(String param){
-        XxlJobLogger.log("爱心雨伞的借取时间更新活动状态的定时任务开始执行");
+        XxlJobHelper.log("爱心雨伞的借取时间更新活动状态的定时任务开始执行");
         try {
         	umbrellaBorrowService.updateBorrowDurationJob();
         } catch (Exception e) {
-            XxlJobLogger.log("定时任务执行失败");
+            XxlJobHelper.log("定时任务执行失败");
             return ReturnT.FAIL;
         }
-        XxlJobLogger.log("定时任务执行成功");
+        XxlJobHelper.log("定时任务执行成功");
         return ReturnT.SUCCESS;
     }
 

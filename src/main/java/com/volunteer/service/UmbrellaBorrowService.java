@@ -64,8 +64,8 @@ public interface UmbrellaBorrowService extends IService<UmbrellaHistoryBorrow> {
     void deleteOvertime(String key);
 
     /**
-     * 根据用户信息借取雨伞，添加借阅记录
-     * 软件方面：借阅情况需要存入redis中
+     * 根据用户信息借取雨伞，添加借阅记录<br>
+     * 软件方面：借阅情况需要存入redis中<br>
      * 硬件方面：需要硬件传回确认回复才完成一次借取操作
      * @param volunteer 用户
      * @return UMBRELLA_BORROWED success<br>other false
@@ -74,8 +74,8 @@ public interface UmbrellaBorrowService extends IService<UmbrellaHistoryBorrow> {
 
 
     /**
-     * 根据用户归还雨伞，添加归还记录
-     * 软件方面：将redis中记录删除，并将一次记录情况存入数据库，需要修改一张表(umbrella_borrow)
+     * 根据用户归还雨伞，添加归还记录<br>
+     * 软件方面：将redis中记录删除，并将一次记录情况存入数据库，需要修改一张表(umbrella_borrow)<br>
      * 硬件方面：需要硬件传回确认回复才完成一次归还雨伞操作
      * @param volunteer 用户
      * @return 1 success<br>other false

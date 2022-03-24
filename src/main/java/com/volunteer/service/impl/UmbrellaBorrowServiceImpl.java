@@ -97,17 +97,16 @@ public class UmbrellaBorrowServiceImpl extends ServiceImpl<UmbrellaMapper, Umbre
 
     @Override
     public UmbrellaHistoryListVo selectHistoryAll(Integer pageNo, Integer pageSize) {
-        if (ObjectUtil.isNull(pageNo)){
+        if (ObjectUtil.isNull(pageNo)) {
             pageNo = 1;//没有输入页号默认返回第一页
         }
-        if (ObjectUtil.isNull(pageSize)){
+        if (ObjectUtil.isNull(pageSize)) {
             pageSize = defaultPageSize;
         }
-        IPage<UmbrellaHistoryBorrow> page = new Page<>(pageNo,pageSize);
         log.info("pageNo:【{}】，pageSize:【{}】", pageNo, pageSize);
         //数据库limit分页从第0条数据开始
         int skip = (pageNo - 1) * pageSize;
-        List<UmbrellaHistoryBorrow> umbrellaHistoryBorrows = baseMapper.selectHistoryAll(skip,pageSize);
+        List<UmbrellaHistoryBorrow> umbrellaHistoryBorrows = baseMapper.selectHistoryAll(skip, pageSize);
         List<UmbrellaHistoryVo> collect = umbrellaHistoryBorrows.stream()
                 .map(UmbrellaHistoryVo::new)
                 .collect(Collectors.toList());
@@ -124,12 +123,12 @@ public class UmbrellaBorrowServiceImpl extends ServiceImpl<UmbrellaMapper, Umbre
 
     @Override
     public UmbrellaOrderListVo selectBorrow(Integer pageNo, Integer pageSize) {
-        return getBeanForRedis("umbrellaBorrow*",pageNo,pageSize);
+        return getBeanForRedis("umbrellaBorrow*", pageNo, pageSize);
     }
 
     @Override
     public UmbrellaOrderListVo selectOvertime(Integer pageNo, Integer pageSize) {
-        return getBeanForRedis("umbrellaOvertime*",pageNo,pageSize);
+        return getBeanForRedis("umbrellaOvertime*", pageNo, pageSize);
     }
 
     @Override
@@ -137,7 +136,7 @@ public class UmbrellaBorrowServiceImpl extends ServiceImpl<UmbrellaMapper, Umbre
         redisOperator.del(key);
     }
 
-    private UmbrellaOrderListVo getBeanForRedis(String key,Integer pageNo, Integer pageSize){
+    private UmbrellaOrderListVo getBeanForRedis(String key, Integer pageNo, Integer pageSize) {
         //封装一个UmbrellaOrderListVo用来回传数据
         UmbrellaOrderListVo listVo = new UmbrellaOrderListVo();
         //从redis里拿到所有的keys
@@ -157,8 +156,8 @@ public class UmbrellaBorrowServiceImpl extends ServiceImpl<UmbrellaMapper, Umbre
                     .setPhoneNumber((String) map.get("phoneNumber"))
                     .setQqNumber((String) map.get("qqNumber"))
                     .setEmailAddress((String) map.get("emailAddress"))
-                    .setBorrowDate(LocalDateTime.parse((String)map.get("borrowDate"), DataFormats.dateTimeFormatter))
-                    .setBorrowDurations(Double.parseDouble((String)map.get("borrowDurations")))
+                    .setBorrowDate(LocalDateTime.parse((String) map.get("borrowDate"), DataFormats.dateTimeFormatter))
+                    .setBorrowDurations(Double.parseDouble((String) map.get("borrowDurations")))
                     .setStudentId(Long.parseLong((String) map.get("studentId")));
             //收集到一个对象后收集起来
             list.add(umbrellaOrder);
@@ -169,7 +168,7 @@ public class UmbrellaBorrowServiceImpl extends ServiceImpl<UmbrellaMapper, Umbre
         pageSize = ObjectUtil.isNull(pageSize) || pageSize < 1 ? 20 : pageSize;
         //这里需要分页
         List<UmbrellaOrderVo> records = list.stream()
-                //先排序，按照借伞时间倒序返回
+                //先排序，按照借伞时间降序返回
                 .sorted(Comparator.comparing(UmbrellaOrder::getBorrowDurations).reversed())
                 .skip((pageNo - 1) * pageSize)//分页
                 .limit(pageSize)
@@ -186,12 +185,11 @@ public class UmbrellaBorrowServiceImpl extends ServiceImpl<UmbrellaMapper, Umbre
     @Transactional(rollbackFor = Exception.class)
     public String borrowByVolunteer(Volunteer volunteer) {
         //拼接openID为了防止姓名重复
-        String key = "umbrellaBorrow:"+volunteer.getName()+volunteer.getOpenid();
-
+        String key = "umbrellaBorrow:" + volunteer.getName() + volunteer.getOpenid();
         String phoneNumber = null;
         try {
             //将手机号解密
-            phoneNumber = AES.decrypt(AES.base64Decode(AES.aesDecrypt(volunteer.getPhoneNumber())),AESSecret);
+            phoneNumber = AES.aesDecrypt(volunteer.getPhoneNumber());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -203,9 +201,9 @@ public class UmbrellaBorrowServiceImpl extends ServiceImpl<UmbrellaMapper, Umbre
                 .setPhoneNumber(phoneNumber)
                 .setBorrowDate(LocalDateTime.now())
                 .setBorrowDurations(0.0)
-                .setEmailAddress(volunteer.getQqNumber()+"@qq.com");
+                .setEmailAddress(volunteer.getQqNumber() + "@qq.com");
         //将bean存入redis中
-        parseRedisMap(key,umbrellaOrder);
+        parseRedisMap(key, umbrellaOrder);
         return UmbrellaDic.UMBRELLA_BORROW_SUCCESS_MSG;
     }
 
@@ -213,7 +211,7 @@ public class UmbrellaBorrowServiceImpl extends ServiceImpl<UmbrellaMapper, Umbre
     @Transactional(rollbackFor = Exception.class)
     public String returnByVolunteer(Volunteer volunteer) {
         //拼接openID为了防止姓名重复
-        String key = "umbrellaBorrow:"+volunteer.getName()+volunteer.getOpenid();
+        String key = "umbrellaBorrow:" + volunteer.getName() + volunteer.getOpenid();
 
         Map<Object, Object> map = redisOperator.hgetall(key);
         //获得借伞时间时间段
@@ -223,7 +221,7 @@ public class UmbrellaBorrowServiceImpl extends ServiceImpl<UmbrellaMapper, Umbre
         //往umbrella_borrow表添加一条历史数据
         UmbrellaHistoryBorrow umbrellaHistoryBorrow = new UmbrellaHistoryBorrow();
         umbrellaHistoryBorrow.setOpenID((String) map.get("openID"))
-                .setBorrowDate(LocalDateTime.parse((String)map.get("borrowDate"),DataFormats.dateTimeFormatter))
+                .setBorrowDate(LocalDateTime.parse((String) map.get("borrowDate"), DataFormats.dateTimeFormatter))
                 .setBorrowDurations(durations)
                 .setReturnDate(LocalDateTime.now())
                 .setBorrowStatus(0);//0表示已归还 1表示未归还
@@ -250,49 +248,61 @@ public class UmbrellaBorrowServiceImpl extends ServiceImpl<UmbrellaMapper, Umbre
     public void updateBorrowDurationJob() {
         //拿到所有的以umbrellaBorrow开头的key
         Set<String> keys = redisOperator.keys("umbrellaBorrow*");
-        if(keys.isEmpty()) return;
+        if (keys.isEmpty()) return;
         //保存逾期用户信息
-        Map<String,Double> overtimeUser = new HashMap<>();
+        Map<String, Double> overtimeUser = new HashMap<>();
         //遍历每一个用户，更新他们借取的时间
-        for(String key : keys){
+        for (String key : keys) {
             String borrowDate = redisOperator.hget(key, "borrowDate");
             //获得时间间隔
             Double duration = getDuration(borrowDate);
+            log.info("用户：{},时间{}，默认时间为{}", key, duration, defaultBorrowDuration);
             //判断用户是否超时
-            if(duration > defaultBorrowDuration){
+            if (duration > defaultBorrowDuration) {
                 //将超时用户信息记录
-                overtimeUser.put(key,duration);
-            }else {
-                //用户在和合法时间内更新借取时间
-                redisOperator.hset(key,"borrowDurations",Double.toString(duration));
+                overtimeUser.put(key, duration);
+            } else {
+                //用户在合法时间内更新借取时间
+                redisOperator.hset(key, "borrowDurations", Double.toString(duration));
             }
         }
         //执行超时策略
-        borrowOvertimeHandle(overtimeUser);
+        if (!overtimeUser.isEmpty()) {
+            borrowOvertimeHandle(overtimeUser);
+        }
+        //更新所有超时用户的时间
+        Set<String> keys2 = redisOperator.keys("umbrellaOvertime*");
+        if (!ObjectUtil.isNull(keys2)) {
+            keys2.forEach(k -> {
+                String borrowDate = redisOperator.hget(k, "borrowDate");
+                redisOperator.hset(k, "borrowDurations", Double.toString(getDuration(borrowDate)));
+            });
+        }
     }
 
     @Override
-    public void borrowOvertimeHandle(Map<String,Double> overTimeUser) {
+    public void borrowOvertimeHandle(Map<String, Double> overTimeUser) {
         //将超时用户的姓名和电话qq号拼接在一起，统一发给管理员
         StringBuilder sb = new StringBuilder();
         overTimeUser.forEach((key, duration) -> {
             //更新借取时间
-            redisOperator.hset(key,"borrowDurations", Double.toString(duration));
-            //拿到预期用户的邮箱
+            redisOperator.hset(key, "borrowDurations", Double.toString(duration));
+            //拿到逾期用户的邮箱
             String emailAddress = redisOperator.hget(key, "emailAddress");
             //发送警告邮件给用户
             sendMailUtil.sendOverTimeAlarm(new String[]{emailAddress});
-            //将用户信息保存一个，保存姓名，电话，qq，借伞时间
+            //将用户信息保存，保存姓名，电话，qq，借伞时间
             String userName = redisOperator.hget(key, "userName");
             String phoneNumber = redisOperator.hget(key, "phoneNumber");
             String qqNumber = redisOperator.hget(key, "qqNumber");
-            String opID = redisOperator.hget(key, "openID");
+            String openID = redisOperator.hget(key, "openID");
             sb.append("用户名：").append(userName)
                     .append("，电话:").append(phoneNumber)
                     .append("，qq：").append(qqNumber)
                     .append("，借取时间：").append(duration).append("小时\n");
+            log.info("超时信息{},超时用户{}", key + "," + duration, sb.toString());
             //修改redis中用户的key，将其保存到超时key集合中
-            redisOperator.rename(key,"umbrellaOvertime:"+userName+opID);
+            redisOperator.rename(key, "umbrellaOvertime:" + userName + openID);
         });
 
         //将所有逾期用户信息发送给管理员
@@ -300,13 +310,12 @@ public class UmbrellaBorrowServiceImpl extends ServiceImpl<UmbrellaMapper, Umbre
     }
 
 
-
     /**
      * 将bean存入Redis中
      */
     private void parseRedisMap(String key, Object bean) {
         Map<String, Object> map = BeanMapUtil.beanToMap(bean);
-        map.forEach((field,value)->redisOperator.hset(key,field, String.valueOf(value)));
+        map.forEach((field, value) -> redisOperator.hset(key, field, String.valueOf(value)));
 
 
         //        // 获得所有的get方法
@@ -343,18 +352,19 @@ public class UmbrellaBorrowServiceImpl extends ServiceImpl<UmbrellaMapper, Umbre
 
     /**
      * 获得借取雨伞的时间间隔
+     *
      * @param borrowDate 借取雨伞时候的时间，格式为yyyy-MM-dd'T'HH:mm:ss.SSS
      * @return 借伞时长，不足30分钟按30分钟算
      */
-    private Double getDuration(Object borrowDate){
+    private Double getDuration(Object borrowDate) {
         //没有取到借伞时间
-        if(ObjectUtil.isNull(borrowDate)){
+        if (ObjectUtil.isNull(borrowDate)) {
             log.error("redis服务异常，未取到缓存数据");
             throw new RuntimeException("服务器读取缓存异常，读取不到用户的BorrowDate数据");
         }
-        LocalDateTime borrowTime = LocalDateTime.parse((String)borrowDate, DataFormats.dateTimeFormatter);
+        LocalDateTime borrowTime = LocalDateTime.parse((String) borrowDate, DataFormats.dateTimeFormatter);
         LocalDateTime now = LocalDateTime.now();
-        Duration duration = Duration.between(borrowTime,now);
+        Duration duration = Duration.between(borrowTime, now);
         //借伞分钟
         long millis = duration.toMinutes();
         //不足30分钟按30分钟算

@@ -22,7 +22,7 @@ public class SecretOperator {
     @Value("${AES-secret}")
     private String AESSecret;
 
-    private AES aes = SecureUtil.aes(Base64.decode(AESSecret));
+    private final AES aes = SecureUtil.aes(Base64.decode(AESSecret));
 
     public String aesEncrypt(String data) {
         return aes.encryptHex(data);
