@@ -1,4 +1,7 @@
 target/
 .idea/
 *.iml
-
+src/main/resources/application-*.yml
+src/main/resources/7202264_volunteer.fengxianhub.top.pfx
+application-LinuxProd.yml
+*.log
