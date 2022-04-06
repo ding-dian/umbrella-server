@@ -69,8 +69,6 @@ public class TestClass {
     @Autowired
     private VolunteerService volunteerService;
 
-    @Autowired
-    private FastDFSClient fastDFSClient;
 
     @Autowired
     private RedisOperator redisOperator;
@@ -207,8 +205,8 @@ public class TestClass {
         // 上传普通文件
 //        String uploadFile = fastDFSClient.uploadFile();
         // 上传图片带缩略图
-        String uploadFile = fastDFSClient.uploadImageAndCrtThumbImage(file);
-        System.out.println(uploadFile);
+//        String uploadFile = fastDFSClient.uploadImageAndCrtThumbImage(file);
+//        System.out.println(uploadFile);
 
         // 删除
 //        fastDFSClient.deleteFile("group1/M00/00/00/rBgar2GkgTuAF_qYABBlZbhgEOQ365.jpg");

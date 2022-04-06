@@ -132,8 +132,8 @@ public class VolunteerActivityServiceImpl extends ServiceImpl<VolunteerActivityM
      */
     @Override
     public void deleteListActivity(Integer[] ids) {
-        for (int i = 0; i < ids.length; i++) {
-            deleteActivity(ids[i]);
+        for (Integer id : ids) {
+            deleteActivity(id);
         }
     }
 
