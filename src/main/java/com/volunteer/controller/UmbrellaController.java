@@ -4,7 +4,6 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSON;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import com.volunteer.annotation.AccessLimit;
 import com.volunteer.component.RedisOperator;
 import com.volunteer.entity.Volunteer;
 import com.volunteer.entity.common.Result;
@@ -22,6 +21,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
 
 /**
  * @author: 梁峰源
@@ -55,7 +56,6 @@ public class UmbrellaController {
     @Resource
     private KcpService kcpService;
 
-
     /**
      * 借取爱心雨伞
      *
@@ -73,10 +73,8 @@ public class UmbrellaController {
             @ApiResponse(code = 604, message = "用户未在规定时间内取走伞"),
             @ApiResponse(code = 605, message = "该用户有超时借伞记录"),
             @ApiResponse(code = 606, message = "该用户有超时借伞记录"),
-            @ApiResponse(code = 610, message = "该接口正在被其他用户访问"),
     })
-    @AccessLimit  //自定义注解，用来限制该接口的并发数量，默认每十秒只能有一个用户访问
-    public Result borrowUmbrellaByToken(@RequestParam String token) {
+    public synchronized Result borrowUmbrellaByToken(@RequestParam String token) {
         if (StringUtils.isEmpty(token)) {
             return ResultGenerator.getFailResult("token有误!");
         }
@@ -145,8 +143,7 @@ public class UmbrellaController {
             @ApiResponse(code = 603, message = "用户没有借取过爱心雨伞，不能归还"),
             @ApiResponse(code = 604, message = "用户未在规定时间内取走伞")
     })
-    @AccessLimit  //自定义注解，用来限制该接口的并发数量，默认每十秒只能有一个用户访问
-    public Result returnUmbrellaByToken(@RequestParam String token) {
+    public synchronized Result returnUmbrellaByToken(@RequestParam String token) {
         if (StringUtils.isEmpty(token)) {
             return ResultGenerator.getFailResult("token有误!!");
         }

@@ -2,7 +2,6 @@ package com.volunteer.service;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.volunteer.entity.common.UmbrellaDic;
-import com.volunteer.protocol.UmbrellaProtocol;
 import com.volunteer.util.SendMailUtil;
 import com.volunteer.util.SpringContextUtil;
 import io.netty.buffer.ByteBuf;
@@ -103,7 +102,7 @@ public class KcpService implements KcpListener {
             throw new RuntimeException("锁机掉线了，发送消息失败");
         }
         //发送开锁信号
-        boolean isSend = ukcp.write(UmbrellaProtocol.sendUnlockMsg(3578862,60 * 5));
+        boolean isSend = ukcp.write(UmbrellaDic.UNLOCK_FRAME);
         if (!isSend) {
             return UmbrellaDic.UNLOCK_FAIL_MSG;
         }
@@ -188,7 +187,6 @@ public class KcpService implements KcpListener {
         if (UmbrellaDic.PING_CLIENT_FRAME.equalsIgnoreCase(str)) {
             //连通性测试，返回服务器的测试帧
             this.ukcp.write(UmbrellaDic.PING_SERVICE_FRAME);
-            log.info("服务器往锁机发帧：Hwsping00T");
         }
         if (curCount == -1) {
             ukcp.close();

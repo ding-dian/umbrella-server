@@ -1,6 +1,7 @@
 package com.volunteer.controller;
 
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.volunteer.component.OSSOperator;
 import com.volunteer.component.RedisOperator;
@@ -9,6 +10,7 @@ import com.volunteer.entity.common.ResultGenerator;
 import com.volunteer.entity.vo.MiniProgramStaticInfoVo;
 import com.volunteer.entity.vo.MiniProgramSwiperListVo;
 import com.volunteer.entity.vo.MiniProgramSwiperVo;
+import com.volunteer.util.BeanMapUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.Min;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;

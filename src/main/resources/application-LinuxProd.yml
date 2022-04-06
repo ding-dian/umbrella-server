@@ -167,7 +167,7 @@ xxl:
 ##爱心雨伞默认数据
 umbrella:
   umbrellaBorrowRecordPageSize: 20 #爱心雨伞借阅记录默认返回条数
-  defaultBorrowDuration: 48 #默认用户能够借取雨伞的时间为48小时
-  defaultUnlockWaitTime: 12 #爱心雨伞锁机默认开锁时间 单位秒,这里要考虑数据延迟的时间，所以校正误差时间四秒钟
+  defaultBorrowDuration: 48 #默认用户能够借取雨伞的时间为24小时
+  defaultUnlockWaitTime: 14 #爱心雨伞锁机默认开锁时间 单位秒,这里要考虑数据延迟的时间，所以校正误差时间四秒钟
 Kcp:
   port: 67 #锁机与服务器通信端口

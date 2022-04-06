@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
@@ -120,8 +120,6 @@ public class RedisOperator {
         redisTemplate.opsForValue().set(key, value, timeout, timeUnit);
     }
 
-
-
     /**
      * 实现命令：GET key，返回 key所关联的字符串值。
      *
@@ -129,7 +127,7 @@ public class RedisOperator {
      * @return value
      */
     public String get(String key) {
-        return redisTemplate.opsForValue().get(key);
+        return (String)redisTemplate.opsForValue().get(key);
     }
 
 

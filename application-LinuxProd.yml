@@ -155,7 +155,7 @@ task:
 xxl:
   job:
     admin:
-      addresses: https://volunteer.fengxianhub.top:8081/xxl-job-admin #部署的调度中心的url
+      addresses: http://127.0.0.1:8081/xxl-job-admin #部署的调度中心的url
     executor:
       appname: xxl-job-volunteer-executor #执行器的名字
       ip:
