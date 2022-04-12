@@ -18,7 +18,7 @@ import org.springframework.jmx.support.RegistrationPolicy;
  */
 @SpringBootApplication
 @MapperScan("com.volunteer.mapper")
-@PropertySource(value={"file:application-LinuxProd.yml"}) //加载jar包同级目录里面的配置文件
+//@PropertySource(value={"file:application-LinuxProd.yml"}) //加载jar包同级目录里面的配置文件
 @EnableMBeanExport(registration = RegistrationPolicy.IGNORE_EXISTING) // 解决jmx重复注册bean的问题
 public class VolunteerManagementApplication {
     public static void main(String[] args) {
@@ -37,15 +37,15 @@ public class VolunteerManagementApplication {
         TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory() {
             @Override
             protected void postProcessContext(Context context) {
-                SecurityConstraint constraint = new SecurityConstraint();
-                constraint.setUserConstraint("CONFIDENTIAL");
-                SecurityCollection collection = new SecurityCollection();
+               SecurityConstraint constraint = new SecurityConstraint();
+               constraint.setUserConstraint("CONFIDENTIAL");
+               SecurityCollection collection = new SecurityCollection();
                 collection.addPattern("/*");
                 constraint.addCollection(collection);
                 context.addConstraint(constraint);
             }
         };
-//        tomcat.addAdditionalTomcatConnectors(httpConnector());
+        tomcat.addAdditionalTomcatConnectors(httpConnector());
         return tomcat;
     }
 
@@ -57,7 +57,7 @@ public class VolunteerManagementApplication {
         connector.setPort(80);
         connector.setSecure(false);
         //监听到http的端口号后转向到的https的端口号
-        connector.setRedirectPort(443);
+       connector.setRedirectPort(443);
         return connector;
     }
 }
